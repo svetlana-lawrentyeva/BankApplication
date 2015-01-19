@@ -2,51 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6f720c20-df5a-4e99-b3fc-aab5b0014801" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/AbstractAccount.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/Account.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/AccountType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/AddClientCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/Bank.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/BankApplication.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/BankApplication.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/BankCommander.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/BankException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/BankFeedCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/BankFeedService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/BankImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/BankReport.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/BankService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/BankUI.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/CheckingAccount.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/Client.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/ClientComparator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/ClientExistsException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/ClientImpl.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/ClientNotExistsException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/ClientRegistrationListener.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/Command.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/DepositCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/FeedException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/FindClientCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/Gender.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/GetAccountsCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/NotEnoughFundsException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/OverDraftLimitExceededException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/Report.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/model/impl/SavingAccount.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/TransferCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/WithdrawCommand.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/feeds/feed1.fd.txt" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="a65edeae-5b13-467c-b015-136cb36d0747" name="New changelist" comment="" />
     <ignored path="BankApplication.iws" />
@@ -216,7 +172,7 @@
       <file leaf-file-name="BankFeedService.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/BankFeedService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="50" column="50" selection-start="1669" selection-end="1669" vertical-scroll-proportion="0.7758621" vertical-offset="580" max-vertical-offset="1122">
+            <state line="50" column="41" selection-start="1660" selection-end="1660" vertical-scroll-proportion="0.7758621" vertical-offset="580" max-vertical-offset="1122">
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1508#1524#0" expanded="true" />
@@ -785,14 +741,19 @@
       <created>1421230562224</created>
       <updated>1421230562224</updated>
     </task>
+    <task id="LOCAL-00001" summary="init">
+      <created>1421684486968</created>
+      <updated>1421684486969</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3293718" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3293718" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -828,6 +789,8 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1223,7 +1186,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/luxoft/bankapp/service/impl/BankFeedService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="50" selection-start="1669" selection-end="1669" vertical-scroll-proportion="0.7758621" vertical-offset="580" max-vertical-offset="1122">
+        <state line="50" column="41" selection-start="1660" selection-end="1660" vertical-scroll-proportion="0.7758621" vertical-offset="580" max-vertical-offset="1122">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1508#1524#0" expanded="true" />
