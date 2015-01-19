@@ -38,8 +38,8 @@ public class CheckingAccount extends AbstractAccount {
 
     @Override
     public void parseFeed(Map<String, String> feed) {
-        this.balance = Float.parseFloat("balance");
-        this.overdraft = Float.parseFloat("overdraft");
+        this.balance = Float.parseFloat(feed.get("balance"));
+        this.overdraft = Float.parseFloat(feed.get("overdraft"));
     }
 
     @Override

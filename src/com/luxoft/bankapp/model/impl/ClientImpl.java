@@ -47,11 +47,18 @@ public class ClientImpl implements com.luxoft.bankapp.model.Client {
 
     @Override
     public void deposit(float x){
-        activeAccount.deposit(x);
+        if (accounts.size() == 0) {
+            Account account = new SavingAccount(x);
+            accounts.add(account);
+            activeAccount = account;
+        } else
+            activeAccount.deposit(x);
     }
 
     @Override
     public void withdraw(float x) throws BankException {
+        if (activeAccount == null)
+            throw new IllegalArgumentException("The Client " + this.toString() + " has not account yet");
         activeAccount.withdraw(x);
     }
 
@@ -227,17 +234,18 @@ public class ClientImpl implements com.luxoft.bankapp.model.Client {
             String gen = feed.get("gender");
             if(gen.equals("m")) this.gender = Gender.MALE;
             else if(gen.equals("f")) this.gender = Gender.FEMALE;
-            else throw new FeedException();
+            else throw new FeedException("wrong parameter: gender");
             this.name = feed.get("name");
             this.overdraft = Float.parseFloat(feed.get("overdraft"));
             this.setBalance(Float.parseFloat(feed.get("balance")));
-            String accountType = feed.get("accountType");
+            String accountType = feed.get("accounttype");
             if(accountType.equals("c"))this.activeAccount = new CheckingAccount();
             else if(accountType.equals("s"))this.activeAccount = new SavingAccount();
-            else throw  new FeedException();
+            else throw  new FeedException("wrong parameter: account type");
+            this.accounts.add(this.activeAccount);
             this.activeAccount.parseFeed(feed);
         } catch (Exception ex){
-            throw new FeedException();
+            throw new FeedException(ex.getMessage());
         }
     }
 

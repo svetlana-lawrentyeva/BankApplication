@@ -5,7 +5,6 @@ import com.luxoft.bankapp.model.Client;
 import com.luxoft.bankapp.model.impl.BankImpl;
 import com.luxoft.bankapp.service.Command;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -42,7 +41,9 @@ public class BankCommander {
         commandMap.put("5", new TransferCommand());
         commandMap.put("6", new AddClientCommand());
         commandMap.put("7", new BankFeedCommand());
-        commandMap.put("8", new Command(){
+        commandMap.put("8", new LoadCommand());
+        commandMap.put("9", new SaveCommand());
+        commandMap.put("10", new Command(){
             public void execute() {
                 System.exit(0);
             }

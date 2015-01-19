@@ -1,9 +1,7 @@
 package com.luxoft.bankapp.service.impl;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +30,7 @@ public class BankFeedService {
                         while((line=br.readLine())!=null){
                             parseFeed(line);
                         }
+                        br.close();
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -42,9 +41,7 @@ public class BankFeedService {
         }
     }
     public void parseFeed(String feed){
-        List<Map<String, String>> maps = new ArrayList();
-        String []lines = feed.split("\n");
-        for(String line:lines){
+
             Map<String, String> map = new HashMap<String, String>();
             String []parameters = feed.split(";");
             for(String str:parameters){
@@ -52,9 +49,6 @@ public class BankFeedService {
                 map.put(mapData[0], mapData[1]);
             }
             BankCommander.currentBank.parseFeed(map);
-        }
-        for(Map<String, String> map:maps){
-            BankCommander.currentBank.parseFeed(map);
-        }
+        int y=0;
     }
 }

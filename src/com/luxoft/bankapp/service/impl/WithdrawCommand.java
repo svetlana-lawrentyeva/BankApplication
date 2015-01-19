@@ -14,12 +14,12 @@ public class WithdrawCommand implements Command {
         Scanner sc = new Scanner(System.in);
         System.out.println("money to withdraw:");
         float x = sc.nextFloat();
+        System.out.println("Account successfully withdrawn");
         try {
             bankService.withdraw(BankCommander.currentClient, x);
         } catch (BankException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("Account successfully withdrawn");
         System.out.println(bankService.getAccountInfo(BankCommander.currentClient.getActiveAccount()));
     }
 

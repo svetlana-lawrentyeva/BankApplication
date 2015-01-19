@@ -8,7 +8,7 @@ import com.luxoft.bankapp.service.Command;
 public class BankFeedCommand implements Command {
     @Override
     public void execute() {
-        BankFeedService.getInstatnce().loadFeeds("E:\\sv\\BankApplication\\feeds");
+        BankFeedService.getInstatnce().loadFeeds("./feeds");
     }
 
     @Override

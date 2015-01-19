@@ -77,6 +77,7 @@ public class BankImpl implements com.luxoft.bankapp.model.Bank {
     @Override
     public void parseFeed(Map<String, String> feed) {
         Client client = new ClientImpl();
+        clients.add(client);
         client.parseFeed(feed);
     }
 

@@ -1,14 +1,14 @@
 package com.luxoft.bankapp.model;
 
 import com.luxoft.bankapp.model.impl.NotEnoughFundsException;
-import com.luxoft.bankapp.model.impl.OverDraftLimitExceededException;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by SCJP on 14.01.15.
  */
-public interface Account extends Report {
+public interface Account extends Report, Serializable {
     public long getId();
     public void setId(long id);
     float getBalance();

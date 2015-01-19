@@ -1,16 +1,15 @@
 package com.luxoft.bankapp.model;
 
 import com.luxoft.bankapp.model.impl.BankException;
-import com.luxoft.bankapp.model.impl.OverDraftLimitExceededException;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by SCJP on 14.01.15.
  */
-public interface Client extends Report {
+public interface Client extends Report, Serializable {
     float getBalance();
 
     void deposit(float x);
