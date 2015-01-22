@@ -1,5 +1,6 @@
 package com.luxoft.bankapp.model;
 
+import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.ClientExistsException;
 import com.luxoft.bankapp.model.impl.ClientNotExistsException;
 
@@ -7,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by SCJP on 14.01.15.
- */
 public interface Bank extends Report {
     @Override
     void printReport();
@@ -36,11 +34,5 @@ public interface Bank extends Report {
 
     public void setName(String name);
 
-    void parseFeed(Map<String,String> feed);
-
-    static class nnn{
-        public static void rr(){
-            System.out.println("kjhkh");
-        }
-    }
+    Client parseFeed(Map<String, String> feed) throws ClientExistsException;
 }

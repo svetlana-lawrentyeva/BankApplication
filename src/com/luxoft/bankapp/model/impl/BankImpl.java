@@ -1,21 +1,17 @@
 package com.luxoft.bankapp.model.impl;
 
-import com.luxoft.bankapp.model.Client;
 import com.luxoft.bankapp.model.ClientRegistrationListener;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * Created by SCJP on 14.01.15.
- */
 public class BankImpl implements com.luxoft.bankapp.model.Bank {
     private String name;
     private Set<Client> clients = new HashSet<Client>();
     private List<ClientRegistrationListener> listeners = new ArrayList<ClientRegistrationListener>();
-    private Map<String, Client> clientsMapByName;
+    private Map<String, Client> clientsMapByName = new HashMap<>();
 
-    public BankImpl(){
+    public BankImpl() {
         this.listeners.add(new ClientRegistrationListener() {
             @Override
             public void onClientAdded(Client c) {
@@ -23,10 +19,11 @@ public class BankImpl implements com.luxoft.bankapp.model.Bank {
             }
         });
     }
-    public BankImpl(String name, List<ClientRegistrationListener>listeners){
-        super();
+
+    public BankImpl(String name, List<ClientRegistrationListener> listeners) {
+        this();
         this.name = name;
-       this.listeners = listeners;
+        this.listeners = listeners;
         listeners.add(new ClientRegistrationListener() {
             @Override
             public void onClientAdded(Client c) {
@@ -37,15 +34,15 @@ public class BankImpl implements com.luxoft.bankapp.model.Bank {
         });
     }
 
-    public BankImpl(String name){
-        super();
+    public BankImpl(String name) {
+        this();
         this.name = name;
         listeners.add(new ClientRegistrationListener() {
             @Override
             public void onClientAdded(Client c) {
                 Date date = new Date();
                 String stringDate = new SimpleDateFormat("dd.MM.yyyy").format(date);
-                System.out.println(""+c+" "+stringDate);
+                System.out.println("" + c + " " + stringDate);
             }
         });
     }
@@ -60,8 +57,8 @@ public class BankImpl implements com.luxoft.bankapp.model.Bank {
 
     @Override
     public Client findClient(String name) throws ClientNotExistsException {
-        for(Client client:clients){
-            if(client.getName().equals(name)) return client;
+        for (Client client : clients) {
+            if (client.getName().equals(name)) return client;
         }
         throw new ClientNotExistsException();
     }
@@ -75,10 +72,19 @@ public class BankImpl implements com.luxoft.bankapp.model.Bank {
     }
 
     @Override
-    public void parseFeed(Map<String, String> feed) {
-        Client client = new ClientImpl();
-        clients.add(client);
+    public Client parseFeed(Map<String, String> feed) throws ClientExistsException {
+        Client client = new Client();
         client.parseFeed(feed);
+        for (Client c : clients) {
+            if (client.equals(c)) {
+                client = c;
+            }
+        }
+        clients.add(client);
+        for (ClientRegistrationListener listener : getListeners()) {
+            listener.onClientAdded(client);
+        }
+        return client;
     }
 
     public Map<String, Client> getClientsMapByName() {
@@ -101,26 +107,21 @@ public class BankImpl implements com.luxoft.bankapp.model.Bank {
     public static class EmailNotificationListener implements ClientRegistrationListener {
         @Override
         public void onClientAdded(Client c) {
-            System.out.println("Notification email for client "+c.getGender().getSalutation()+ " " + c.getName()+" to be sent\n");
+            System.out.println("Notification email for client " + c.getGender().getSalutation() + " " + c.getName() + " to be sent\n");
         }
     }
+
     @Override
     public void printReport() {
-        System.out.println("Bank "+name+" has clients:");
-        for(Client client:clients){
+        System.out.println("Bank " + name + " has clients:");
+        for (Client client : clients) {
             client.printReport();
             System.out.println("\n");
         }
     }
 
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Bank "+name+" has clients:");
-        for(Client client:clients){
-            stringBuilder.append(client);
-            stringBuilder.append("\n");
-        }
-        return stringBuilder.toString();
+        return ("Bank " + name);
     }
 
     @Override
@@ -131,8 +132,8 @@ public class BankImpl implements com.luxoft.bankapp.model.Bank {
     @Override
     public void setClients(Set<Client> clients) {
         this.clients = clients;
-        for(Client client:clients){
-            for(ClientRegistrationListener listener: getListeners()){
+        for (Client client : clients) {
+            for (ClientRegistrationListener listener : getListeners()) {
                 listener.onClientAdded(client);
             }
         }
@@ -140,20 +141,21 @@ public class BankImpl implements com.luxoft.bankapp.model.Bank {
 
     @Override
     public void addClient(Client client) throws ClientExistsException {
-        if(hasClient(client)) throw new ClientExistsException();
+        if (hasClient(client)) throw new ClientExistsException();
         clients.add(client);
-        for(ClientRegistrationListener listener: getListeners()){
+        for (ClientRegistrationListener listener : getListeners()) {
             listener.onClientAdded(client);
         }
     }
 
-    private boolean hasClient(Client client){
+    private boolean hasClient(Client client) {
         boolean hasClient = false;
-        for(Client c:clients){
-            if(c.equals(client))hasClient = true;
+        for (Client c : clients) {
+            if (c.equals(client)) hasClient = true;
         }
         return hasClient;
     }
+
     @Override
     public void removeClient(Client client) {
         clients.remove(client);

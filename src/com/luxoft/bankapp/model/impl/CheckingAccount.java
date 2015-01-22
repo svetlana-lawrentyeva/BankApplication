@@ -2,38 +2,38 @@ package com.luxoft.bankapp.model.impl;
 
 import java.util.Map;
 
-/**
- * Created by SCJP on 14.01.15.
- */
 public class CheckingAccount extends AbstractAccount {
     private float overdraft = 10;
 
-    public CheckingAccount(){}
-    public CheckingAccount(float startBalance){
-        super.setBalance(startBalance);
+    public CheckingAccount() {
     }
 
-    public CheckingAccount(float startBalance, float overdraft){
-        super.setBalance(startBalance);
-        this.setOverdraft(overdraft);
+    public CheckingAccount(float startBalance) {
+        setBalance(startBalance);
     }
+
+    public CheckingAccount(float startBalance, float overdraft) {
+        setBalance(startBalance);
+        this.overdraft = overdraft;
+    }
+
     public void deposit(float x) {
-        balance+=x;
+        balance += x;
     }
 
     @Override
     public void withdraw(float x) throws OverDraftLimitExceededException {
-        if(balance+overdraft>=x)
-            balance-=x;
-        else{
+        if (balance + overdraft >= x) {
+            balance -= x;
+        } else {
             float money = getAvailableMoney();
-            throw  new OverDraftLimitExceededException(this, money);
+            throw new OverDraftLimitExceededException(this, money);
         }
     }
 
     @Override
     public float getAvailableMoney() {
-        return balance+overdraft;
+        return balance + overdraft;
     }
 
     @Override
@@ -52,12 +52,14 @@ public class CheckingAccount extends AbstractAccount {
     }
 
     public void setOverdraft(float overdraft) {
-        if (overdraft<0) throw new IllegalArgumentException();
+        if (overdraft < 0) {
+            throw new IllegalArgumentException();
+        }
         this.overdraft = overdraft;
     }
 
-    public String toString(){
-        return "Checking account "+this.hashCode()+" with balance: "+balance+", overdraft: "+overdraft;
+    public String toString() {
+        return "Checking account " + this.hashCode() + " with balance: " + balance + ", overdraft: " + overdraft;
     }
 
 }
