@@ -1,5 +1,7 @@
 package com.luxoft.bankapp.model.impl;
 
+import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
+
 import java.util.Map;
 
 public class SavingAccount extends AbstractAccount {

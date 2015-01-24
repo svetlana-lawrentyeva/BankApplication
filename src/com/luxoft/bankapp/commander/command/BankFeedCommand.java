@@ -2,7 +2,7 @@ package com.luxoft.bankapp.commander.command;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.model.impl.ClientExistsException;
+import com.luxoft.bankapp.commander.Response;
 
 public class BankFeedCommand extends AbstractCommand implements Command {
     public BankFeedCommand(Commander commander) {
@@ -10,15 +10,16 @@ public class BankFeedCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public String execute(String param) {
-        String result = "oops";
+    public Response execute(String param) {
+        String message = "";
         try {
             getService().loadFeeds(getCommander().getCurrentBank(), param); //"./feeds" - path
-            result = "execute successfully";
-        } catch (ClientExistsException e) {
-            e.printStackTrace();
+            message = "execute successfully";
+        } catch (Exception e) {
+            message = e.getMessage();
         }
-        return result;
+        setResponse(null, message);
+        return getResponse();
     }
 
     @Override

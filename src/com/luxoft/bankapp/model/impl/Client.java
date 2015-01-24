@@ -4,6 +4,8 @@ import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.AccountType;
 import com.luxoft.bankapp.model.Gender;
 import com.luxoft.bankapp.model.Report;
+import com.luxoft.bankapp.model.exceptions.BankException;
+import com.luxoft.bankapp.model.exceptions.FeedException;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -12,13 +14,12 @@ import java.util.Set;
 
 public class Client implements Report {
     private String name;
-    private String city;
+    private String city = "none";
     private String email;
     private String phone;
     private float overdraft;
-    private float balance;
     private Gender gender;
-    private Set<Account> accounts = new HashSet<Account>();
+    private Set<Account> accounts = new HashSet<>();
     private Account activeAccount;
 
     public String getCity() {
@@ -39,10 +40,6 @@ public class Client implements Report {
     public Client(float initialOverdraft, Gender gender) {
         this.overdraft = initialOverdraft;
         this.gender = gender;
-    }
-
-    public float getBalance() {
-        return this.balance;
     }
 
     public void deposit(float x) {
@@ -104,7 +101,7 @@ public class Client implements Report {
     }
 
     public String toString() {
-        return gender.getSalutation() + " " + name + "  " + getBalance();
+        return gender.getSalutation() + " " + name + "  " + activeAccount.getBalance();
     }
 
     public String getName() {
@@ -229,9 +226,9 @@ public class Client implements Report {
             } else {
                 throw new FeedException("wrong parameter: gender");
             }
+            this.setCity(feed.get("city"));
             this.name = feed.get("name");
             this.overdraft = Float.parseFloat(feed.get("overdraft"));
-            this.setBalance(Float.parseFloat(feed.get("balance")));
             String accountType = feed.get("accounttype");
             if (accountType.equals("c")) {
                 this.activeAccount = new CheckingAccount();
@@ -247,7 +244,7 @@ public class Client implements Report {
         }
     }
 
-    public void setBalance(float balance) {
-        this.balance = balance;
+    public float getBalance(){
+        return activeAccount.getBalance();
     }
 }

@@ -1,9 +1,10 @@
 package com.luxoft.bankapp.service;
 
 import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.Bank;
+import com.luxoft.bankapp.model.exceptions.BankException;
+import com.luxoft.bankapp.model.exceptions.ClientExistsException;
+import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.*;
-import com.luxoft.bankapp.remote.BankInfo;
 
 import java.io.*;
 import java.util.HashMap;
@@ -67,8 +68,8 @@ public class Service {
         return account;
     }
 
-    public String getActiveAccount(Client client) {
-        return client.getActiveAccount().toString();
+    public Account getActiveAccount(Client client) {
+        return client.getActiveAccount();
     }
 
     public void deposit(Client client, float x) {
@@ -87,32 +88,30 @@ public class Service {
         return bank.getClientsMapByName().get(clientName);
     }
 
-    public void saveClient(Client client, String param) {
+    public void saveClient(Client client, String param) throws BankException {
         try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(param));
             oos.writeObject(client);
             oos.close();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (Exception e) {
+            throw new BankException(e.getMessage());
         }
     }
 
-    public Client loadClient(String param) {
+    public Client loadClient(String param) throws BankException {
         Client client = new Client();
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(param));
             client = (Client) ois.readObject();
             ois.close();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (Exception e) {
+            throw new BankException(e.getClass().getSimpleName() +" "+e.getMessage());
         }
 
         return client;
     }
 
-    public void loadFeeds(Bank bank, String folder) throws ClientExistsException {
+    public void loadFeeds(Bank bank, String folder) throws BankException {
         File dir = new File(folder);
         if (dir.exists()) {
             File[] files = dir.listFiles();
@@ -127,10 +126,8 @@ public class Service {
                             parseFeed(bank, line);
                         }
                         br.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        throw  new BankException(e.getMessage());
                     }
                 }
             }
@@ -152,11 +149,12 @@ public class Service {
     public BankInfo getBankInfo(Bank bank){
         BankInfo bankInfo = new BankInfo();
         BankReport bankReport = new BankReport();
-        bankInfo.setClientsNumber(bankReport.getNumberOfClients(bank));
-        bankInfo.setGetAccountsNumber(bankReport.getAccountsNumber(bank));
-        bankInfo.setGetBankCreditSum(bankReport.getBankCreditSum(bank));
-        bankInfo.setGetClientsByCity(bankReport.getClientsByCity(bank));
-        bankInfo.setGetClientsSorted(bankReport.getClientsSorted(bank));
+        bankReport.setBank(bank);
+        bankInfo.setClientsNumber(bankReport.getNumberOfClients());
+        bankInfo.setAccountsNumber(bankReport.getAccountsNumber());
+        bankInfo.setBankCreditSum(bankReport.getBankCreditSum());
+        bankInfo.setClientsByCity(bankReport.getClientsByCity());
+        bankInfo.setClientsSorted(bankReport.getClientsSorted());
 
         return bankInfo;
     }

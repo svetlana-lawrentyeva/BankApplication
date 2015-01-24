@@ -1,4 +1,4 @@
-package com.luxoft.bankapp.model.impl;
+package com.luxoft.bankapp.model.exceptions;
 
 public class ClientNotExistsException extends BankException {
     public String getMessage() {

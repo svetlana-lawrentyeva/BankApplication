@@ -1,9 +1,9 @@
 package com.luxoft.bankapp.commander.command;
 
 import com.luxoft.bankapp.commander.Commander;
+import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.Client;
-import com.luxoft.bankapp.model.impl.ClientNotExistsException;
 
 public class SetActiveAccountCommand extends AbstractCommand {
     public SetActiveAccountCommand(Commander commander) {
@@ -11,19 +11,21 @@ public class SetActiveAccountCommand extends AbstractCommand {
     }
 
     @Override
-    public String execute(String param) {  //"client_name&account_id"
-        String result = "oops";
+    public Response execute(String param) {  //"client_name&account_id"
+        String message = "";
+        Account account = null;
         String[] params = param.split("&");
         try {
             Client client = getService().findClient(getCommander().getCurrentBank(), params[0]);
             long accountId = Long.parseLong(params[1]);
-            Account account = getService().getAccount(client, accountId);
-            result = "client " + client.getClientSalutation() + " active account " +
+            account = getService().getAccount(client, accountId);
+            message = "client " + client.getClientSalutation() + " active account " +
                     getService().getAccountInfo(account);
-        } catch (ClientNotExistsException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            message = e.getMessage();
         }
-        return result;
+        setResponse(account, message);
+        return getResponse();
     }
 
     @Override

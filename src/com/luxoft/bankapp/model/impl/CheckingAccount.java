@@ -1,5 +1,7 @@
 package com.luxoft.bankapp.model.impl;
 
+import com.luxoft.bankapp.model.exceptions.OverDraftLimitExceededException;
+
 import java.util.Map;
 
 public class CheckingAccount extends AbstractAccount {

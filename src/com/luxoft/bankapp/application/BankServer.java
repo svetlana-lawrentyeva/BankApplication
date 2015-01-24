@@ -2,10 +2,12 @@ package com.luxoft.bankapp.application;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.model.Bank;
-import com.luxoft.bankapp.model.impl.BankImpl;
+import com.luxoft.bankapp.commander.Response;
+import com.luxoft.bankapp.model.impl.Bank;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -18,7 +20,7 @@ public class BankServer {
     public static void main(String[] args) {
         BankServer bankServer = new BankServer();
         bankServer.bankApplication = new BankApplication();
-        bankServer.bank = new BankImpl("my bank");
+        bankServer.bank = new Bank("my bank");
         bankServer.commander = new Commander();
         bankServer.commander.setCurrentBank(bankServer.bank);
         bankServer.bankApplication.initialize(bankServer.bank, bankServer.commander);
@@ -30,7 +32,7 @@ public class BankServer {
         ServerSocket serverSocket = null;
         Socket connectionSocket = null;
         try {
-            serverSocket = new ServerSocket(1999);
+            serverSocket = new ServerSocket(2999);
             connectionSocket = serverSocket.accept();
             readCommands(connectionSocket);
         } catch (IOException e) {
@@ -47,36 +49,42 @@ public class BankServer {
 
     private void readCommands(Socket socket) {
 
-        BufferedReader br = null;
-        PrintWriter pw = null;
+        ObjectInputStream in = null;
+        ObjectOutputStream out = null;
 
         try {
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            pw = new PrintWriter(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
 
             while (true) {
-                String param = br.readLine();
+                String param = (String) in.readObject();
                 int amp = param.indexOf("&");
                 int i = Integer.parseInt(param.substring(0, amp));
                 param = param.substring(amp + 1);
                 Command command = commander.getCommandMap().get(i);
 
-                String response = (String)command.execute(param);
-                pw.println(response);
-                pw.flush();
+                Response response = command.execute(param);
+                out.writeObject(response);
+                out.flush();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        if (br != null) {
+        if (in != null) {
             try {
-                br.close();
+                in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (pw != null) {
-            pw.close();
+        if (out != null) {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
     }
 

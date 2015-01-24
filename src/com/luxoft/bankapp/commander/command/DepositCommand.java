@@ -2,6 +2,7 @@ package com.luxoft.bankapp.commander.command;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
+import com.luxoft.bankapp.commander.Response;
 
 public class DepositCommand extends AbstractCommand implements Command {
     public DepositCommand(Commander commander) {
@@ -9,11 +10,18 @@ public class DepositCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public String execute(String param) {
+    public Response execute(String param) {
+        String message = "";
         float x = Float.parseFloat(param);
+        try{
         getService().deposit(getCommander().getCurrentClient(), x);
-        return "Current client's active account " +
+        message = "Current client's active account " +
                 getService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount());
+        } catch (Exception e){
+            message = e.getMessage();
+        }
+        setResponse(null, message);
+        return getResponse();
 
     }
 
