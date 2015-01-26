@@ -3,6 +3,8 @@ package com.luxoft.bankapp.commander.command;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
+import com.luxoft.bankapp.commander.Response;
+import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.Client;
 
 public class GetActiveAccountCommand extends AbstractCommand implements Command {
@@ -12,9 +14,18 @@ public class GetActiveAccountCommand extends AbstractCommand implements Command 
     }
 
     @Override
-    public String execute(String param) {
+    public Response execute(String param) {
+        String message = "";
         Client currentClient = getCommander().getCurrentClient();
-        return ("Active account of " + currentClient.getClientSalutation() + " " + getService().getActiveAccount(currentClient));
+        Account account = null;
+        try {
+            account = getService().getActiveAccount(currentClient);
+            message = "Active account of " + currentClient.getClientSalutation() + " " + account;
+        } catch (Exception e){
+            message = e.getMessage();
+        }
+        setResponse(account, message);
+        return getResponse();
     }
 
     @Override

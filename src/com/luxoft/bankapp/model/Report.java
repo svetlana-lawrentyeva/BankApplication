@@ -1,5 +1,7 @@
 package com.luxoft.bankapp.model;
 
-public interface Report {
+import java.io.Serializable;
+
+public interface Report extends Serializable {
     void printReport();
 }

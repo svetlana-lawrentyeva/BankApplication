@@ -16,11 +16,10 @@ public class BankApplication {
     public static void main(String[] args) {
         BankApplication bankApplication = new BankApplication();
         bankApplication.commander = new Commander();
-        bankApplication.bank = new BankImpl();
+        bankApplication.bank = new Bank();
         bankApplication.commander.setCurrentBank(bankApplication.bank);
 
         bankApplication.initialize();
-        bankApplication.printBankReport();
     }
 
     private String createFeed(Client client, Account account) {
@@ -30,15 +29,16 @@ public class BankApplication {
         builder.append(String.valueOf(client.getOverdraft())).append("&");
         builder.append(client.getName()).append("&");
         String gender = client.getGender().name();
-        builder.append(gender.substring(gender.lastIndexOf(".") + 1).toLowerCase().charAt(0));
+        builder.append(gender.substring(gender.lastIndexOf(".") + 1).toLowerCase().charAt(0)).append("&");
+        builder.append(client.getCity()).append("&");
 
         return builder.toString();
     }
 
     public void initialize() {
-        BankImpl.PrintClientListener printClientListener = new BankImpl.PrintClientListener();
-        BankImpl.EmailNotificationListener emailNotificationListener = new BankImpl.EmailNotificationListener();
-        ArrayList<ClientRegistrationListener> listeners = new ArrayList<ClientRegistrationListener>();
+        Bank.PrintClientListener printClientListener = new Bank.PrintClientListener();
+        Bank.EmailNotificationListener emailNotificationListener = new Bank.EmailNotificationListener();
+        ArrayList<ClientRegistrationListener> listeners = new ArrayList<>();
 
         listeners.add(printClientListener);
         listeners.add(emailNotificationListener);
@@ -48,6 +48,7 @@ public class BankApplication {
         Client client1 = new Client("London");
         client1.setName("Peter Johnson");
         client1.setGender(Gender.MALE);
+        client1.setCity("moscow");
         client1.createAccount(AccountType.CHECKING_ACCOUNT, 200);
         client1.createAccount(AccountType.SAVING_ACCOUNT, 100);
         Account account1 = new CheckingAccount(800, 300);
@@ -59,6 +60,7 @@ public class BankApplication {
         Client client2 = new Client("Moscow");
         client2.setName("Mike Greg");
         client2.setGender(Gender.MALE);
+        client2.setCity("london");
         client2.createAccount(AccountType.CHECKING_ACCOUNT, 500);
         Account account2 = new CheckingAccount(800, 300);
         Account account3 = new SavingAccount(1500);
@@ -73,6 +75,7 @@ public class BankApplication {
         Client client20 = new Client("Moscow");
         client20.setName("Mike Greg");
         client20.setGender(Gender.MALE);
+        client20.setCity("berlin");
         client20.createAccount(AccountType.CHECKING_ACCOUNT, 500);
         Account account20 = new CheckingAccount(800, 300);
         Account account30 = new SavingAccount(1500);
@@ -88,6 +91,7 @@ public class BankApplication {
         Client client3 = new Client("Kiev");
         client3.setName("Tom Jackson");
         client3.setGender(Gender.MALE);
+        client3.setCity("tokio");
         client3.createAccount(AccountType.CHECKING_ACCOUNT);
         client3.createAccount(AccountType.SAVING_ACCOUNT, 100);
         Account account4 = new SavingAccount(1000);
@@ -103,6 +107,7 @@ public class BankApplication {
         Client client4 = new Client("Paris");
         client4.setName("Lion Queen");
         client4.setGender(Gender.FEMALE);
+        client4.setCity("rome");
         client4.createAccount(AccountType.CHECKING_ACCOUNT);
         client4.createAccount(AccountType.SAVING_ACCOUNT, 300);
         client4.createAccount(AccountType.SAVING_ACCOUNT, 250);

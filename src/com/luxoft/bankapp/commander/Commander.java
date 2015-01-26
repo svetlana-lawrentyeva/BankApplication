@@ -1,7 +1,7 @@
 package com.luxoft.bankapp.commander;
 
 import com.luxoft.bankapp.commander.command.*;
-import com.luxoft.bankapp.model.Bank;
+import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 
 import java.util.*;
@@ -9,8 +9,8 @@ import java.util.*;
 public class Commander {
     private Client currentClient;
     private Bank currentBank;
-    private Map<Integer, Command> commandMap = new HashMap<Integer, Command>();
-    private String[] commandRequest = new String[10];
+    private Map<Integer, Command> commandMap = new HashMap<>();
+    private String[] commandRequest = new String[12];
 
     public Commander() {
         commandMap.put(0, new FindClientCommand(this));
@@ -19,13 +19,15 @@ public class Commander {
         commandMap.put(3, new DepositCommand(this));
         commandMap.put(4, new TransferCommand(this));
         commandMap.put(5, new AddClientCommand(this));
-        commandMap.put(6, new BankFeedCommand(this));
-        commandMap.put(7, new LoadCommand(this));
-        commandMap.put(8, new SaveCommand(this));
-        commandMap.put(9, new Command() {
+        commandMap.put(6, new RemoveClientCommand(this));
+        commandMap.put(7, new BankFeedCommand(this));
+        commandMap.put(8, new LoadCommand(this));
+        commandMap.put(9, new SaveCommand(this));
+        commandMap.put(10, new BankInfoCommand(this));
+        commandMap.put(11, new Command() {
 
             @Override
-            public String execute(String ask) {
+            public Response execute(String ask) {
                 System.exit(0);
                 return null;
             }
@@ -41,11 +43,13 @@ public class Commander {
         commandRequest[2] = "money to withdraw:";
         commandRequest[3] = "money to deposit:";
         commandRequest[4] = "name:&money to transfer:";
-        commandRequest[5] = "account type(c|s):&balance:&overdraft:&name:&gender(m|f):";
-        commandRequest[6] = "feed, path from:";
-        commandRequest[7] = "path to load:";
-        commandRequest[8] = "path to save:";
-        commandRequest[9] = "exit";
+        commandRequest[5] = "account type(c|s):&balance:&overdraft:&name:&gender(m|f):&city:";
+        commandRequest[6] = "name:";
+        commandRequest[7] = "feed, path from:";
+        commandRequest[8] = "path to load:";
+        commandRequest[9] = "path to save:";
+        commandRequest[10] = "";
+        commandRequest[11] = "exit";
     }
 
     public Client getCurrentClient() {

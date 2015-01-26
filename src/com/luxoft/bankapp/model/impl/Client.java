@@ -4,6 +4,8 @@ import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.AccountType;
 import com.luxoft.bankapp.model.Gender;
 import com.luxoft.bankapp.model.Report;
+import com.luxoft.bankapp.model.exceptions.BankException;
+import com.luxoft.bankapp.model.exceptions.FeedException;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -12,13 +14,12 @@ import java.util.Set;
 
 public class Client implements Report {
     private String name;
-    private String city;
+    private String city = "none";
     private String email;
     private String phone;
     private float overdraft;
-    private float balance;
     private Gender gender;
-    private Set<Account> accounts = new HashSet<Account>();
+    private Set<Account> accounts = new HashSet<>();
     private Account activeAccount;
 
     public String getCity() {
@@ -39,10 +40,6 @@ public class Client implements Report {
     public Client(float initialOverdraft, Gender gender) {
         this.overdraft = initialOverdraft;
         this.gender = gender;
-    }
-
-    public float getBalance() {
-        return this.balance;
     }
 
     public void deposit(float x) {
@@ -104,7 +101,7 @@ public class Client implements Report {
     }
 
     public String toString() {
-        return gender.getSalutation() + " " + name + "  " + getBalance();
+        return gender.getSalutation() + " " + name + "  " + activeAccount.getBalance();
     }
 
     public String getName() {
@@ -112,7 +109,10 @@ public class Client implements Report {
     }
 
     public void setName(String name) {
-        this.name = name;
+        String NAME_PATTERN ="[a-zA-z]+([ '-][a-zA-Z]+)*";
+        if(name.matches(NAME_PATTERN)){
+            this.name = name;
+        }
     }
 
     public Set<Account> getAccounts() {
@@ -192,7 +192,11 @@ public class Client implements Report {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        String EMAIL_PATTERN ="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        if(email.matches(EMAIL_PATTERN)){
+            this.email = email;
+        }
     }
 
     public String getPhone() {
@@ -200,7 +204,10 @@ public class Client implements Report {
     }
 
     public void setPhone(String phone) {
-        this.phone = phone;
+        String PHONE_PATTERN="\\d{3}-\\d{7}";
+        if(phone.matches(PHONE_PATTERN)){
+            this.phone = phone;
+        }
     }
 
     public float getOverdraft() {
@@ -214,7 +221,7 @@ public class Client implements Report {
     public String getFullInfo() {
         StringBuilder builder = new StringBuilder();
         builder.append(name).append("\n").append(email).append("\n").append(phone).append("\n");
-        builder.append("balance: ").append("overdraft: ").append(overdraft).append("\n");
+        builder.append("balance: ").append(getBalance()).append("overdraft: ").append(overdraft).append("\n");
         builder.append(getAccountsInfo());
         return builder.toString();
     }
@@ -229,9 +236,9 @@ public class Client implements Report {
             } else {
                 throw new FeedException("wrong parameter: gender");
             }
+            this.setCity(feed.get("city"));
             this.name = feed.get("name");
             this.overdraft = Float.parseFloat(feed.get("overdraft"));
-            this.setBalance(Float.parseFloat(feed.get("balance")));
             String accountType = feed.get("accounttype");
             if (accountType.equals("c")) {
                 this.activeAccount = new CheckingAccount();
@@ -247,7 +254,7 @@ public class Client implements Report {
         }
     }
 
-    public void setBalance(float balance) {
-        this.balance = balance;
+    public float getBalance(){
+        return activeAccount.getBalance();
     }
 }

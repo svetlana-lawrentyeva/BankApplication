@@ -1,5 +1,7 @@
 package com.luxoft.bankapp.model;
 
-public enum AccountType {
+import java.io.Serializable;
+
+public enum AccountType implements Serializable {
     SAVING_ACCOUNT, CHECKING_ACCOUNT;
 }

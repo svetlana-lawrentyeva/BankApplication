@@ -2,10 +2,10 @@ package com.luxoft.bankapp.application;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.model.Bank;
-import com.luxoft.bankapp.model.impl.BankImpl;
+import com.luxoft.bankapp.commander.Response;
+import com.luxoft.bankapp.model.impl.Bank;
+import com.luxoft.bankapp.model.impl.BankReport;
 import com.luxoft.bankapp.model.impl.Client;
-import com.luxoft.bankapp.service.BankReport;
 
 import java.util.Scanner;
 
@@ -18,7 +18,7 @@ public class BankUI{
     public static void main(String[] args) {
         BankUI bankUI = new BankUI();
         bankUI.bankApplication = new BankApplication();
-        bankUI.bank = new BankImpl("my bank");
+        bankUI.bank = new Bank("my bank");
         bankUI.commander = new Commander();
         bankUI.commander.setCurrentBank(bankUI.bank);
         bankUI.bankApplication.initialize(bankUI.bank, bankUI.commander);
@@ -28,18 +28,20 @@ public class BankUI{
             for(String str:args){
                 if(str.equals("report")){
                     BankReport bankReport = new BankReport();
-                    bankReport.getNumberOfClients(bankUI.bank);
-                    bankReport.getAccountsNumber(bankUI.bank);
-                    bankReport.getClientsSorted(bankUI.bank);
-                    bankReport.getBankCreditSum(bankUI.bank);
-                    bankReport.getClientsByCity(bankUI.bank);
+                    bankReport.setBank(bankUI.bank);
+                    bankReport.getNumberOfClients();
+                    bankReport.getAccountsNumber();
+                    bankReport.getClientsSorted();
+                    bankReport.getBankCreditSum();
+                    bankReport.getClientsByCity();
                 }
             }
         } else {
             while (true) {
                 Client currentClient = bankUI.commander.getCurrentClient();
                 System.out.println("-----------------------------------------------------");
-                if(currentClient == null)
+                System.out.println(bankUI.commander.getCurrentBank());
+                if(currentClient != null)
                     System.out.println("Active client is "+currentClient+"\n");
                 Command command;
                 for(Integer i:bankUI.commander.getCommandMap().keySet()){
@@ -61,8 +63,8 @@ public class BankUI{
                         }
                     }
                 }
-                String response = (String) bankUI.commander.getCommandMap().get(i).execute(builder.toString());
-                System.out.println(response);
+                Response response = bankUI.commander.getCommandMap().get(i).execute(builder.toString());
+                System.out.println(response.getMessage());
             }
         }
     }

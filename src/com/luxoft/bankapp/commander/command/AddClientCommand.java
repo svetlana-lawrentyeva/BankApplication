@@ -2,8 +2,8 @@ package com.luxoft.bankapp.commander.command;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
+import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.model.impl.Client;
-import com.luxoft.bankapp.model.impl.ClientExistsException;
 
 public class AddClientCommand extends AbstractCommand implements Command {
 
@@ -12,8 +12,9 @@ public class AddClientCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public String execute(String param) {
+    public Response execute(String param) {
         Client client = null;
+        String message = "";
         String[] params = param.split("&");
         StringBuilder builder = new StringBuilder();
         builder.append("accounttype=").append(params[0]).append(";");
@@ -21,14 +22,16 @@ public class AddClientCommand extends AbstractCommand implements Command {
         builder.append("overdraft=").append(params[2]).append(";");
         builder.append("name=").append(params[3]).append(";");
         builder.append("gender=").append(params[4]).append(";");
+        builder.append("city=").append(params[5]).append(";");
         try {
             client = this.getService().parseFeed(getCommander().getCurrentBank(), builder.toString());
-            System.out.println("Client " + client.getClientSalutation() + " successfully added");
             getCommander().setCurrentClient(client);
-        } catch (ClientExistsException e) {
-            e.printStackTrace();
+            message = "Client " + client.getClientSalutation() + " successfully added";
+        } catch (Exception e) {
+            message = e.getMessage();
         }
-        return client.toString();
+        setResponse(client, message);
+        return getResponse();
     }
 
     @Override

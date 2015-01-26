@@ -2,9 +2,8 @@ package com.luxoft.bankapp.commander.command;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.model.impl.BankException;
+import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.model.impl.Client;
-import com.luxoft.bankapp.model.impl.ClientNotExistsException;
 
 public class TransferCommand extends AbstractCommand implements Command {
     public TransferCommand(Commander commander) {
@@ -12,25 +11,27 @@ public class TransferCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public String execute(String param) {
+    public Response execute(String param) {
         String[] params = param.split("&"); //sum&client_name
-
         String name = params[0];
         float x = Float.parseFloat(params[1]);
 
         Client client = null;
+        StringBuilder message = new StringBuilder();
         try {
             client = getService().findClient(getCommander().getCurrentBank(), name);
-        } catch (ClientNotExistsException e) {
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            message.append(e.getMessage());
         }
         try {
             getService().transfer(getCommander().getCurrentClient(), client, x);
-        } catch (BankException e) {
-            System.out.println(e.getMessage());
+            message.append("Current client's active account " +
+                    getService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount()));
+        } catch (Exception e) {
+            message.append(":").append(e.getMessage());
         }
-        return "Current client's active account " +
-                getService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount());
+        setResponse(client, message.toString());
+        return getResponse();
     }
 
     @Override
