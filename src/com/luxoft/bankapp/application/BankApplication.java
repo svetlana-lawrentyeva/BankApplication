@@ -1,8 +1,9 @@
 package com.luxoft.bankapp.application;
 
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.command.AddClientCommand;
-import com.luxoft.bankapp.commander.command.SetActiveAccountCommand;
+import com.luxoft.bankapp.commander.command.servicecommands.ServiceCommander;
+import com.luxoft.bankapp.commander.command.servicecommands.AddClientCommand;
+import com.luxoft.bankapp.commander.command.servicecommands.SetActiveAccountCommand;
 import com.luxoft.bankapp.model.*;
 import com.luxoft.bankapp.model.impl.*;
 
@@ -14,8 +15,9 @@ public class BankApplication {
     private Bank bank;
 
     public static void main(String[] args) {
+
         BankApplication bankApplication = new BankApplication();
-        bankApplication.commander = new Commander();
+        bankApplication.commander = new ServiceCommander();
         bankApplication.bank = new Bank();
         bankApplication.commander.setCurrentBank(bankApplication.bank);
 

@@ -1,18 +1,28 @@
 package com.luxoft.bankapp.model.impl;
 
 import com.luxoft.bankapp.model.Account;
+import sun.net.www.content.audio.basic;
 
 public abstract class AbstractAccount implements Account {
     private long id;
-    protected float balance;
+    private float balance;
 
+    public AbstractAccount(){
+        id = Math.abs(hashCode());
+//        id = initialId(hashCode());
+        balance = 0;
+    }
+    public AbstractAccount(float balance){
+        this();
+        if (balance < 0) throw new IllegalArgumentException();
+        this.balance = balance;
+    }
     @Override
     public float getBalance() {
         return balance;
     }
 
-    public void setBalance(float balance) {
-        if (balance < 0) throw new IllegalArgumentException();
+    public void setBalance(float balance){
         this.balance = balance;
     }
 
@@ -29,18 +39,17 @@ public abstract class AbstractAccount implements Account {
         this.id = id;
     }
 
-    public int hashcode() {
+    public int hashCode() {
         int p = 17;
         int q = 37;
-        return (int) ((p * q + id) * q + id);
+        return (int) ((p * q + super.hashCode()) * q);
     }
 
     public boolean equals(Object obj) {
-        if (!super.equals(obj)) return false;
         if (this == obj) return true;
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
         AbstractAccount account = (AbstractAccount) obj;
-        return (this.id == account.id);
+        return (this.id == account.id && this.balance == account.balance);
     }
 }

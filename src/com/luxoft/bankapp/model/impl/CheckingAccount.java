@@ -11,7 +11,7 @@ public class CheckingAccount extends AbstractAccount {
     }
 
     public CheckingAccount(float startBalance) {
-        setBalance(startBalance);
+        super(startBalance);
     }
 
     public CheckingAccount(float startBalance, float overdraft) {
@@ -19,14 +19,26 @@ public class CheckingAccount extends AbstractAccount {
         this.overdraft = overdraft;
     }
 
+    @Override
+    public void setBalance(float balance) {
+        if(balance < overdraft * -1){
+            throw new IllegalArgumentException();
+        }
+        else {
+            super.setBalance(balance);
+        }
+    }
+
     public void deposit(float x) {
-        balance += x;
+        if(x<0) throw new IllegalArgumentException();
+        setBalance(getBalance() + x);
     }
 
     @Override
     public void withdraw(float x) throws OverDraftLimitExceededException {
-        if (balance + overdraft >= x) {
-            balance -= x;
+        if(x<0) throw new IllegalArgumentException();
+        if (getBalance() + overdraft >= x) {
+            setBalance(getBalance()-x);
         } else {
             float money = getAvailableMoney();
             throw new OverDraftLimitExceededException(this, money);
@@ -35,12 +47,12 @@ public class CheckingAccount extends AbstractAccount {
 
     @Override
     public float getAvailableMoney() {
-        return balance + overdraft;
+        return getBalance() + overdraft;
     }
 
     @Override
     public void parseFeed(Map<String, String> feed) {
-        this.balance = Float.parseFloat(feed.get("balance"));
+        setBalance(Float.parseFloat(feed.get("balance")));
         this.overdraft = Float.parseFloat(feed.get("overdraft"));
     }
 
@@ -61,7 +73,7 @@ public class CheckingAccount extends AbstractAccount {
     }
 
     public String toString() {
-        return "Checking account " + this.hashCode() + " with balance: " + balance + ", overdraft: " + overdraft;
+        return "Checking account " + getId() + " with balance: " + getBalance() + ", overdraft: " + overdraft;
     }
 
 }

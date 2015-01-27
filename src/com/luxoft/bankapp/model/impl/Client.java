@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Client implements Report {
+    private long id;
     private String name;
     private String city = "none";
     private String email;
@@ -109,7 +110,10 @@ public class Client implements Report {
     }
 
     public void setName(String name) {
-        this.name = name;
+        String NAME_PATTERN ="[a-zA-z]+([ '-][a-zA-Z]+)*";
+        if(name.matches(NAME_PATTERN)){
+            this.name = name;
+        }
     }
 
     public Set<Account> getAccounts() {
@@ -189,7 +193,11 @@ public class Client implements Report {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        String EMAIL_PATTERN ="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        if(email.matches(EMAIL_PATTERN)){
+            this.email = email;
+        }
     }
 
     public String getPhone() {
@@ -197,7 +205,10 @@ public class Client implements Report {
     }
 
     public void setPhone(String phone) {
-        this.phone = phone;
+        String PHONE_PATTERN="\\d{3}-\\d{7}";
+        if(phone.matches(PHONE_PATTERN)){
+            this.phone = phone;
+        }
     }
 
     public float getOverdraft() {
@@ -211,7 +222,7 @@ public class Client implements Report {
     public String getFullInfo() {
         StringBuilder builder = new StringBuilder();
         builder.append(name).append("\n").append(email).append("\n").append(phone).append("\n");
-        builder.append("balance: ").append("overdraft: ").append(overdraft).append("\n");
+        builder.append("balance: ").append(getBalance()).append("overdraft: ").append(overdraft).append("\n");
         builder.append(getAccountsInfo());
         return builder.toString();
     }
@@ -246,5 +257,13 @@ public class Client implements Report {
 
     public float getBalance(){
         return activeAccount.getBalance();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

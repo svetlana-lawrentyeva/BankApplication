@@ -11,6 +11,8 @@ public interface Account extends Report {
 
     float getBalance();
 
+    void setBalance(float balance);
+
     void deposit(float x);
 
     void withdraw(float x) throws NotEnoughFundsException;
@@ -20,4 +22,8 @@ public interface Account extends Report {
     int decimalValue();
 
     void parseFeed(Map<String, String> feed);
+
+    float getOverdraft();
+
+    void setOverdraft(float overdraft);
 }

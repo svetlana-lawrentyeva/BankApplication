@@ -10,36 +10,48 @@ public class SavingAccount extends AbstractAccount {
     }
 
     public SavingAccount(float startBalance) {
-        super.setBalance(startBalance);
-    }
-
-    public float getBalance() {
-        return super.getBalance();
+        super(startBalance);
     }
 
     @Override
     public void deposit(float x) {
-        balance += x;
+        if(x<0) throw new IllegalArgumentException();
+        setBalance(getBalance()+x);
     }
 
     @Override
     public void withdraw(float x) throws NotEnoughFundsException {
-        if (balance < x) {
+        if(x<0) throw new IllegalArgumentException();
+        if (getBalance() < x) {
             throw new NotEnoughFundsException();
         }
-        balance -= x;
+        setBalance(getBalance()-x);
     }
 
     @Override
     public float getAvailableMoney() {
-        return balance;
+        return getBalance();
     }
 
     @Override
     public void parseFeed(Map<String, String> feed) {
-        this.balance = Float.parseFloat(feed.get("balance"));
+        setBalance(Float.parseFloat(feed.get("balance")));
     }
 
+    @Override
+    public float getOverdraft() {
+        return 0;
+    }
+
+    @Override
+    public void setOverdraft(float overdraft) {
+    }
+
+    @Override
+    public void setBalance(float balance) {
+        if (balance < 0) throw new IllegalArgumentException();
+        super.setBalance(balance);
+    }
 
     @Override
     public void printReport() {
@@ -47,6 +59,6 @@ public class SavingAccount extends AbstractAccount {
     }
 
     public String toString() {
-        return "Saving account " + this.hashCode() + " with balance: " + balance;
+        return "Saving account " + getId() + " with balance: " + getBalance();
     }
 }
