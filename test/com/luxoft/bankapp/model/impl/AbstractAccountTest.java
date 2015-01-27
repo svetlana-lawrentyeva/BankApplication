@@ -41,6 +41,16 @@ public class AbstractAccountTest {
         }
 
         @Override
+        public float getOverdraft() {
+            return 0;
+        }
+
+        @Override
+        public void setOverdraft(float overdraft) {
+
+        }
+
+        @Override
         public void printReport() {
             System.out.println(this);
         }

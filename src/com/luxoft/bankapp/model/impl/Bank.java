@@ -8,10 +8,19 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Bank {
+    private long id;
     private String name;
     private Set<Client> clients = new HashSet<>();
     private List<ClientRegistrationListener> listeners = new ArrayList<>();
     private Map<String, Client> clientsMapByName = new HashMap<>();
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
 
     public static class PrintClientListener implements ClientRegistrationListener {

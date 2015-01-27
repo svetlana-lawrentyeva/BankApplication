@@ -39,6 +39,15 @@ public class SavingAccount extends AbstractAccount {
     }
 
     @Override
+    public float getOverdraft() {
+        return 0;
+    }
+
+    @Override
+    public void setOverdraft(float overdraft) {
+    }
+
+    @Override
     public void setBalance(float balance) {
         if (balance < 0) throw new IllegalArgumentException();
         super.setBalance(balance);

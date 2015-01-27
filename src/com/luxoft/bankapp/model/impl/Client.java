@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Client implements Report {
+    private long id;
     private String name;
     private String city = "none";
     private String email;
@@ -256,5 +257,13 @@ public class Client implements Report {
 
     public float getBalance(){
         return activeAccount.getBalance();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

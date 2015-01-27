@@ -1,7 +1,8 @@
-package com.luxoft.bankapp.commander.command;
+package com.luxoft.bankapp.commander.command.servicecommands;
 
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
+import com.luxoft.bankapp.commander.command.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
 
 public class AddAccountCommand extends AbstractCommand {
