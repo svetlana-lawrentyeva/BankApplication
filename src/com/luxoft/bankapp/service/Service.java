@@ -1,5 +1,12 @@
 package com.luxoft.bankapp.service;
 
+import com.luxoft.bankapp.dao.AccountDao;
+import com.luxoft.bankapp.dao.BankDao;
+import com.luxoft.bankapp.dao.ClientDao;
+import com.luxoft.bankapp.dao.exceptions.DaoException;
+import com.luxoft.bankapp.dao.impl.AccountDaoImpl;
+import com.luxoft.bankapp.dao.impl.BankDaoImpl;
+import com.luxoft.bankapp.dao.impl.ClientDaoImpl;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.exceptions.BankException;
 import com.luxoft.bankapp.model.exceptions.ClientExistsException;
@@ -11,13 +18,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Service {
+    ClientDao clientDao = new ClientDaoImpl();
+    AccountDao accountDao = new AccountDaoImpl();
+    BankDao bankDao = new BankDaoImpl();
 
-    public void addClient(Bank bank, Client client) throws ClientExistsException {
+    public void addClient(Bank bank, Client client) throws ClientExistsException, DaoException {
         bank.addClient(client);
+        clientDao.save(client);
     }
 
-    public void removeClient(Bank bank, Client client) {
-        bank.removeClient(client);
+    public void removeClient(Bank bank, Client client) throws DaoException {
+        clientDao.remove(client);
     }
 
     public void addAccount(Client client, Account account) {
@@ -43,12 +54,13 @@ public class Service {
         client.setActiveAccount(account);
     }
 
-    public void withdraw(Client client, float x) throws BankException {
+    public void withdraw(Client client, float x) throws BankException, DaoException {
         client.withdraw(x);
+        clientDao.save(client);
     }
 
-    public Client findClient(Bank bank, String name) throws ClientNotExistsException {
-        Client client = getClient(bank, name);
+    public Client findClient(Bank bank, String name) throws ClientNotExistsException, DaoException {
+        Client client = clientDao.findClientByName(bank, name);
         if (client == null) {
             throw new ClientNotExistsException();
         }
@@ -72,16 +84,19 @@ public class Service {
         return client.getActiveAccount();
     }
 
-    public void deposit(Client client, float x) {
+    public void deposit(Client client, float x) throws DaoException {
         client.deposit(x);
+        clientDao.save(client);
     }
 
     public String getAccountInfo(Account account) {
         return account.toString();
     }
 
-    public void transfer(Client client1, Client c2, float x) throws BankException {
+    public void transfer(Client client1, Client c2, float x) throws BankException, DaoException {
         client1.transfer(c2, x);
+        clientDao.save(client1);
+        clientDao.save(c2);
     }
 
     public Client getClient(Bank bank, String clientName) {
@@ -147,15 +162,6 @@ public class Service {
     }
 
     public BankInfo getBankInfo(Bank bank){
-        BankInfo bankInfo = new BankInfo();
-        BankReport bankReport = new BankReport();
-        bankReport.setBank(bank);
-        bankInfo.setClientsNumber(bankReport.getNumberOfClients());
-        bankInfo.setAccountsNumber(bankReport.getAccountsNumber());
-        bankInfo.setBankCreditSum(bankReport.getBankCreditSum());
-        bankInfo.setClientsByCity(bankReport.getClientsByCity());
-        bankInfo.setClientsSorted(bankReport.getClientsSorted());
-
-        return bankInfo;
+        return bankDao.getBankInfo(bank);
     }
 }

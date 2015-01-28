@@ -1,0 +1,105 @@
+create table banks(
+id identity not null,
+name varchar(255)
+);
+
+create table clients(
+id identity not null,
+name varchar(255),
+city varchar(255),
+email varchar(255),
+phone varchar(255),
+overdraft real,
+gender varchar(1),
+id_active_account bigint,
+id_bank bigint,
+foreign key (id_bank) references banks(id)
+);
+
+create table accounts(
+id identity not null,
+balance real,
+overdraft real,
+id_client bigint,
+foreign key(id_client) references clients(id)
+);
+
+alter table clients add foreign key(id_active_account) references accounts(id);
+
+insert into banks(name) values('First Bank');
+insert into banks(name) values('Main Bank');
+
+insert into clients (name, city, email, phone, overdraft, gender, id_bank) values ('kate', 'london', 'kate@gmail.com',  '111-1111111', 1000, 'f', 1);
+insert into clients (name, city, email, phone, overdraft, gender, id_bank) values ('ann', 'moscow', 'ann@gmail.com',  '222-2222222', 3500, 'f', 1);
+insert into clients (name, city, email, phone, overdraft, gender, id_bank) values ('igor', 'dublin', 'igor@gmail.com',  '333-3333333', 8000, 'm', 1);
+insert into clients (name, city, email, phone, overdraft, gender, id_bank) values ('oleg', 'tokio', 'oleg@gmail.com',  '444-4444444', 500, 'm', 1);
+insert into clients (name, city, email, phone, overdraft, gender, id_bank) values ('tanya', 'toronto', 'tanya@gmail.com',  '555-5555555', 600, 'f', 1);
+insert into clients (name, city, email, phone, overdraft, gender, id_bank) values ('pavel', 'lima', 'pavel@gmail.com',  '666-6666666', 900, 'm', 1);
+insert into clients (name, city, email, phone, overdraft, gender, id_bank) values ('alex', 'ney york', 'alex@gmail.com',  '777-7777777', 1100, 'm', 1);
+
+insert into accounts (balance, overdraft, id_client) values (6000, 100, 1);
+insert into accounts (balance, overdraft, id_client) values (12000, 100, 1);
+insert into accounts (balance, overdraft, id_client) values (11500, 500, 2);
+insert into accounts (balance, overdraft, id_client) values (7000, 500, 2);
+insert into accounts (balance, overdraft, id_client) values (4000, 200, 3);
+insert into accounts (balance, overdraft, id_client) values (9800, 100, 4);
+insert into accounts (balance, overdraft, id_client) values (23000, 100, 4);
+insert into accounts (balance, overdraft, id_client) values (4000, 450, 5);
+insert into accounts (balance, overdraft, id_client) values (120, 1000, 6);
+insert into accounts (balance, overdraft, id_client) values (-200, 450, 5);
+insert into accounts (balance, overdraft, id_client) values (-900, 1000, 6);
+insert into accounts (balance, overdraft, id_client) values (-4000, 4100, 7);
+insert into accounts (balance, overdraft, id_client) values (-500, 600, 7);
+insert into accounts (balance, overdraft, id_client) values (-900, 1000, 7);
+insert into accounts (balance, overdraft, id_client) values (77, 0, 1);
+insert into accounts (balance, overdraft, id_client) values (45, 0, 1);
+insert into accounts (balance, overdraft, id_client) values (21, 0, 2);
+insert into accounts (balance, overdraft, id_client) values (34, 0, 2);
+insert into accounts (balance, overdraft, id_client) values (56, 0, 3);
+insert into accounts (balance, overdraft, id_client) values (80, 0, 4);
+insert into accounts (balance, overdraft, id_client) values (99, 0, 4);
+insert into accounts (balance, overdraft, id_client) values (67, 0, 5);
+insert into accounts (balance, overdraft, id_client) values (12, 0, 6);
+insert into accounts (balance, overdraft, id_client) values (7, 0, 5);
+insert into accounts (balance, overdraft, id_client) values (90, 0, 6);
+insert into accounts (balance, overdraft, id_client) values (35, 0, 7);
+insert into accounts (balance, overdraft, id_client) values (60, 0, 7);
+insert into accounts (balance, overdraft, id_client) values (70, 0, 7);
+
+update clients set id_active_account=1 where id=1;
+update  clients set id_active_account=3 where id=2;
+update  clients set id_active_account=5 where id=3;
+update  clients set id_active_account=6 where id=4;
+update  clients set id_active_account=8 where id=5;
+update  clients set id_active_account=9 where id=6;
+update  clients set id_active_account=12 where id=7;
+
+
+-----------------------------------------------------------------------------------------
+
+select c.name as client, sum(a.balance) as balance from clients as c
+join accounts as a on c.id=a.id_client
+group by c.name;
+
+select c.name as client, sum(a.balance) as balance from clients as c
+join accounts as a on c.id=a.id_client
+group by c.name
+having sum(a.balance)<0
+order by balance desc ;
+
+select c.name as clients, sum(a.balance) as balance from clients as c
+join accounts as a on c.id=a.id_client
+group by c.name
+having sum(a.balance)>1000;
+
+select c.name as clients, sum(a.balance) as balance from clients as c
+join accounts as a on c.id=a.id_client
+group by c.name
+having sum(a.balance)>1000;
+
+update accounts set balance=(
+select a.balance from accounts as a where id=8)-200 where id=8;
+update accounts set balance=(
+select a.balance from accounts as a where id=10)+200 where id=10;
+
+

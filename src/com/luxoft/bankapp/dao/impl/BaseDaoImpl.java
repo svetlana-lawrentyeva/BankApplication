@@ -7,9 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Created by SCJP on 27.01.15.
- */
+
 public class BaseDaoImpl implements BaseDao {
 
     private Connection connection;
@@ -35,11 +33,11 @@ public class BaseDaoImpl implements BaseDao {
         }
     }
 
-    public Connection getConnection() {
+    @Override public Connection getConnection() {
         return connection;
     }
 
-    public void setConnection(Connection connection) {
+    @Override public void setConnection(Connection connection) {
         this.connection = connection;
     }
 }

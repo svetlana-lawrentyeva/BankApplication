@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Client implements Report {
-    private long id;
+    private long id = -1;
     private String name;
     private String city = "none";
     private String email;
@@ -91,7 +91,6 @@ public class Client implements Report {
             account = new SavingAccount(initialBalance);
         }
         accounts.add(account);
-        account.setId(account.hashCode() * new Date().getTime());
         return account;
     }
 
@@ -102,7 +101,12 @@ public class Client implements Report {
     }
 
     public String toString() {
-        return gender.getSalutation() + " " + name + "  " + activeAccount.getBalance();
+        StringBuilder builder = new StringBuilder();
+        builder.append(gender.getSalutation()).append(" ").append(name);
+        if(activeAccount != null){
+            builder.append(" ").append(activeAccount.getBalance());
+        }
+        return builder.toString();
     }
 
     public String getName() {
@@ -221,9 +225,13 @@ public class Client implements Report {
 
     public String getFullInfo() {
         StringBuilder builder = new StringBuilder();
-        builder.append(name).append("\n").append(email).append("\n").append(phone).append("\n");
-        builder.append("balance: ").append(getBalance()).append("overdraft: ").append(overdraft).append("\n");
-        builder.append(getAccountsInfo());
+        try{
+            builder.append(name).append("\n").append(email).append("\n").append(phone).append("\n");
+            builder.append("balance: ").append(getBalance()).append("overdraft: ").append(overdraft).append("\n");
+            builder.append(getAccountsInfo());
+        } catch (Exception e) {
+            builder.append("error: ").append(e.getMessage());
+        }
         return builder.toString();
     }
 

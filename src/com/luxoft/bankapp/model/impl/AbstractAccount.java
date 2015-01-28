@@ -1,15 +1,12 @@
 package com.luxoft.bankapp.model.impl;
 
 import com.luxoft.bankapp.model.Account;
-import sun.net.www.content.audio.basic;
 
 public abstract class AbstractAccount implements Account {
-    private long id;
+    private long id = -1;
     private float balance;
 
     public AbstractAccount(){
-        id = Math.abs(hashCode());
-//        id = initialId(hashCode());
         balance = 0;
     }
     public AbstractAccount(float balance){
@@ -50,6 +47,6 @@ public abstract class AbstractAccount implements Account {
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
         AbstractAccount account = (AbstractAccount) obj;
-        return (this.id == account.id && this.balance == account.balance);
+        return (this.id == account.id);
     }
 }

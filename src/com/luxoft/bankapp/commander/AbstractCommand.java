@@ -1,4 +1,4 @@
-package com.luxoft.bankapp.commander.command;
+package com.luxoft.bankapp.commander;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;

@@ -1,15 +1,11 @@
-package com.luxoft.bankapp.commander.command.daocommands;
+package com.luxoft.bankapp.commander.commands;
 
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.command.AbstractCommand;
-import com.luxoft.bankapp.dao.ClientDao;
-import com.luxoft.bankapp.dao.impl.ClientDaoImpl;
+import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
 
 public class FindClientCommand extends AbstractCommand {
-
-    ClientDao clientDao = new ClientDaoImpl();
 
     public FindClientCommand(Commander commander) {
         super(commander);
@@ -20,7 +16,7 @@ public class FindClientCommand extends AbstractCommand {
         Client client = null;
         String message = "";
         try {
-            client = clientDao.findClientByName(getCommander().getCurrentBank(), name);
+            client = getService().findClient(getCommander().getCurrentBank(), name);
             message = "Client " + client.getClientSalutation() + " is checked";
             getCommander().setCurrentClient(client);
         } catch (Exception e) {

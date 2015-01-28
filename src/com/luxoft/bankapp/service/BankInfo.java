@@ -57,21 +57,25 @@ public class BankInfo implements Serializable{
 
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        builder.append("number of clients: ").append(clientsNumber).append("\n");
-        builder.append("number of accounts: ").append(accountsNumber).append("\n");
-        builder.append("list of clients:\n");
-        for(Client client:clientsSorted){
-            builder.append(client).append("\n");
-        }
-        builder.append("credit sum: ").append(getBankCreditSum()).append("\n");
-        builder.append("list of clients by city:\n");
-        Set<String> cities = clientsByCity.keySet();
-        for(String city:cities){
-            List<Client>clients = clientsByCity.get(city);
-            for(Client client:clients){
-                builder.append(city).append(":").append(client).append("\n");
+            try{
+                builder.append("number of clients: ").append(clientsNumber).append("\n");
+                builder.append("number of accounts: ").append(accountsNumber).append("\n");
+                builder.append("list of clients:\n");
+                for(Client client:clientsSorted){
+                    builder.append(client).append("\n");
+                }
+                builder.append("credit sum: ").append(getBankCreditSum()).append("\n");
+                builder.append("list of clients by city:\n");
+                Set<String> cities = clientsByCity.keySet();
+                for(String city:cities){
+                    List<Client>clients = clientsByCity.get(city);
+                    for(Client client:clients){
+                        builder.append(city).append(":").append(client).append("\n");
+                    }
+                }
+        } catch(Exception e){
+                builder.append("error: ").append(e.getMessage());
             }
-        }
         return builder.toString();
     }
 }

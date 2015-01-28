@@ -1,7 +1,7 @@
 package com.luxoft.bankapp.application;
 
 import com.luxoft.bankapp.commander.Command;
-import com.luxoft.bankapp.commander.command.servicecommands.ServiceCommander;
+import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.model.impl.Bank;
 
@@ -14,7 +14,7 @@ import java.net.Socket;
 public class BankServer {
     static String bankName = "My bank";
 
-    private ServiceCommander commander;
+    private Commander commander;
     private Bank bank;
     private BankApplication bankApplication;
 
@@ -22,7 +22,8 @@ public class BankServer {
         BankServer bankServer = new BankServer();
         bankServer.bankApplication = new BankApplication();
         bankServer.bank = new Bank(bankName);
-        bankServer.commander = new ServiceCommander();
+        bankServer.bank.setId(1);
+        bankServer.commander = new Commander();
         bankServer.commander.setCurrentBank(bankServer.bank);
         bankServer.bankApplication.initialize(bankServer.bank, bankServer.commander);
 

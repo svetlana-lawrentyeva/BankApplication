@@ -16,7 +16,7 @@ import java.util.List;
 public interface ClientDao {
     Client findClientByName(Bank bank, String name) throws ClientNotExistsException, DaoException;
 
-    Client findClientById(int id) throws ClientNotExistsException, DaoException;
+    Client findClientById(long id) throws ClientNotExistsException, DaoException;
 
     List<Client> getAllClients(Bank bank) throws DaoException;
 

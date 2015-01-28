@@ -2,18 +2,17 @@ package com.luxoft.bankapp.dao;
 
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
+import com.luxoft.bankapp.model.impl.Client;
 
 import java.util.List;
 
-/**
- * Created by SCJP on 27.01.15.
- */
+
 public interface AccountDao {
     /**
      * Save Account in database
      * @param account
      */
-    public void save(Account account) throws DaoException;
+    public void save(Account account, Client client) throws DaoException;
 
     /**
      * Remove all accounts of client

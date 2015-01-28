@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Bank {
-    private long id;
+    private long id = -1;
     private String name;
     private Set<Client> clients = new HashSet<>();
     private List<ClientRegistrationListener> listeners = new ArrayList<>();

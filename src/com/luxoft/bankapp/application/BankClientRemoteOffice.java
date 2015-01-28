@@ -1,7 +1,6 @@
 package com.luxoft.bankapp.application;
 
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.command.servicecommands.ServiceCommander;
 import com.luxoft.bankapp.commander.Response;
 
 import java.io.*;
@@ -14,7 +13,7 @@ public class BankClientRemoteOffice {
 
     public static void main(String[] args) {
         BankClientRemoteOffice bankClientRemoteOffice = new BankClientRemoteOffice();
-        bankClientRemoteOffice.commander = new ServiceCommander();
+        bankClientRemoteOffice.commander = new Commander();
         bankClientRemoteOffice.run();
     }
 

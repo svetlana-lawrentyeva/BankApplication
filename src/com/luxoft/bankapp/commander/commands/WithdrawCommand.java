@@ -1,9 +1,9 @@
-package com.luxoft.bankapp.commander.command.daocommands;
+package com.luxoft.bankapp.commander.commands;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.command.AbstractCommand;
+import com.luxoft.bankapp.commander.AbstractCommand;
 
 public class WithdrawCommand extends AbstractCommand implements Command {
 
