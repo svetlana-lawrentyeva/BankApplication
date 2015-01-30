@@ -33,11 +33,4 @@ public class BaseDaoImpl implements BaseDao {
         }
     }
 
-    @Override public Connection getConnection() {
-        return connection;
-    }
-
-    @Override public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
 }

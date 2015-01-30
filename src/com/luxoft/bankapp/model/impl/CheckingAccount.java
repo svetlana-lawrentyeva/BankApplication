@@ -7,15 +7,16 @@ import java.util.Map;
 public class CheckingAccount extends AbstractAccount {
     private float overdraft = 10;
 
-    public CheckingAccount() {
+    @Override
+    public float getOverdraft() {
+        return overdraft;
     }
 
-    public CheckingAccount(float startBalance) {
-        super(startBalance);
-    }
-
-    public CheckingAccount(float startBalance, float overdraft) {
-        setBalance(startBalance);
+    @Override
+    public void setOverdraft(float overdraft) {
+        if (overdraft < 0) {
+            throw new IllegalArgumentException();
+        }
         this.overdraft = overdraft;
     }
 
@@ -29,10 +30,7 @@ public class CheckingAccount extends AbstractAccount {
         }
     }
 
-    public void deposit(float x) {
-        if(x<0) throw new IllegalArgumentException();
-        setBalance(getBalance() + x);
-    }
+    //--------------------------------------------------
 
     @Override
     public void withdraw(float x) throws OverDraftLimitExceededException {
@@ -61,19 +59,12 @@ public class CheckingAccount extends AbstractAccount {
         System.out.println(this);
     }
 
-    public float getOverdraft() {
-        return overdraft;
-    }
-
-    public void setOverdraft(float overdraft) {
-        if (overdraft < 0) {
-            throw new IllegalArgumentException();
-        }
-        this.overdraft = overdraft;
-    }
-
+    @Override
     public String toString() {
-        return "Checking account " + getId() + " with balance: " + getBalance() + ", overdraft: " + overdraft;
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n").append("Checking account #").append(getId()).append(". balance: ");
+        builder.append(getBalance()).append(", overdraft: ").append(overdraft);
+        return builder.toString();
     }
 
 }

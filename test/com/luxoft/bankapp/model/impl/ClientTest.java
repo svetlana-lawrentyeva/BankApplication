@@ -3,6 +3,7 @@ package com.luxoft.bankapp.model.impl;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.Gender;
 import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,44 +33,53 @@ public class ClientTest {
         client.setEmail("mark@mmm.ru");
 
         Set<Account> accounts = new HashSet<>();
-        Account account = new CheckingAccount(50, 10);
+        Account account = new CheckingAccount();
+        account.setBalance(50);
         accounts.add(account);
         client.setActiveAccount(account);
-        accounts.add(new SavingAccount(100));
+        Account account1 = new SavingAccount();
+        account1.setBalance(600);
+        accounts.add(account1);
         client.setAccounts(accounts);
     }
 
     @Test
     public void testDeposit() throws Exception {
-        client.deposit(20.0f);
-        assertEquals(70.0f, client.getBalance(), 0);
+        Account account = client.getActiveAccount();
+        ServiceFactory.getAccountService().deposit(account, 20.0f);
+        assertEquals(70.0f, account.getBalance(), 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDepositNegative() throws Exception {
-        client.deposit(-20.0f);
+        Account account = client.getActiveAccount();
+        ServiceFactory.getAccountService().deposit(account, -20.0f);
     }
 
     @Test
     public void testWithdraw() throws Exception {
-        client.withdraw(20.0f);
-        assertEquals(30.0f, client.getBalance(), 0);
+        Account account = client.getActiveAccount();
+        ServiceFactory.getAccountService().withdraw(account, 20.0f);
+        assertEquals(30.0f, account.getBalance(), 0);
     }
 
     @Test
     public void testWithdrawTakenOverdraft() throws Exception {
-        client.withdraw(55.0f);
-        assertEquals(-5.0f, client.getBalance(), 0);
+        Account account = client.getActiveAccount();
+        ServiceFactory.getAccountService().withdraw(account,55.0f);
+        assertEquals(-5.0f, account.getBalance(), 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testWithdrawNegative() throws Exception {
-        client.withdraw(-20.0f);
+        Account account = client.getActiveAccount();
+        ServiceFactory.getAccountService().withdraw(account, -20.0f);
     }
 
     @Test
     public void testCreateAccount() throws Exception {
-        Account account = new SavingAccount(9.0f);
+        Account account = new SavingAccount();
+        account.setBalance(9);
         client.addAccount(account);
         assertEquals(3, client.getAccounts().size());
     }
@@ -97,15 +107,16 @@ public class ClientTest {
         client1.setEmail("elena@mmm.ru");
 
         Set<Account> accounts = new HashSet<>();
-        Account account = new CheckingAccount(20, 10);
+        Account account = new CheckingAccount();
+        account.setBalance(20);
         accounts.add(account);
         client1.setActiveAccount(account);
         client1.setAccounts(accounts);
 
-        client.transfer(client1, 20);
+        ServiceFactory.getAccountService().transfer(client.getActiveAccount(), client1.getActiveAccount(), 20);
 
-        assertEquals(30, client.getBalance(), 0);
-        assertEquals(40, client1.getBalance(), 0);
+        assertEquals(30, client.getActiveAccount().getBalance(), 0);
+        assertEquals(40, client1.getActiveAccount().getBalance(), 0);
     }
 
     @Test
@@ -119,15 +130,15 @@ public class ClientTest {
         client1.setEmail("elena@mmm.ru");
 
         Set<Account> accounts = new HashSet<>();
-        Account account = new CheckingAccount(20, 10);
+        Account account = new CheckingAccount();
         accounts.add(account);
         client1.setActiveAccount(account);
         client1.setAccounts(accounts);
 
-        client.transfer(client1, 55);
+        ServiceFactory.getAccountService().transfer(client.getActiveAccount(), client1.getActiveAccount(), 55);
 
-        assertEquals(-5, client.getBalance(), 0);
-        assertEquals(75, client1.getBalance(), 0);
+        assertEquals(-5, client.getActiveAccount().getBalance(), 0);
+        assertEquals(75, client1.getActiveAccount().getBalance(), 0);
     }
 
     @Test(expected = NotEnoughFundsException.class)
@@ -141,14 +152,15 @@ public class ClientTest {
         client1.setEmail("elena@mmm.ru");
 
         Set<Account> accounts = new HashSet<>();
-        Account account = new CheckingAccount(20, 10);
+        Account account = new CheckingAccount();
+        account.setBalance(20);
         accounts.add(account);
         client1.setActiveAccount(account);
         client1.setAccounts(accounts);
 
-        client.transfer(client1, 65);
+        ServiceFactory.getAccountService().transfer(client.getActiveAccount(), client1.getActiveAccount(), 65);
 
-        assertEquals(20, client1.getBalance(), 0);
+        assertEquals(20, client1.getActiveAccount().getBalance(), 0);
     }
 
     @Test

@@ -14,9 +14,6 @@ public class AbstractAccountTest {
 
     private class TestingAccount extends AbstractAccount {
 
-        public TestingAccount(float balance){
-            super(balance);
-        }
         @Override
         public void deposit(float x) {
             setBalance(getBalance()+x);
@@ -64,41 +61,49 @@ public class AbstractAccountTest {
 
     @Test
     public void testSetBalanceInConstructor() {
-        sut = new TestingAccount(1.0f);
+        sut = new TestingAccount();
+        sut.setBalance(1.0f);
         assertEquals(1.0f, sut.getBalance(), 0);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testSetNegativeBalanceInConstructor() {
-        sut = new TestingAccount(-1.0f);
+        sut = new TestingAccount();
+        sut.setBalance(-1.0f);
     }
 
     @Test
     public void testDecimalValue() throws Exception {
-        sut = new TestingAccount(0.5f);
+        sut = new TestingAccount();
+        sut.setBalance(0.5f);
         assertEquals(1, sut.decimalValue(), 0);
     }
     @Test
     public void testEquals() throws Exception {
-        sut = new TestingAccount(0.5f);
-        TestingAccount sutTest = new TestingAccount(0.5f);
+        sut = new TestingAccount();
+        sut.setBalance(0.5f);
+        TestingAccount sutTest = new TestingAccount();
+        sutTest.setBalance(0.5f);
         sutTest.setId(sut.getId());
         boolean res = sut.equals(sutTest);
         assertEquals(sut, sutTest);
-//        assertTrue(sut.equals(sutTest));
     }
 
     @Test
     public void testEqualsWrongId() throws Exception {
-        sut = new TestingAccount(0.5f);
-        TestingAccount sutTest = new TestingAccount(0.5f);
+        sut = new TestingAccount();
+        sut.setBalance(0.5f);
+        TestingAccount sutTest = new TestingAccount();
+        sutTest.setBalance(0.5f);
         assertFalse(sut.equals(sutTest));
     }
 
     @Test
     public void testEqualsWrongBalance() throws Exception {
-        sut = new TestingAccount(0.5f);
-        TestingAccount sutTest = new TestingAccount(1.5f);
+        sut = new TestingAccount();
+        sut.setBalance(0.5f);
+        TestingAccount sutTest = new TestingAccount();
+        sutTest.setBalance(1.5f);
         sutTest.setId(sut.getId());
         assertFalse(sut.equals(sutTest));
     }

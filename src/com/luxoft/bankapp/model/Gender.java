@@ -11,6 +11,9 @@ public enum Gender implements Serializable {
         this.salutation = salutation;
     }
 
+    /**
+     * Get salutation for gender
+     */
     public String getSalutation() {
         return salutation;
     }

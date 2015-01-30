@@ -1,149 +1,147 @@
 package com.luxoft.bankapp.application;
 
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.dao.ClientDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.dao.impl.ClientDaoImpl;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.AccountType;
-import com.luxoft.bankapp.model.ClientRegistrationListener;
 import com.luxoft.bankapp.model.Gender;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class BankApplication {
 
-    private Commander commander;
-    private Bank bank;
+    private Bank bank = ServiceFactory.getBankService().getByName("My bank");
 
     public static void main(String[] args) {
 
         BankApplication bankApplication = new BankApplication();
-        bankApplication.commander = new Commander();
-        bankApplication.bank = new Bank();
-        bankApplication.commander.setCurrentBank(bankApplication.bank);
+        bankApplication.bank = ServiceFactory.getBankService().save(bankApplication.bank);
+
+        bankApplication.clearBank();
 
         bankApplication.initialize();
+
+        bankApplication.printBankReport();
+
+        try {
+            Client client1 = ServiceFactory.getClientService().getByName(bankApplication.bank, "Peter Johnson");
+            Client client2 = ServiceFactory.getClientService().getByName(bankApplication.bank, "Mike Greg");
+
+            ServiceFactory.getAccountService().deposit(client1.getActiveAccount(), 111);
+            ServiceFactory.getAccountService().withdraw(client2.getActiveAccount(), 99);
+
+            ServiceFactory.getAccountService().transfer(client1.getActiveAccount(), client2.getActiveAccount(), 10000);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ after modification ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        bankApplication.printBankReport();
     }
 
-    private String createFeed(Client client, Account account) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(account.getClass().getName().toLowerCase().charAt(0)).append("&");
-        builder.append(String.valueOf(account.getBalance())).append("&");
-        builder.append(String.valueOf(client.getOverdraft())).append("&");
-        builder.append(client.getName()).append("&");
-        String gender = client.getGender().name();
-        builder.append(gender.substring(gender.lastIndexOf(".") + 1).toLowerCase().charAt(0)).append("&");
-        builder.append(client.getCity()).append("&");
-
-        return builder.toString();
+    public void clearBank(){
+        try {
+            List<Client>clients = ServiceFactory.getClientService().getAllByBank(bank);
+            for(Client client:clients){
+                ServiceFactory.getClientService().remove(client);
+            }
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
     }
 
     public void initialize() {
-        Bank.PrintClientListener printClientListener = new Bank.PrintClientListener();
-        Bank.EmailNotificationListener emailNotificationListener = new Bank.EmailNotificationListener();
-        ArrayList<ClientRegistrationListener> listeners = new ArrayList<>();
+        bank.getListeners().add(new Bank.PrintClientListener());
+        bank.getListeners().add(new Bank.EmailNotificationListener());
 
-        listeners.add(printClientListener);
-        listeners.add(emailNotificationListener);
-
-        bank.getListeners().addAll(listeners);
-
-        ClientDao clientDao = new ClientDaoImpl();
-
-        Client client1 = new Client();
-        client1.setName("Peter Johnson");
-        client1.setGender(Gender.MALE);
-        client1.setCity("moscow");
-        client1.setPhone("444-44444444");
-        client1.setEmail("lll@yyy.kkk");
-        client1.createAccount(AccountType.CHECKING_ACCOUNT, 200);
-        client1.createAccount(AccountType.SAVING_ACCOUNT, 100);
-        Account account1 = new CheckingAccount(800, 300);
+        Client client1 = createClient("Peter Johnson", Gender.MALE, "moscow", "444-4444444", "lll@yyy.kkk", 1000);
+        Account account1 = createAccount(client1, 12000, AccountType.CHECKING_ACCOUNT);
         client1.addAccount(account1);
         client1.setActiveAccount(account1);
 
-
-
-        Client client2 = new Client();
-        client2.setName("Mike Greg");
-        client2.setGender(Gender.MALE);
-        client2.setCity("london");
-        client2.setPhone("444-44444444");
-        client2.setEmail("lll@yyy.kkk");
-        client2.createAccount(AccountType.CHECKING_ACCOUNT, 500);
-        Account account2 = new CheckingAccount(800, 300);
-        Account account3 = new SavingAccount(1500);
+        Client client2 = createClient("Mike Greg", Gender.MALE, "london", "444-4444444", "lll@yyy.kkk", 520);
+        Account account2 = createAccount(client2, 10000, AccountType.CHECKING_ACCOUNT);
+        Account account3 = createAccount(client2, 11100, AccountType.SAVING_ACCOUNT);
         client2.addAccount(account2);
         client2.addAccount(account3);
         client2.setActiveAccount(account2);
 
-
-        Client client20 = new Client("Moscow");
-        client20.setName("Mike Greg");
-        client20.setGender(Gender.MALE);
-        client20.setCity("berlin");
-        client20.setPhone("555-44444444");
-        client20.setEmail("hhh@yyy.kkk");
-        client20.createAccount(AccountType.CHECKING_ACCOUNT, 500);
-        Account account20 = new CheckingAccount(800, 300);
-        Account account30 = new SavingAccount(1500);
-        client20.addAccount(account20);
-        client20.addAccount(account30);
-        client20.setActiveAccount(account20);
-
-        Client client3 = new Client("Kiev");
-        client3.setName("Tom Jackson");
-        client3.setGender(Gender.MALE);
-        client3.setCity("tokio");
-        client3.setPhone("222-44444444");
-        client3.setEmail("fffe@yyy.kkk");
-        client3.createAccount(AccountType.CHECKING_ACCOUNT);
-        client3.createAccount(AccountType.SAVING_ACCOUNT, 100);
-        Account account4 = new SavingAccount(1000);
-        client3.addAccount(account4);
-        client3.setActiveAccount(account4);
-
-        Client client4 = new Client("Paris");
-        client4.setName("Lion Queen");
-        client4.setGender(Gender.FEMALE);
-        client4.setCity("rome");
-        client4.setPhone("777-44444444");
-        client4.setEmail("llliul@yyy.kkk");
-        client4.createAccount(AccountType.CHECKING_ACCOUNT);
-        client4.createAccount(AccountType.SAVING_ACCOUNT, 300);
-        client4.createAccount(AccountType.SAVING_ACCOUNT, 250);
-        Account account5 = new CheckingAccount(750, 200);
-        Account account6 = new CheckingAccount(1800, 1000);
-        Account account7 = new SavingAccount(2500);
-        client4.addAccount(account5);
-        client4.addAccount(account6);
-        client4.addAccount(account7);
-        client4.setActiveAccount(account5);
+//        Client client20 = createClient("Mike Tomson", Gender.MALE, "berlin", "555-4444444", "hhh@yyy.kkk", 100);
+//        Account account20 = createAccount(client20, 100, AccountType.CHECKING_ACCOUNT);
+//        Account account30 = createAccount(client20, 150, AccountType.SAVING_ACCOUNT);
+//        client20.addAccount(account20);
+//        client20.addAccount(account30);
+//        client20.setActiveAccount(account20);
+//
+//        Client client3 = createClient("Tom Jackson", Gender.MALE, "tokyo", "222-4444444", "fffe@yyy.kkk", 700);
+//        Account account4 = createAccount(client3, 1700, AccountType.SAVING_ACCOUNT);
+//        client3.addAccount(account4);
+//        client3.setActiveAccount(account4);
+//
+//        Client client4 = createClient("Lion Queen", Gender.FEMALE, "rome", "777-4444444", "llliul@yyy.kkk", 200);
+//        Account account5 = createAccount(client3, 17000, AccountType.CHECKING_ACCOUNT);
+//        Account account6 = createAccount(client3, 2000, AccountType.CHECKING_ACCOUNT);
+//        Account account7 = createAccount(client3, 22020, AccountType.SAVING_ACCOUNT);
+//        client4.addAccount(account5);
+//        client4.addAccount(account6);
+//        client4.addAccount(account7);
+//        client4.setActiveAccount(account5);
 
         try {
-            clientDao.save(client1);
-            clientDao.save(client2);
-            clientDao.save(client20);
-            clientDao.save(client3);
-            clientDao.save(client4);
-        } catch (DaoException e) {
+            ServiceFactory.getClientService().save(client1);
+            ServiceFactory.getClientService().save(client2);
+//            ServiceFactory.getClientService().save(client20);
+//            ServiceFactory.getClientService().save(client3);
+//            ServiceFactory.getClientService().save(client4);
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
     }
 
+    private Client createClient(String name, Gender gender, String city, String phone, String email, float overdraft){
+        Client client = new Client();
+        client.setName(name);
+        client.setGender(gender);
+        client.setCity(city);
+        client.setPhone(phone);
+        client.setEmail(email);
+        client.setBank(bank);
+        client.setOverdraft(overdraft);
+
+        bank.addClient(client);
+
+        return client;
+    }
+
+    private Account createAccount(Client client, float balanse, AccountType type){
+        Account account;
+        if(type == AccountType.CHECKING_ACCOUNT){
+            account = new CheckingAccount();
+        } else {
+            account  = new SavingAccount();
+        }
+        account.setBalance(balanse);
+        account.setClient(client);
+        client.addAccount(account);
+        return account;
+    }
+
     public void printBankReport() {
-        bank.printReport();
+        try {
+            System.out.println(ServiceFactory.getBankService().getBankReport(bank));
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
     }
 
     public void initialize(Bank currentBank, Commander commander) {
         this.bank = currentBank;
-        this.commander = commander;
         initialize();
     }
 }

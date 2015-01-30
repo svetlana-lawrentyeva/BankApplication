@@ -5,6 +5,7 @@ import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class SaveCommand extends AbstractCommand implements Command {
     public SaveCommand(Commander commander) {
@@ -17,7 +18,7 @@ public class SaveCommand extends AbstractCommand implements Command {
         String message = null;
         try{
         currentClient = getCommander().getCurrentClient();
-        getService().saveClient(currentClient, param);
+        ServiceFactory.getClientService().save(currentClient);
         message = "Client " + currentClient.getClientSalutation() + " successfully saved";
         } catch (Exception e){
             message = e.getMessage();

@@ -5,6 +5,7 @@ import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class SetActiveAccountCommand extends AbstractCommand {
     public SetActiveAccountCommand(Commander commander) {
@@ -17,11 +18,11 @@ public class SetActiveAccountCommand extends AbstractCommand {
         Account account = null;
         String[] params = param.split("&");
         try {
-            Client client = getService().findClient(getCommander().getCurrentBank(), params[0]);
+            Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), params[0]);
             long accountId = Long.parseLong(params[1]);
-            account = getService().getAccount(client, accountId);
+            account = ServiceFactory.getAccountService().getById(accountId);
             message = "client " + client.getClientSalutation() + " active account " +
-                    getService().getAccountInfo(account);
+                    ServiceFactory.getAccountService().getAccountInfo(account);
         } catch (Exception e) {
             message = e.getMessage();
         }

@@ -12,19 +12,35 @@ public interface AccountDao {
      * Save Account in database
      * @param account
      */
-    public void save(Account account, Client client) throws DaoException;
+    Account save(Account account) throws DaoException;
 
     /**
      * Remove all accounts of client
-     * @param id Id of the client
+     * @param client client
      */
-    public void removeByClientId(long id) throws DaoException;
+    void removeAllByClient(Client client) throws DaoException;
 
     /**
-     * Get all accounts of the client
-     * @param id Id of the client
+     * Remove the account
+     * @param id Id of the account
      */
-    public List<Account> getClientAccounts(long id) throws DaoException;
+    void remove(Account account) throws DaoException;
+    /**
+     * Get all accounts of the client
+     * @param client Id of the client
+     */
+    List<Account> getAllByClient(Client client) throws DaoException;
 
-    public Account findAccountById(long id) throws DaoException;
+    /**
+     * Get account by id
+     * @param id Id of the account that should be found
+     */
+    Account getById(long id) throws DaoException;
+
+    /**
+     * Add an Account to the Client
+     * @param client client
+     * @param account account
+     */
+    void addAccountToClient(Client client, Account account) throws DaoException;
 }

@@ -4,6 +4,7 @@ import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.commander.AbstractCommand;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class WithdrawCommand extends AbstractCommand implements Command {
 
@@ -17,9 +18,9 @@ public class WithdrawCommand extends AbstractCommand implements Command {
         float x = Float.parseFloat(param);
         StringBuilder message = new StringBuilder();
         try {
-            getService().withdraw(getCommander().getCurrentClient(), x);
+            ServiceFactory.getAccountService().withdraw(getCommander().getCurrentClient().getActiveAccount(), x);
             message.append("Current client's active account " +
-                    getService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount()));
+                    ServiceFactory.getAccountService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount()));
         } catch (Exception e) {
             message.append(e.getMessage()).append(":");
         }

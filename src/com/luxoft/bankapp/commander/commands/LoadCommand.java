@@ -5,6 +5,7 @@ import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class LoadCommand extends AbstractCommand implements Command {
     public LoadCommand(Commander commander) {
@@ -16,7 +17,7 @@ public class LoadCommand extends AbstractCommand implements Command {
         Client client = null;
         String message = "";
         try{
-        client = getService().loadClient(param);
+        client = ServiceFactory.getClientService().loadFromDisk(param);
         getCommander().setCurrentClient(client);
             message = client.toString() + " is loaded";
         } catch (Exception e){

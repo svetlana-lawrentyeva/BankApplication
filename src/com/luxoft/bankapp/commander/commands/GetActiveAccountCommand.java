@@ -20,7 +20,7 @@ public class GetActiveAccountCommand extends AbstractCommand implements Command 
         Client currentClient = getCommander().getCurrentClient();
         Account account = null;
         try {
-            account = getService().getActiveAccount(currentClient);
+            account = currentClient.getActiveAccount();
             message = "Active account of " + currentClient.getClientSalutation() + " " + account;
         } catch (Exception e){
             message = e.getMessage();

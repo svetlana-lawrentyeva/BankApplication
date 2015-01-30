@@ -5,6 +5,7 @@ import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class TransferCommand extends AbstractCommand implements Command {
     public TransferCommand(Commander commander) {
@@ -20,14 +21,14 @@ public class TransferCommand extends AbstractCommand implements Command {
         Client client = null;
         StringBuilder message = new StringBuilder();
         try {
-            client = getService().findClient(getCommander().getCurrentBank(), name);
+            client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), name);
         } catch (Exception e) {
             message.append(e.getMessage());
         }
         try {
-            getService().transfer(getCommander().getCurrentClient(), client, x);
+            ServiceFactory.getAccountService().transfer(getCommander().getCurrentClient().getActiveAccount(), client.getActiveAccount(), x);
             message.append("Current client's active account " +
-                    getService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount()));
+                    ServiceFactory.getAccountService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount()));
         } catch (Exception e) {
             message.append(":").append(e.getMessage());
         }

@@ -3,6 +3,7 @@ package com.luxoft.bankapp.model.impl;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.Gender;
 import com.luxoft.bankapp.model.exceptions.ClientExistsException;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,7 +24,8 @@ public class BankTest {
 
     @Before
     public void init(){
-        bank = new Bank("test bank");
+        bank = new Bank();
+        bank.setName("My bank");
 
         Client client = new Client();
         client.setName("mark");
@@ -34,25 +36,26 @@ public class BankTest {
         client.setEmail("mark@mmm.ru");
 
         Set<Account> accounts = new HashSet<>();
-        Account account = new CheckingAccount(50, 10);
+        Account account = new CheckingAccount();
+        account.setBalance(50);
         accounts.add(account);
         client.setActiveAccount(account);
-        accounts.add(new SavingAccount(100));
+        Account account1 = new SavingAccount();
+        account1.setBalance(100);
+        accounts.add(account1);
         client.setAccounts(accounts);
 
-        try {
             bank.addClient(client);
-        } catch (ClientExistsException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
     public void testAddClient() throws Exception {
-        Client client = new Client("dnepr");
+        Client client = new Client();
         client.setName("harry");
+        client.setCity("dnepr");
         client.setGender(Gender.MALE);
-        Account account = new SavingAccount(10);
+        Account account = new SavingAccount();
+        account.setBalance(10);
         client.addAccount(account);
         client.setActiveAccount(account);
         bank.addClient(client);
@@ -61,15 +64,17 @@ public class BankTest {
 
     @Test
     public void testRemoveClient() throws Exception {
-        Client client = new Client("dnepr");
+        Client client = new Client();
         client.setName("harry");
+        client.setCity("dnepr");
         client.setGender(Gender.MALE);
-        Account account = new SavingAccount(10);
+        Account account = new SavingAccount();
+        account.setBalance(10);
         client.addAccount(account);
         client.setActiveAccount(account);
         bank.addClient(client);
-        Client client1 = bank.findClient("mark");
-        bank.removeClient(client1);
+        Client client1 = ServiceFactory.getClientService().getByName(bank, "mark");
+        ServiceFactory.getClientService().remove(client1);
         assertEquals(1, bank.getClients().size());
     }
 }

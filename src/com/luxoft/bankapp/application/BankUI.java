@@ -4,7 +4,7 @@ import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.model.impl.Bank;
-import com.luxoft.bankapp.model.impl.BankReport;
+import com.luxoft.bankapp.service.BankReport;
 import com.luxoft.bankapp.model.impl.Client;
 
 import java.util.Scanner;
@@ -18,7 +18,8 @@ public class BankUI{
     public static void main(String[] args) {
         BankUI bankUI = new BankUI();
         bankUI.bankApplication = new BankApplication();
-        bankUI.bank = new Bank("my bank");
+        bankUI.bank = new Bank();
+        bankUI.bank.setName("My bank");
         bankUI.commander = new Commander();
         bankUI.commander.setCurrentBank(bankUI.bank);
         bankUI.bankApplication.initialize(bankUI.bank, bankUI.commander);

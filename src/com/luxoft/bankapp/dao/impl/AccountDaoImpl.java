@@ -1,9 +1,9 @@
 package com.luxoft.bankapp.dao.impl;
 
 import com.luxoft.bankapp.dao.AccountDao;
-import com.luxoft.bankapp.dao.BaseDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
+import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
@@ -15,18 +15,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountDaoImpl implements AccountDao {
+public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
-    private BaseDao baseDao = new BaseDaoImpl();
-
-    private void insert(Account account, Client client) throws DaoException {
-        Connection conn = baseDao.openConnection();
-        String sql = "insert into accounts (balance, overdraft, id_client) values (?, ?, ?)";
+    private Account insert(Account account) throws DaoException {
+        Connection conn = openConnection();
+        String sql = "insert into accounts (balance, overdraft) values (?, ?)";
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setFloat(1, account.getBalance());
             preparedStatement.setFloat(2, account.getOverdraft());
-            preparedStatement.setLong(3, client.getId());
 
             if(preparedStatement.executeUpdate() == 0){
                 throw new DaoException("impossible to save account in db. transaction is rolled back");
@@ -42,14 +39,17 @@ public class AccountDaoImpl implements AccountDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        baseDao.closeConnection();
+        closeConnection();
+
+        return account;
     }
 
     @Override
-    public void save(Account account, Client client) throws DaoException {
-        Connection conn = baseDao.openConnection();
+    public Account save(Account account) throws DaoException {
+        Connection conn = openConnection();
+
         if(account.getId() == -1){
-            insert(account, client);
+            account = insert(account);
         } else {
             String sql = "update accounts set balance = (?), overdraft = (?), id_client = (?) where id = (?)";
             try {
@@ -57,7 +57,7 @@ public class AccountDaoImpl implements AccountDao {
 
                 preparedStatement.setFloat(1, account.getBalance());
                 preparedStatement.setFloat(2, account.getOverdraft());
-                preparedStatement.setLong(3, client.getId());
+                preparedStatement.setLong(3, account.getClient().getId());
                 preparedStatement.setLong(4, account.getId());
 
                 if(preparedStatement.executeUpdate() == 0){
@@ -65,19 +65,21 @@ public class AccountDaoImpl implements AccountDao {
                 }
                 preparedStatement.close();
             } catch (SQLException e) {
-                throw new DaoException("error while updating client "+client.getName());
+                throw new DaoException("error while updating account "+account.getId());
             }
         }
-        baseDao.closeConnection();
+        closeConnection();
+
+        return account;
     }
 
     @Override
-    public void removeByClientId(long id) throws DaoException {
-        Connection conn = baseDao.openConnection();
-        String sql = "delete from accounts where id_client = (?)";
+    public void remove(Account account) throws DaoException {
+        Connection conn = openConnection();
+        String sql = "delete from accounts where id = (?)";
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(1, account.getId());
 
             if(preparedStatement.executeUpdate() == 0){
                 throw new DaoException("impossible to remove account in db. transaction is rolled back");
@@ -86,17 +88,35 @@ public class AccountDaoImpl implements AccountDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        baseDao.closeConnection();
+        closeConnection();
     }
 
     @Override
-    public List<Account> getClientAccounts(long id) throws DaoException {
+    public void removeAllByClient(Client client) throws DaoException {
+        Connection conn = openConnection();
+        String sql = "delete from accounts where id_client = (?)";
+        try {
+            final PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setLong(1, client.getId());
+
+            if(preparedStatement.executeUpdate() == 0){
+                throw new DaoException("impossible to remove account in db. transaction is rolled back");
+            }
+            preparedStatement.close();
+        } catch (SQLException e) {
+            throw new DaoException(e.getMessage());
+        }
+        closeConnection();
+    }
+
+    @Override
+    public List<Account> getAllByClient(Client client) throws DaoException {
         List<Account>accounts = null;
-        Connection conn = baseDao.openConnection();
+        Connection conn = openConnection();
         String sql = "select * from accounts where id_client = (?)";
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(1, client.getId());
 
             if(!preparedStatement.execute()){
                 throw new DaoException("impossible to get accounts from db.");
@@ -116,6 +136,7 @@ public class AccountDaoImpl implements AccountDao {
                 }
                 account.setId(idAccount);
                 account.setBalance(balance);
+                account.setClient(client);
 
                 accounts.add(account);
             }
@@ -124,43 +145,75 @@ public class AccountDaoImpl implements AccountDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        baseDao.closeConnection();
+        closeConnection();
         return accounts;
     }
 
     @Override
-    public Account findAccountById(long id) throws DaoException {
+    public Account getById(long idAccount) throws DaoException {
         Account account = null;
-        Connection conn = baseDao.openConnection();
+        Connection conn = openConnection();
         String sql = "select * from accounts where id = (?)";
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(1, idAccount);
 
             if(!preparedStatement.execute()){
                 throw new DaoException("impossible to get the account from db.");
             }
             ResultSet rs = preparedStatement.getResultSet();
-            if(rs.next()){
-                long idAccount = rs.getLong(1);
-                float balance = rs.getFloat(2);
-                float overdraft = rs.getFloat(3);
-                if(overdraft == 0){
-                    account = new SavingAccount();
-                } else {
-                    account = new CheckingAccount();
-                    account.setOverdraft(overdraft);
-                }
-                account.setId(idAccount);
-                account.setBalance(balance);
+            if(!rs.next()){
+                throw new DaoException("impossible to get the account from db.");
+            }
+            float balance = rs.getFloat(2);
+            float overdraft = rs.getFloat(3);
+            long idClient = rs.getLong(4);
+            if(overdraft == 0){
+                account = new SavingAccount();
+            } else {
+                account = new CheckingAccount();
+                account.setOverdraft(overdraft);
+            }
+            account.setId(idAccount);
+            account.setBalance(balance);
+
+            if(idClient > 0){
+                Client client = DaoFactory.getClientDao().getById(idClient);
+                account.setClient(client);
             }
 
             rs.close();
             preparedStatement.close();
+
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
+        } catch (ClientNotExistsException e) {
+            e.printStackTrace();
         }
-        baseDao.closeConnection();
+        closeConnection();
         return account;
     }
+
+    @Override
+    public void addAccountToClient(Client client, Account account) throws DaoException {
+        Connection conn = openConnection();
+
+        String sql = "update accounts set id_client = (?) where id = (?)";
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            preparedStatement.setLong(1, client.getId());
+            preparedStatement.setLong(2, account.getId());
+
+            if(preparedStatement.executeUpdate() == 0){
+                throw new DaoException("impossible to add account. transaction is rolled back");
+            }
+            preparedStatement.close();
+        } catch (SQLException e) {
+            throw new DaoException("error while adding account "+ account.getId() + " to client " + client.getId());
+        }
+
+        closeConnection();
+    }
+
 }

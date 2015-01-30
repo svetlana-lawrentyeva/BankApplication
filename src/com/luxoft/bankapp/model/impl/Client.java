@@ -1,27 +1,37 @@
 package com.luxoft.bankapp.model.impl;
 
 import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.AccountType;
 import com.luxoft.bankapp.model.Gender;
 import com.luxoft.bankapp.model.Report;
-import com.luxoft.bankapp.model.exceptions.BankException;
 import com.luxoft.bankapp.model.exceptions.FeedException;
 
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class Client implements Report {
     private long id = -1;
-    private String name;
+    private String name = "";
     private String city = "none";
-    private String email;
-    private String phone;
+    private String email = "";
+    private String phone = "";
     private float overdraft;
-    private Gender gender;
+    private Gender gender = Gender.FEMALE;
+    private Bank bank = null;
     private Set<Account> accounts = new HashSet<>();
-    private Account activeAccount;
+    private Account activeAccount = null;
+    private AccountRegistrationListener listener = new OverdraftSetterListener();
+
+    private static class OverdraftSetterListener implements AccountRegistrationListener{
+
+        @Override
+        public void onAccountAdded(Client client, Account account) {
+            if(account instanceof CheckingAccount){
+                account.setOverdraft(client.overdraft);
+            }
+        }
+    }
 
     public String getCity() {
         return city;
@@ -31,101 +41,31 @@ public class Client implements Report {
         this.city = city;
     }
 
-    public Client() {
-    }
-
-    public Client(String city) {
-        this.city = city;
-    }
-
-    public Client(float initialOverdraft, Gender gender) {
-        this.overdraft = initialOverdraft;
-        this.gender = gender;
-    }
-
-    public void deposit(float x) {
-        if (accounts.size() == 0) {
-            Account account = new SavingAccount(x);
-            accounts.add(account);
-            activeAccount = account;
-        } else {
-            activeAccount.deposit(x);
-        }
-    }
-
-    public void withdraw(float x) throws BankException {
-        if (activeAccount == null) {
-            throw new IllegalArgumentException("The Client " + this.toString() + " has not account yet");
-        }
-        activeAccount.withdraw(x);
-    }
-
-    public void withdraw(float x, Account account) throws BankException {
-
-        if (hasAccount(account) == false) {
-            throw new IllegalArgumentException("The Client has not account " + account);
-        }
-        account.withdraw(x);
-    }
-
-    private boolean hasAccount(Account account) {
-        boolean hasAccount = false;
-        for (Account a : accounts) {
-            if (a.equals(account)) {
-                hasAccount = true;
-                break;
-            }
-        }
-        return hasAccount;
-    }
-
-    public Account createAccount(AccountType accountType) {
-        return createAccount(accountType, 0);
-    }
-
-    public Account createAccount(AccountType accountType, float initialBalance) {
-        Account account = null;
-        if (accountType.equals(AccountType.CHECKING_ACCOUNT)) {
-            account = new CheckingAccount(initialBalance, overdraft);
-        } else if (accountType.equals(AccountType.SAVING_ACCOUNT)) {
-            account = new SavingAccount(initialBalance);
-        }
-        accounts.add(account);
-        return account;
-    }
-
-    public void printReport() {
-        System.out.println(this);
-
-        System.out.println(getAccountsInfo());
-    }
-
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(gender.getSalutation()).append(" ").append(name);
-        if(activeAccount != null){
-            builder.append(" ").append(activeAccount.getBalance());
-        }
-        return builder.toString();
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        String NAME_PATTERN ="[a-zA-z]+([ '-][a-zA-Z]+)*";
-        if(name.matches(NAME_PATTERN)){
+        String NAME_PATTERN = "[a-zA-z]+([ '-][a-zA-Z]+)*";
+        if (name.matches(NAME_PATTERN)) {
             this.name = name;
         }
     }
 
-    public Set<Account> getAccounts() {
-        return accounts;
+    public void  addAccount(Account account) {
+        accounts.add(account);
+        listener.onAccountAdded(this, account);
+    }
+
+    public Set<Account> getAccounts(){
+        return Collections.unmodifiableSet(accounts);
     }
 
     public void setAccounts(Set<Account> accounts) {
         this.accounts = accounts;
+        for(Account account:accounts){
+            listener.onAccountAdded(this, account);
+        }
     }
 
     public Account getActiveAccount() {
@@ -136,10 +76,6 @@ public class Client implements Report {
         this.activeAccount = activeAccount;
     }
 
-    public void addAccount(Account account) {
-        accounts.add(account);
-    }
-
     public Gender getGender() {
         return gender;
     }
@@ -148,58 +84,14 @@ public class Client implements Report {
         this.gender = gender;
     }
 
-    public String getClientSalutation() {
-        return gender.getSalutation() + " " + name;
-    }
-
-    public String getAccountsInfo() {
-        StringBuilder builder = new StringBuilder();
-        for (Account account : accounts) {
-            if (account.equals(activeAccount)) {
-                builder.append("active: ");
-            }
-            builder.append(account).append("\n");
-        }
-        return builder.toString();
-    }
-
-    public void transfer(Client c2, float x) throws BankException {
-        try {
-            this.withdraw(x);
-            c2.deposit(x);
-        } catch (BankException e) {
-            throw e;
-        }
-    }
-
-    public int hashcode() {
-        int p = 17;
-        int q = 37;
-        return (p * q + name.hashCode()) * q + gender.hashCode();
-    }
-
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        Client client = (Client) obj;
-        return (this.name.equals(client.name) && this.gender.equals(client.gender));
-    }
-
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
-        String EMAIL_PATTERN ="^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-        if(email.matches(EMAIL_PATTERN)){
+        String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        if (email.matches(EMAIL_PATTERN)) {
             this.email = email;
         }
     }
@@ -209,8 +101,8 @@ public class Client implements Report {
     }
 
     public void setPhone(String phone) {
-        String PHONE_PATTERN="\\d{3}-\\d{7}";
-        if(phone.matches(PHONE_PATTERN)){
+        String PHONE_PATTERN = "\\d{3}-\\d{7}";
+        if (phone.matches(PHONE_PATTERN)) {
             this.phone = phone;
         }
     }
@@ -223,18 +115,35 @@ public class Client implements Report {
         this.overdraft = overdraft;
     }
 
-    public String getFullInfo() {
-        StringBuilder builder = new StringBuilder();
-        try{
-            builder.append(name).append("\n").append(email).append("\n").append(phone).append("\n");
-            builder.append("balance: ").append(getBalance()).append("overdraft: ").append(overdraft).append("\n");
-            builder.append(getAccountsInfo());
-        } catch (Exception e) {
-            builder.append("error: ").append(e.getMessage());
-        }
-        return builder.toString();
+    public long getId() {
+        return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    //----------------------------------------------------------------
+
+    /**
+     * Get gender salutation and client's name
+     */
+    public String getClientSalutation() {
+        return gender.getSalutation() + " " + name;
+    }
+
+    /**
+     * Parse feed map to load data
+     * @param feed map for parsing for get data
+     */
     public void parseFeed(Map<String, String> feed) {
         try {
             String gen = feed.get("gender");
@@ -263,15 +172,48 @@ public class Client implements Report {
         }
     }
 
-    public float getBalance(){
-        return activeAccount.getBalance();
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Client client = (Client) obj;
+        return (this.name.equals(client.name) && this.gender.equals(client.gender));
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public int hashCode() {
+        int p = 17;
+        int q = 37;
+        return (p * q + name.hashCode()) * q + gender.hashCode();
     }
 
-    public void setId(long id) {
-        this.id = id;
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\nclient: ").append(gender.getSalutation()).append(" ").append(name).append("\n");
+        if(accounts.size()>0){
+            builder.append("accounts:");
+            builder.append("\n............................");
+            for(Account account:accounts){
+                builder.append(account);
+                if(activeAccount!=null & account.equals(activeAccount)){
+                    builder.append(" < =====active=====");
+                }
+                builder.append("\n............................");
+            }
+        }
+        return builder.toString();
     }
+
+    @Override public void printReport() {
+        System.out.println(this);
+    }
+
 }

@@ -21,8 +21,9 @@ public class BankServer {
     public static void main(String[] args) {
         BankServer bankServer = new BankServer();
         bankServer.bankApplication = new BankApplication();
-        bankServer.bank = new Bank(bankName);
-        bankServer.bank.setId(1);
+        bankServer.bank = new Bank();
+        bankServer.bank.setName("My bank");
+
         bankServer.commander = new Commander();
         bankServer.commander.setCurrentBank(bankServer.bank);
         bankServer.bankApplication.initialize(bankServer.bank, bankServer.commander);

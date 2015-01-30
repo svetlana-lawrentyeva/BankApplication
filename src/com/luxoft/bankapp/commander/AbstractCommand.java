@@ -3,11 +3,11 @@ package com.luxoft.bankapp.commander;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.service.Service;
+import com.luxoft.bankapp.service.ServiceOld;
 
 public abstract class AbstractCommand implements Command {
 
-    private Service service = new Service();
+    private ServiceOld service = new ServiceOld();
     private Commander commander;
     private Response response = new Response();
 
@@ -15,11 +15,11 @@ public abstract class AbstractCommand implements Command {
         this.commander = commander;
     }
 
-    public Service getService() {
+    public ServiceOld getService() {
         return service;
     }
 
-    public void setService(Service service) {
+    public void setService(ServiceOld service) {
         this.service = service;
     }
 

@@ -11,11 +11,14 @@ import java.sql.Connection;
  * Time: 7:26 PM
  */
 public interface BaseDao {
+
+    /**
+     * Open connection to database
+     */
     Connection openConnection() throws DaoException;
 
+    /**
+     * Close connection to database
+     */
     void closeConnection() throws DaoException;
-
-    Connection getConnection();
-
-    void setConnection(Connection connection);
 }

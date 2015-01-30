@@ -1,6 +1,10 @@
-package com.luxoft.bankapp.model.impl;
+package com.luxoft.bankapp.service;
 
 import com.luxoft.bankapp.model.Account;
+import com.luxoft.bankapp.model.impl.Bank;
+import com.luxoft.bankapp.model.impl.CheckingAccount;
+import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.model.impl.ClientComparator;
 
 import java.io.Serializable;
 import java.util.*;

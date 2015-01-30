@@ -4,6 +4,7 @@ import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class FindClientCommand extends AbstractCommand {
 
@@ -16,7 +17,7 @@ public class FindClientCommand extends AbstractCommand {
         Client client = null;
         String message = "";
         try {
-            client = getService().findClient(getCommander().getCurrentBank(), name);
+            client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), name);
             message = "Client " + client.getClientSalutation() + " is checked";
             getCommander().setCurrentClient(client);
         } catch (Exception e) {

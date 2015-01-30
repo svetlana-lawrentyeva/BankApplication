@@ -1,18 +1,46 @@
 package com.luxoft.bankapp.model.impl;
 
 import com.luxoft.bankapp.model.ClientRegistrationListener;
+import com.luxoft.bankapp.model.Report;
 import com.luxoft.bankapp.model.exceptions.ClientExistsException;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class Bank {
+public class Bank implements Report{
+
     private long id = -1;
     private String name;
     private Set<Client> clients = new HashSet<>();
     private List<ClientRegistrationListener> listeners = new ArrayList<>();
     private Map<String, Client> clientsMapByName = new HashMap<>();
+
+    //-----------------------------------------------------------------------------
+
+    public static class PrintClientListener implements ClientRegistrationListener {
+
+        public void onClientAdded(Client c) {
+            System.out.println(c.getClientSalutation() + " added");
+        }
+    }
+
+    public static class EmailNotificationListener implements ClientRegistrationListener {
+
+        public void onClientAdded(Client c) {
+            System.out.println("Notification email for client " + c.getClientSalutation() + " to be sent");
+            System.out.println("=========================================");
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+
+    public Bank() {
+        this.listeners.add(new ClientRegistrationListener() {
+
+            public void onClientAdded(Client c) {
+                clientsMapByName.put(c.getName(), c);
+            }
+        });
+    }
 
     public long getId() {
         return id;
@@ -20,59 +48,6 @@ public class Bank {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-
-    public static class PrintClientListener implements ClientRegistrationListener {
-
-        public void onClientAdded(Client c) {
-            System.out.println("client added\n=========================================");
-            System.out.println(c);
-            System.out.println("=========================================");
-        }
-    }
-
-    public static class EmailNotificationListener implements ClientRegistrationListener {
-
-        public void onClientAdded(Client c) {
-            System.out.println("Notification email for client " + c.getGender().getSalutation() + " " + c.getName() + " to be sent\n");
-        }
-    }
-
-    public Bank() {
-        this.listeners.add(new ClientRegistrationListener() {
-            
-            public void onClientAdded(Client c) {
-                clientsMapByName.put(c.getName(), c);
-            }
-        });
-    }
-
-    public Bank(String name, List<ClientRegistrationListener> listeners) {
-        this();
-        this.name = name;
-        this.listeners = listeners;
-        listeners.add(new ClientRegistrationListener() {
-            
-            public void onClientAdded(Client c) {
-                Date date = new Date();
-                String stringDate = new SimpleDateFormat("h:mm a").format(date);
-                System.out.println("" + c + " " + stringDate + "\n");
-            }
-        });
-    }
-
-    public Bank(String name) {
-        this();
-        this.name = name;
-        listeners.add(new ClientRegistrationListener() {
-            
-            public void onClientAdded(Client c) {
-                Date date = new Date();
-                String stringDate = new SimpleDateFormat("dd.MM.yyyy").format(date);
-                System.out.println("" + c + " " + stringDate);
-            }
-        });
     }
 
     public List<ClientRegistrationListener> getListeners() {
@@ -83,8 +58,8 @@ public class Bank {
         this.listeners = listeners;
     }
 
-    public Set<Client> getClients() {
-        return clients;
+    public Set<Client> getClients(){
+        return Collections.unmodifiableSet(clients);
     }
 
     public void setClients(Set<Client> clients) {
@@ -112,13 +87,29 @@ public class Bank {
         this.clientsMapByName = clientsMapByName;
     }
 
-    public Client findClient(String name) throws ClientNotExistsException {
-        for (Client client : clients) {
-            if (client.getName().equals(name)) return client;
+    public void addClient(Client client){
+        clients.add(client);
+        for(ClientRegistrationListener listener:listeners){
+            listener.onClientAdded(client);
         }
-        throw new ClientNotExistsException();
     }
 
+    //----------------------------------------------------------------------------
+
+    private boolean hasClient(Client client) {
+        boolean hasClient = false;
+        for (Client c : clients) {
+            if (c.equals(client)) {
+                hasClient = true;
+            }
+        }
+        return hasClient;
+    }
+
+    /**
+     * Parse feed map to load data
+     * @param feed map for parsing for get data
+     */
     public Client parseFeed(Map<String, String> feed) throws ClientExistsException {
         Client client = new Client();
         client.parseFeed(feed);
@@ -136,39 +127,21 @@ public class Bank {
         }
         return client;
     }
-    
+
+    @Override
     public void printReport() {
-        System.out.println("Bank " + name + " has clients:");
-        for (Client client : clients) {
-            client.printReport();
-            System.out.println("\n");
-        }
-    }
-    
-    public void addClient(Client client) throws ClientExistsException {
-        if (hasClient(client)) throw new ClientExistsException();
-        clients.add(client);
-        for (ClientRegistrationListener listener : getListeners()) {
-            listener.onClientAdded(client);
-        }
+        System.out.println(this);
     }
 
-    private boolean hasClient(Client client) {
-        boolean hasClient = false;
-        for (Client c : clients) {
-            if (c.equals(client)) {
-                hasClient = true;
-            }
-        }
-        return hasClient;
-    }
-    
-    public void removeClient(Client client) {
-        clients.remove(client);
-        clientsMapByName.remove(client.getName());
-    }
-
+    @Override
     public String toString() {
-        return ("Bank " + name);
+        StringBuilder builder = new StringBuilder();
+        builder.append("Bank ").append(name).append("\n");
+        builder.append("clients:");
+        builder.append("\n------------------------------------");
+        for(Client client:clients){
+            builder.append(client).append("\n------------------------------------");
+        }
+        return builder.toString();
     }
 }

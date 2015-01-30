@@ -9,15 +9,22 @@ public class SavingAccount extends AbstractAccount {
     public SavingAccount() {
     }
 
-    public SavingAccount(float startBalance) {
-        super(startBalance);
+    @Override
+    public void setBalance(float balance) {
+        if (balance < 0) throw new IllegalArgumentException();
+        super.setBalance(balance);
     }
 
     @Override
-    public void deposit(float x) {
-        if(x<0) throw new IllegalArgumentException();
-        setBalance(getBalance()+x);
+    public float getOverdraft() {
+        return 0;
     }
+
+    @Override
+    public void setOverdraft(float overdraft) {
+    }
+
+    //------------------------------------------------------
 
     @Override
     public void withdraw(float x) throws NotEnoughFundsException {
@@ -39,26 +46,14 @@ public class SavingAccount extends AbstractAccount {
     }
 
     @Override
-    public float getOverdraft() {
-        return 0;
-    }
-
-    @Override
-    public void setOverdraft(float overdraft) {
-    }
-
-    @Override
-    public void setBalance(float balance) {
-        if (balance < 0) throw new IllegalArgumentException();
-        super.setBalance(balance);
-    }
-
-    @Override
     public void printReport() {
         System.out.println(this);
     }
 
+    @Override
     public String toString() {
-        return "Saving account " + getId() + " with balance: " + getBalance();
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n").append("Saving account #").append(getId()).append(". balance: ").append(getBalance());
+        return builder.toString();
     }
 }
