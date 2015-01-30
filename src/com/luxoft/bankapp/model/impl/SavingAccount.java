@@ -1,0 +1,59 @@
+package com.luxoft.bankapp.model.impl;
+
+import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
+
+import java.util.Map;
+
+public class SavingAccount extends AbstractAccount {
+
+    public SavingAccount() {
+    }
+
+    @Override
+    public void setBalance(float balance) {
+        if (balance < 0) throw new IllegalArgumentException();
+        super.setBalance(balance);
+    }
+
+    @Override
+    public float getOverdraft() {
+        return 0;
+    }
+
+    @Override
+    public void setOverdraft(float overdraft) {
+    }
+
+    //------------------------------------------------------
+
+    @Override
+    public void withdraw(float x) throws NotEnoughFundsException {
+        if(x<0) throw new IllegalArgumentException();
+        if (getBalance() < x) {
+            throw new NotEnoughFundsException();
+        }
+        setBalance(getBalance()-x);
+    }
+
+    @Override
+    public float getAvailableMoney() {
+        return getBalance();
+    }
+
+    @Override
+    public void parseFeed(Map<String, String> feed) {
+        setBalance(Float.parseFloat(feed.get("balance")));
+    }
+
+    @Override
+    public void printReport() {
+        System.out.println(this);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n").append("Saving account #").append(getId()).append(". balance: ").append(getBalance());
+        return builder.toString();
+    }
+}
