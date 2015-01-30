@@ -7,14 +7,14 @@ import java.io.*;
 import java.net.Socket;
 import java.util.*;
 
-public class BankClientRemoteOffice {
+public class RemoteOffice {
 
     Commander commander;
 
     public static void main(String[] args) {
-        BankClientRemoteOffice bankClientRemoteOffice = new BankClientRemoteOffice();
-        bankClientRemoteOffice.commander = new Commander();
-        bankClientRemoteOffice.run();
+        RemoteOffice remoteOffice = new RemoteOffice();
+        remoteOffice.commander = new Commander();
+        remoteOffice.run();
     }
 
     private Socket socket;

@@ -216,4 +216,31 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
         closeConnection();
     }
 
+    @Override public float getBalance(Account account) throws DaoException {
+        Connection conn = openConnection();
+        String sql = "select balance from accounts where id = (?)";
+        float balance = 0;
+        try {
+            final PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setLong(1, account.getId());
+
+            if (!preparedStatement.execute()) {
+                throw new DaoException("impossible to get the account from db.");
+            }
+            ResultSet rs = preparedStatement.getResultSet();
+            if (!rs.next()) {
+                throw new DaoException("impossible to get the account from db.");
+            }
+            balance = rs.getFloat(1);
+
+            rs.close();
+            preparedStatement.close();
+
+        } catch (SQLException e) {
+            throw new DaoException(e.getMessage());
+        }
+        closeConnection();
+        return  balance;
+    }
+
 }

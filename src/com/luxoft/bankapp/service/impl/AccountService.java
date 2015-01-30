@@ -86,4 +86,12 @@ public class AccountService {
         DaoFactory.getAccountDao().save(account2);
     }
 
+    /**
+     * Get balance of the account
+     * @param account account to get balance
+     */
+    public float getBalance(Account account) throws DaoException {
+        return DaoFactory.getAccountDao().getBalance(account);
+    }
+
 }

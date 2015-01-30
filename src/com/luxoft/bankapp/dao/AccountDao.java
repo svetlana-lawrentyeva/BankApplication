@@ -43,4 +43,10 @@ public interface AccountDao {
      * @param account account
      */
     void addAccountToClient(Client client, Account account) throws DaoException;
+
+    /**
+     * Get balance of the account
+     * @param account account to get balance
+     */
+    float getBalance(Account account) throws DaoException;
 }
