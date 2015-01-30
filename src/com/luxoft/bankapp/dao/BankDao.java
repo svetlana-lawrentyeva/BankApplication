@@ -35,4 +35,10 @@ public interface BankDao {
      * @param bank The bank to get bank info
      */
     BankInfo getBankInfo(Bank bank);
+
+    /**
+     * Create Bank report
+     * @param bank The bank to get bank report
+     */
+    String getBankReport(Bank bank) throws DaoException;
 }

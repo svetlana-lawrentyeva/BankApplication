@@ -50,7 +50,6 @@ public class BankService {
 
     public String getBankReport(Bank bank) throws DaoException {
         bank = getByName(bank.getName());
-        bank.setClients(new HashSet<>(ServiceFactory.getClientService().getAllByBank(bank)));
-        return bank.toString();
+        return DaoFactory.getBankDao().getBankReport(bank);
     }
 }

@@ -2,6 +2,7 @@ package com.luxoft.bankapp.dao.impl;
 
 import com.luxoft.bankapp.dao.BankDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
+import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.ClientComparator;
@@ -146,6 +147,37 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             e.printStackTrace();
         }
         return bankInfo;
+    }
+
+    @Override
+    public String getBankReport(Bank bank) throws DaoException {
+        List<Client> clients = (DaoFactory.getClientDao().getAllClients(bank));
+        bank.setClients(new HashSet<Client>(clients));
+        int clientsNumber = getClientsNumber(bank);
+        int accountNumber = getAccountsNumber(bank);
+        Set<Client> sortedByBalance = getClientsSorted(bank);
+        float bankCreditSum = getBankCreditSum(bank);
+        Map<String, List<Client>>clientSortedByCity = getClientsByCity(bank);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("number of clients: ").append(clientsNumber).append("\n");
+        builder.append("number of accounts: ").append(accountNumber).append("\n");
+        for(Client client:sortedByBalance){
+            builder.append(client.getClientSalutation()).append("\n");
+            for(Account account:client.getAccounts()){
+                builder.append(account).append("\n");
+            }
+        }
+
+        builder.append("bank credit sum: ").append(bankCreditSum).append("\n");
+
+        for(String city:clientSortedByCity.keySet()){
+            for(Client client:clientSortedByCity.get(city)){
+                builder.append(city).append(" ").append(client.getClientSalutation()).append("\n");
+            }
+        }
+
+        return builder.toString();
     }
 
     private int getClientsNumber(Bank bank) throws DaoException {
