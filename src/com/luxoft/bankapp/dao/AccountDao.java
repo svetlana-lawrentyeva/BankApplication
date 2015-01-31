@@ -22,7 +22,7 @@ public interface AccountDao {
 
     /**
      * Remove the account
-     * @param id Id of the account
+     * @param account account to remove
      */
     void remove(Account account) throws DaoException;
     /**

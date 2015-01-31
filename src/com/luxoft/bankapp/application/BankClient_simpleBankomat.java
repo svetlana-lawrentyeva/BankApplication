@@ -6,13 +6,13 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.*;
 
-public class BankClient_simple {
+public class BankClient_simpleBankomat {
 
     private Socket socket;
-    private Map<Integer, List<String>> commandMap = new TreeMap<>();
+    private List<Map<String, String>> commands = new ArrayList<>();
 
     public static void main(String[] args) {
-        BankClient_simple bankClient = new BankClient_simple();
+        BankClient_simpleBankomat bankClient = new BankClient_simpleBankomat();
         bankClient.run();
     }
 
@@ -20,19 +20,24 @@ public class BankClient_simple {
         List<String>list1 = new ArrayList<>();
         String clientService = "com.luxoft.bankapp.service.impl.ClientService"; // service class that contains method
         String accountService = "com.luxoft.bankapp.service.impl.AccountService";
-        String bankService = "com.luxoft.bankapp.service.impl.BankService";
 
-        initMap(1, clientService, "getAllByBank", "choose your name:");
-        initMap(2, accountService, "getAllByClient", "choose balance for operations:");
-        initMap(3, accountService, "getBalance", "withdraw money:");
+        initMap(clientService, "getAllByBank", "com.luxoft.bankapp.model.impl.Bank", "setId", "2", "List<Client>", "choose your name:");
+        initMap(accountService, "getAllByClient", "java.lang.String", "", "", "List<Account>",  "choose balance for operations:");
+        initMap(accountService, "getBalance", "long.class", "setId", "", "float.class", "withdraw money:");
     }
 
-    private void initMap(int i, String className, String methodName, String uiMessage){
-        List<String>list = new ArrayList<>();
-        list.add(className);
-        list.add(methodName);
-        list.add(uiMessage);
-        commandMap.put(i, list);
+    private void initMap(String className, String methodName, String parameterType, String setterName, String fieldValue,
+                         String returnedType, String uiMessage){
+        Map<String, String>map = new HashMap<>();
+        map.put("class", className);
+        map.put("methodName", methodName);
+        map.put("parameterType", parameterType);
+        map.put("fieldName", setterName);
+        map.put("fieldValue", fieldValue);
+        map.put("returnedType", returnedType);
+        map.put("uiMessage", uiMessage);
+
+        commands.add(map);
     }
 
     public void run() {
@@ -48,13 +53,18 @@ public class BankClient_simple {
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
 
-            for(int i:commandMap.keySet()){
-                out.writeObject(commandMap.get(i).get(0));
-                out.writeObject(commandMap.get(i).get(1));
+            for(int i=0; i< commands.size(); ++i){
+                Map<String, String> map = commands.get(i);
+
+                out.writeObject(map);
                 out.flush();
 
-                Object object = in.readObject();
-                System.out.println(object);
+                map = (Map<String, String>) in.readObject();
+                System.out.println(map.get("returnedType"));
+                System.out.println(map.get("uiMessage"));
+
+                if(i < commands.size()-1){
+                }
             }
 
 
