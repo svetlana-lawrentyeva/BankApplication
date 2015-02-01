@@ -46,14 +46,17 @@ public class SavingAccount extends AbstractAccount {
     }
 
     @Override
-    public void printReport() {
-        System.out.println(this);
+    public String printReport() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n").append("Saving account #").append(getId()).append(". balance: ").append(getBalance());
+        System.out.println(builder);
+        return builder.toString();
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("\n").append("Saving account #").append(getId()).append(". balance: ").append(getBalance());
+        builder.append("Saving account #").append(getId());
         return builder.toString();
     }
 }

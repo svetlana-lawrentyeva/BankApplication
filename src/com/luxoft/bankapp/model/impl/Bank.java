@@ -129,19 +129,22 @@ public class Bank implements Report{
     }
 
     @Override
-    public void printReport() {
-        System.out.println(this);
+    public String printReport() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Bank ").append(name).append("\n");
+        builder.append("clients:");
+        builder.append("\n------------------------------------");
+        for (Client client : clients) {
+            builder.append(client).append("\n------------------------------------");
+        }
+        System.out.println(builder);
+        return builder.toString();
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Bank ").append(name).append("\n");
-        builder.append("clients:");
-        builder.append("\n------------------------------------");
-        for(Client client:clients){
-            builder.append(client).append("\n------------------------------------");
-        }
         return builder.toString();
     }
 }

@@ -62,7 +62,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             rs.next();
             long id = rs.getLong(1);
             String bankName = rs.getString(2);
-
+            bank = new Bank();
             bank.setId(id);
             bank.setName(bankName);
 

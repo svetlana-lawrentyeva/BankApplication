@@ -13,28 +13,64 @@ public class BankClient_simpleBankomat {
 
     public static void main(String[] args) {
         BankClient_simpleBankomat bankClient = new BankClient_simpleBankomat();
+        bankClient.initialize();
         bankClient.run();
     }
 
     private void initialize(){
-        List<String>list1 = new ArrayList<>();
         String clientService = "com.luxoft.bankapp.service.impl.ClientService"; // service class that contains method
         String accountService = "com.luxoft.bankapp.service.impl.AccountService";
+        String bankService = "com.luxoft.bankapp.service.impl.BankService";
 
-        initMap(clientService, "getAllByBank", "com.luxoft.bankapp.model.impl.Bank", "setId", "2", "List<Client>", "choose your name:");
-        initMap(accountService, "getAllByClient", "java.lang.String", "", "", "List<Account>",  "choose balance for operations:");
-        initMap(accountService, "getBalance", "long.class", "setId", "", "float.class", "withdraw money:");
+        initMap(clientService,
+                "getAllByBank",
+                "com.luxoft.bankapp.model.impl.Bank",
+                bankService,
+                "1",
+                "",
+                "List<Client>",
+                "choose client number:");
+        initMap(accountService,
+                "getAllByClient",
+                "com.luxoft.bankapp.model.impl.Client",
+                clientService,
+                "",
+                "",
+                "List<Account>",
+                "choose account for operations:");
+        initMap(accountService,
+                "getBalance",
+                "com.luxoft.bankapp.model.Account",
+                accountService,
+                "",
+                "",
+                "java.lang.Float",
+                "withdraw money:");
+        initMap(accountService,
+                "withdraw",
+                "com.luxoft.bankapp.model.Account",
+                accountService,
+                "",
+                "",
+                "",
+                "done");
     }
 
-    private void initMap(String className, String methodName, String parameterType, String setterName, String fieldValue,
-                         String returnedType, String uiMessage){
+    private void initMap(String serviceClass,
+                         String serviceMethod,
+                         String entityClass,
+                         String entityServiceClass,
+                         String entityId,
+                         String paramVal,
+                         String returnedType,
+                         String uiMessage) {
         Map<String, String>map = new HashMap<>();
-        map.put("class", className);
-        map.put("methodName", methodName);
-        map.put("parameterType", parameterType);
-        map.put("fieldName", setterName);
-        map.put("fieldValue", fieldValue);
-        map.put("returnedType", returnedType);
+        map.put("serviceClass", serviceClass);
+        map.put("serviceMethod", serviceMethod);
+        map.put("entityClass", entityClass);
+        map.put("entityServiceClass", entityServiceClass);
+        map.put("entityId", entityId);
+        map.put("paramVal", paramVal);
         map.put("uiMessage", uiMessage);
 
         commands.add(map);
@@ -46,6 +82,7 @@ public class BankClient_simpleBankomat {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+        Scanner sc = new Scanner(System.in);
         ObjectInputStream in = null;
         ObjectOutputStream out = null;
         try {
@@ -53,21 +90,27 @@ public class BankClient_simpleBankomat {
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
 
-            for(int i=0; i< commands.size(); ++i){
+            for(int i=0; i < commands.size(); ++i){
                 Map<String, String> map = commands.get(i);
 
                 out.writeObject(map);
                 out.flush();
 
-                map = (Map<String, String>) in.readObject();
-                System.out.println(map.get("returnedType"));
-                System.out.println(map.get("uiMessage"));
-
-                if(i < commands.size()-1){
+                String response = (String) in.readObject();
+                System.out.println(response);
+                System.out.println(commands.get(i).get("uiMessage"));
+                if(i < commands.size() - 2){
+                    String entityId = sc.nextLine();
+                    commands.get(i + 1).put("entityId", entityId);
+                }
+                if(i == commands.size() - 2){
+                    commands.get(commands.size() - 1).put("entityId", commands.get(commands.size() - 2).get("entityId"));
+                    String paramVal = sc.nextLine();
+                    commands.get(commands.size() - 1).put("paramVal", paramVal);
                 }
             }
-
-
+            out.writeObject(null);
+            out.flush();
         } catch (Exception e) {
             e.printStackTrace();
             if (in != null) {

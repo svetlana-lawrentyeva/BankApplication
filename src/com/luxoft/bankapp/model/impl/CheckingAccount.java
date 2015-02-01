@@ -55,15 +55,18 @@ public class CheckingAccount extends AbstractAccount {
     }
 
     @Override
-    public void printReport() {
-        System.out.println(this);
+    public String printReport() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n").append("Checking account #").append(getId()).append(". balance: ");
+        builder.append(getBalance()).append(", overdraft: ").append(overdraft);
+        System.out.println(builder);
+        return builder.toString();
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("\n").append("Checking account #").append(getId()).append(". balance: ");
-        builder.append(getBalance()).append(", overdraft: ").append(overdraft);
+        builder.append("Checking account #").append(getId());
         return builder.toString();
     }
 

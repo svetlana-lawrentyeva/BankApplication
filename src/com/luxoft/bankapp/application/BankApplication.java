@@ -11,10 +11,7 @@ import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BankApplication {
 
@@ -23,46 +20,8 @@ public class BankApplication {
     public static void main(String[] args) {
 
         try {
-            Map<String, String>requestMap = new HashMap<>();
-            requestMap.put("class", "com.luxoft.bankapp.service.impl.ClientService");
-            requestMap.put("methodName", "getAllByBank");
-            requestMap.put("parameterType", "com.luxoft.bankapp.model.impl.Bank");
-            requestMap.put("parameterSetterType", "long");
-            requestMap.put("setterName", "setId");
-            requestMap.put("setterValue", "2");
-            requestMap.put("returnedType", "returnedType");
-            requestMap.put("uiMessage", "uiMessage");
 
-            String clazz = requestMap.get("class");
-            String methodName = requestMap.get("methodName");
-            String parameterType = requestMap.get("parameterType");
-            String parameterSetterType = requestMap.get("parameterSetterType");
-            String setterName = requestMap.get("setterName");
-            String setterValue = requestMap.get("setterValue");
-
-            Class serviceClass = Class.forName(clazz);
-            Object service = serviceClass.newInstance();
-            Class bankClass = Class.forName(parameterType);
-            Object bank = bankClass.newInstance();
-            Class longType = Class.forName(parameterSetterType);
-            Class[]bankSetterTypes = new Class[]{longType};
-
-            Object longObject = longType.newInstance();
-
-            Method bankSetter = bankClass.getMethod(setterName, bankSetterTypes);
-            Object[]bankSetterArgs = new Object[]{};
-            bankSetter.invoke(bank, bankSetterArgs);
-            Class[]methodTypes = new Class[]{bankClass};
-            Method method = serviceClass.getMethod(methodName, methodTypes);
-            Object [] arg = new Object[]{bank};
-            Object res = method.invoke(service,arg);
-            System.out.println(res.getClass());
-
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-       /* BankApplication bankApplication = new BankApplication();
+       BankApplication bankApplication = new BankApplication();
         bankApplication.bank = ServiceFactory.getBankService().save(bankApplication.bank);
 
         bankApplication.clearBank();
@@ -73,7 +32,10 @@ public class BankApplication {
 
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ after modification ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        bankApplication.printBankReport();*/
+        bankApplication.printBankReport();
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void clearBank(){

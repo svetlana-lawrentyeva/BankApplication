@@ -113,14 +113,6 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 } else {
                     throw new DaoException("incorrect data in db, impossible to load the client");
                 }
-                Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
-
-                Account activeAccount = null;
-                for (Account account : accounts) {
-                    if (account.getId() == idActiveAccount) {
-                        activeAccount = account;
-                    }
-                }
 
                 client = new Client();
                 client.setId(idClient);
@@ -130,6 +122,17 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 client.setPhone(phone);
                 client.setOverdraft(overdraft);
                 client.setGender(gender);
+
+
+                Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
+
+                Account activeAccount = null;
+                for (Account account : accounts) {
+                    if (account.getId() == idActiveAccount) {
+                        activeAccount = account;
+                    }
+                }
+
                 client.setAccounts(accounts);
                 client.setActiveAccount(activeAccount);
 

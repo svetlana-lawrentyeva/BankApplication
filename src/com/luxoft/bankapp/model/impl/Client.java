@@ -197,23 +197,26 @@ public class Client implements Report {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("\nclient: ").append(gender.getSalutation()).append(" ").append(name).append("\n");
-        if(accounts.size()>0){
+        builder.append("client #").append(id).append(" ").append(getClientSalutation());
+        return builder.toString();
+    }
+
+    @Override public String printReport() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\nclient #").append(id).append(" ").append(getClientSalutation()).append("\n");
+        if (accounts.size() > 0) {
             builder.append("accounts:");
             builder.append("\n............................");
-            for(Account account:accounts){
+            for (Account account : accounts) {
                 builder.append(account);
-                if(activeAccount!=null & account.equals(activeAccount)){
+                if (activeAccount != null & account.equals(activeAccount)) {
                     builder.append(" < =====active=====");
                 }
                 builder.append("\n............................");
             }
         }
+        System.out.println(builder);
         return builder.toString();
-    }
-
-    @Override public void printReport() {
-        System.out.println(this);
     }
 
 }
