@@ -13,12 +13,21 @@ public class Commander{
     private Client currentClient;
     private Bank currentBank = ServiceFactory.getBankService().getByName("My bank");
     private Map<Integer, Command> commandMap = new HashMap<>();
-    private static InputStream is = System.in;
-    private static OutputStream os = System.out;
-    private static BufferedReader in = new BufferedReader(new InputStreamReader(is));
-    private static PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+    private InputStream is = System.in;
+    private OutputStream os = System.out;
+    ObjectInputStream in;
+    ObjectOutputStream out;
+//    private BufferedReader in = new BufferedReader(new InputStreamReader(is));
+//    private PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
 
     public Commander() {
+        try {
+            in = new ObjectInputStream(is);
+            out = new ObjectOutputStream(os);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         commandMap.put(0, new FindClientCommand(this, is, os));
         commandMap.put(1, new ShowAllAccounts(this, is, os));
         commandMap.put(2, new DepositCommand(this, is, os));
@@ -46,21 +55,30 @@ public class Commander{
 
     public static void main(String[] args) {
         Commander commander = new Commander();
-        while(true){
-            Set<Integer>commandSet = commander.commandMap.keySet();
-            for(int i = 0; i < commandSet.size(); ++i){
-                out.println(i + ". " + commander.commandMap.get(i).printCommandInfo());
+        commander.start();
+    }
+
+    public void start(){
+        while (true) {
+            try {
+            Set<Integer> commandSet = commandMap.keySet();
+            for (int i = 0; i < commandSet.size(); ++i) {
+                out.writeObject((i + ". " + commandMap.get(i).printCommandInfo()));
+//                out.println(i + ". " + commandMap.get(i).printCommandInfo());
+                out.flush();
             }
-            out.println("your choice:");
+                out.writeObject("your choice:");
+//            out.println("your choice:");
             out.flush();
             int choice = 0;
-            try{
-                choice = Integer.parseInt(in.readLine());
-            } catch (Exception e){
+                choice = Integer.parseInt((String) in.readObject());
+//                choice = Integer.parseInt(in.readLine());
+                commandMap.get(choice).execute();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            commander.commandMap.get(choice).execute();
         }
+
     }
 
     public Client getCurrentClient() {
@@ -101,6 +119,12 @@ public class Commander{
 
     public void setIs(InputStream is) {
         this.is = is;
+//        in = new BufferedReader(new InputStreamReader(is));
+        try {
+            in = new ObjectInputStream(is);
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     public OutputStream getOs() {
@@ -109,5 +133,11 @@ public class Commander{
 
     public void setOs(OutputStream os) {
         this.os = os;
+//        out = new PrintWriter(new OutputStreamWriter(os));
+        try {
+            out = new ObjectOutputStream(os);
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 }
