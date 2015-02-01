@@ -1,7 +1,6 @@
 package com.luxoft.bankapp.dao;
 
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
@@ -57,20 +56,4 @@ public interface ClientDao {
      * @param bank bank to remove clients from
      */
     void addClientToBank(Bank bank, Client client) throws DaoException;
-
-    /**
-     * Set client's active account
-     *
-     * @param client  client
-     * @param account account
-     */
-    void setActiveAccount(Client client, Account account) throws DaoException;
-
-    /**
-     * Remove the active account from the Client
-     *
-     * @param client client
-     */
-    void removeActiveAccount(Client client) throws DaoException;
-
 }

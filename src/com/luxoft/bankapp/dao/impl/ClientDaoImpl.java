@@ -42,7 +42,6 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             String phone = rs.getString(5);
             float overdraft = rs.getFloat(6);
             String genderLetter = rs.getString(7);
-            long idActiveAccount = rs.getLong(8);
 
             Gender gender;
             if (genderLetter.equals("m")) {
@@ -63,14 +62,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
             Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
 
-            Account activeAccount = null;
-            for (Account account : accounts) {
-                if (account.getId() == idActiveAccount) {
-                    activeAccount = account;
-                }
-            }
             client.setAccounts(accounts);
-            client.setActiveAccount(activeAccount);
             client.setBank(bank);
 
             rs.close();
@@ -102,8 +94,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 String phone = rs.getString(5);
                 float overdraft = rs.getFloat(6);
                 String genderLetter = rs.getString(7);
-                long idActiveAccount = rs.getLong(8);
-                long idBank = rs.getLong(9);
+                long idBank = rs.getLong(8);
 
                 Gender gender;
                 if (genderLetter.equals("m")) {
@@ -126,15 +117,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
                 Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
 
-                Account activeAccount = null;
-                for (Account account : accounts) {
-                    if (account.getId() == idActiveAccount) {
-                        activeAccount = account;
-                    }
-                }
-
                 client.setAccounts(accounts);
-                client.setActiveAccount(activeAccount);
 
                 Bank bank = DaoFactory.getBankDao().getBankById(idBank);
                 client.setBank(bank);
@@ -173,7 +156,6 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 String phone = rs.getString(5);
                 float overdraft = rs.getFloat(6);
                 String genderLetter = rs.getString(7);
-                long idActiveAccount = rs.getLong(8);
 
                 Gender gender;
                 if (genderLetter.equals("m")) {
@@ -194,15 +176,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
                 Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
 
-                Account activeAccount = null;
-                for (Account account : accounts) {
-                    if (account.getId() == idActiveAccount) {
-                        activeAccount = account;
-                    }
-                }
-
                 client.setAccounts(accounts);
-                client.setActiveAccount(activeAccount);
 
                 clients.add(client);
             }
@@ -245,10 +219,6 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 DaoFactory.getAccountDao().save(account);
                 DaoFactory.getAccountDao().addAccountToClient(client, account);
             }
-
-            if(client.getActiveAccount() != null){
-                setActiveAccount(client, client.getActiveAccount());
-            }
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
@@ -267,7 +237,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 }
                 Connection conn = openConnection();
                 String sql = "update clients set name = (?), city = (?), email = (?), phone = (?), overdraft = (?), gender = (?)," +
-                        " id_active_account = (?), id_bank = (?) where id = (?)";
+                        " id_bank = (?) where id = (?)";
                 final PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setString(1, client.getName());
                 preparedStatement.setString(2, client.getCity());
@@ -275,7 +245,6 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 preparedStatement.setString(4, client.getPhone());
                 preparedStatement.setFloat(5, client.getOverdraft());
                 preparedStatement.setString(6, String.valueOf(client.getGender().toString().toLowerCase().charAt(0)));
-                preparedStatement.setLong(6, client.getActiveAccount().getId());
                 preparedStatement.setLong(7, client.getBank().getId());
                 preparedStatement.setLong(8, client.getId());
 
@@ -294,7 +263,6 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
     @Override
     public void remove(Client client) throws DaoException {
         try {
-            removeActiveAccount(client);
             DaoFactory.getAccountDao().removeAllByClient(client);
 
             Connection conn = openConnection();
@@ -314,9 +282,21 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
     @Override
     public void removeAllByBank(Bank bank) throws DaoException {
-        for(Client client:bank.getClients()){
-            remove(client);
+        try {
+
+            Connection conn = openConnection();
+            String sql = "delete from clients where id_bank = (?)";
+            final PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setLong(1, bank.getId());
+
+            if (preparedStatement.executeUpdate() == 0) {
+                throw new DaoException("impossible to remove the client in db. transaction is rolled back");
+            }
+            preparedStatement.close();
+        } catch (SQLException e) {
+            throw new DaoException(e.getMessage());
         }
+        closeConnection();
     }
 
     @Override
@@ -340,47 +320,4 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
         closeConnection();
     }
-
-    @Override
-    public void setActiveAccount(Client client, Account account) throws DaoException {
-        Connection conn = openConnection();
-
-        String sql = "update clients  set id_active_account  = (?) where id = (?)";
-        try {
-            PreparedStatement preparedStatement = conn.prepareStatement(sql);
-
-            preparedStatement.setLong(1, account.getId());
-            preparedStatement.setLong(2, client.getId());
-
-            if (preparedStatement.executeUpdate() == 0) {
-                throw new DaoException("impossible to set account as active. transaction is rolled back");
-            }
-            preparedStatement.close();
-        } catch (SQLException e) {
-            throw new DaoException("error while setting account as active " + account.getId() + " to client " + client.getId());
-        }
-
-        closeConnection();
-    }
-
-    @Override
-    public void removeActiveAccount(Client client) throws DaoException {
-        Connection conn = openConnection();
-
-        String sql = "update clients set id_active_account = null where id = (?)";
-        try {
-            PreparedStatement preparedStatement = conn.prepareStatement(sql);
-
-            preparedStatement.setLong(1, client.getId());
-
-            if (preparedStatement.executeUpdate() == 0) {
-                throw new DaoException("impossible to set active account in db. transaction is rolled back");
-            }
-            preparedStatement.close();
-        } catch (SQLException e) {
-            throw new DaoException("error while setting active account");
-        }
-        closeConnection();
-    }
-
 }

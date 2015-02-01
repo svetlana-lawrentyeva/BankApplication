@@ -3,8 +3,7 @@ package com.luxoft.bankapp.service.impl;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.dao.impl.DaoFactory;
 import com.luxoft.bankapp.model.impl.Bank;
-
-import java.util.HashSet;
+import com.luxoft.bankapp.service.BankInfo;
 
 public class BankService {
     /**
@@ -51,5 +50,10 @@ public class BankService {
     public String getBankReport(Bank bank) throws DaoException {
         bank = getByName(bank.getName());
         return DaoFactory.getBankDao().getBankReport(bank);
+    }
+
+    public BankInfo getBankInfo(Bank bank){
+        bank = getByName(bank.getName());
+        return DaoFactory.getBankDao().getBankInfo(bank);
     }
 }

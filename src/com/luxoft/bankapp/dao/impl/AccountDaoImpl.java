@@ -19,11 +19,12 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
     private Account insert(Account account) throws DaoException {
         Connection conn = openConnection();
-        String sql = "insert into accounts (balance, overdraft) values (?, ?)";
+        String sql = "insert into accounts (balance, overdraft, id_client) values (?, ?, ?)";
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setFloat(1, account.getBalance());
             preparedStatement.setFloat(2, account.getOverdraft());
+            preparedStatement.setLong(3, account.getClient().getId());
 
             if(preparedStatement.executeUpdate() == 0){
                 throw new DaoException("impossible to save account in db. transaction is rolled back");

@@ -1,37 +1,63 @@
 package com.luxoft.bankapp.commander.commands;
 
-import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.commander.AbstractCommand;
+import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.model.impl.SavingAccount;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
+import java.io.*;
+
 public class AddAccountCommand extends AbstractCommand {
-    public AddAccountCommand(Commander commander) {
+
+    private BufferedReader in;
+    private PrintWriter out;
+    private InputStream is;
+    private OutputStream os;
+
+    public AddAccountCommand(Commander commander, InputStream is, OutputStream os) {
         super(commander);
+        this.is = is;
+        this.os = os;
+        in = new BufferedReader(new InputStreamReader(is));
+        out = new PrintWriter(new OutputStreamWriter(os));
     }
 
     @Override
-    public Response execute(String param) {  //"client&x&s|c"
-        String[] params = param.split("&");
-        Client client = null;
-        float x = Float.parseFloat(params[1]);
-        String message;
-        char type = params[2].charAt(0);
+    public void execute() {
         try {
-            client = getService().parseFeed(getCommander().getCurrentBank(), params[0]);
-            Account account = new CheckingAccount();
-            account.setBalance(15000);
+            out.println("type of account (c|s):");
+            out.flush();
+            String typeAccount = in.readLine();
+            out.println("start balance:");
+            out.flush();
+            float startBalance = Float.parseFloat(in.readLine());
+            Client client = null;
+            while((client = getCommander().getCurrentClient()) == null){
+                FindClientCommand command = new FindClientCommand(getCommander(), is, os);
+                command.execute();
+            }
+            Account account;
+            switch (typeAccount){
+                case "c":
+                    account = new CheckingAccount();
+                    break;
+                case "s":
+                    account = new SavingAccount();
+                    break;
+                default:
+                    throw new IllegalArgumentException("error: wrong balance type");
+            }
+            account.setBalance(startBalance);
             client.addAccount(account);
             ServiceFactory.getAccountService().save(account);
-            message = "Current client's active account " + client.getActiveAccount();
+            out.println("success");
         } catch (Exception e) {
-            message = e.getMessage();
+            out.println(e.getMessage());
         }
-        setResponse(client, message);
-        return getResponse();
+        out.flush();
     }
 
     @Override

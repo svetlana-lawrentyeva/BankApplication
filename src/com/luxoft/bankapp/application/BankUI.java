@@ -2,10 +2,9 @@ package com.luxoft.bankapp.application;
 
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.model.impl.Bank;
-import com.luxoft.bankapp.service.BankReport;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.BankReport;
 
 import java.util.Scanner;
 
@@ -52,20 +51,20 @@ public class BankUI{
                 Scanner sc = new Scanner((System.in));
                 int i = Integer.parseInt(sc.nextLine());
 
-                String param = bankUI.commander.getCommandRequest().get(i);
-                String[]params = param.split("&");
+//                String param = bankUI.commander.getCommandRequest().get(i);
+//                String[]params = param.split("&");
                 StringBuilder builder = new StringBuilder();
-                for(int j = 0; j < params.length; ++j){
-                    if(!params[j].equals("")){
-                        System.out.println(params[j]);
-                        builder.append(sc.nextLine());
-                        if(j<params.length-1) {
-                            builder.append("&");
-                        }
-                    }
-                }
-                Response response = bankUI.commander.getCommandMap().get(i).execute(builder.toString());
-                System.out.println(response.getMessage());
+//                for(int j = 0; j < params.length; ++j){
+//                    if(!params[j].equals("")){
+//                        System.out.println(params[j]);
+//                        builder.append(sc.nextLine());
+//                        if(j<params.length-1) {
+//                            builder.append("&");
+//                        }
+//                    }
+//                }
+//                Response response = bankUI.commander.getCommandMap().get(i).execute(builder.toString());
+//                System.out.println(response.getMessage());
             }
         }
     }

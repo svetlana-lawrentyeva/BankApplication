@@ -13,11 +13,11 @@ import java.util.Set;
 public class Client implements Report {
     private long id = -1;
     private String name = "";
-    private String city = "none";
+    private String city = "";
     private String email = "";
     private String phone = "";
     private float overdraft;
-    private Gender gender = Gender.FEMALE;
+    private Gender gender = null;
     private Bank bank = null;
     private Set<Account> accounts = new HashSet<>();
     private Account activeAccount = null;
@@ -45,15 +45,19 @@ public class Client implements Report {
         return name;
     }
 
-    public void setName(String name) {
+    public boolean setName(String name) {
+        boolean result = false;
         String NAME_PATTERN = "[a-zA-z]+([ '-][a-zA-Z]+)*";
         if (name.matches(NAME_PATTERN)) {
             this.name = name;
+            result = true;
         }
+        return result;
     }
 
     public void  addAccount(Account account) {
         accounts.add(account);
+        account.setClient(this);
         listener.onAccountAdded(this, account);
     }
 
@@ -88,23 +92,29 @@ public class Client implements Report {
         return email;
     }
 
-    public void setEmail(String email) {
+    public boolean setEmail(String email) {
+        boolean result = false;
         String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                 + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         if (email.matches(EMAIL_PATTERN)) {
             this.email = email;
+            result = true;
         }
+        return result;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public boolean setPhone(String phone) {
+        boolean result = false;
         String PHONE_PATTERN = "\\d{3}-\\d{7}";
         if (phone.matches(PHONE_PATTERN)) {
             this.phone = phone;
+            result = true;
         }
+        return result;
     }
 
     public float getOverdraft() {
@@ -219,4 +229,11 @@ public class Client implements Report {
         return builder.toString();
     }
 
+    public float getBalance(){
+        float balance = 0;
+        for(Account account:accounts){
+            balance += account.getBalance();
+        }
+        return balance;
+    }
 }

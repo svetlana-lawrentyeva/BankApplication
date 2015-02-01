@@ -1,26 +1,34 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.AbstractCommand;
+
+import java.io.*;
 
 public class BankFeedCommand extends AbstractCommand implements Command {
-    public BankFeedCommand(Commander commander) {
+
+    private BufferedReader in;
+    private PrintWriter out;
+
+    public BankFeedCommand(Commander commander, InputStream is, OutputStream os) {
         super(commander);
+        in = new BufferedReader(new InputStreamReader(is));
+        out = new PrintWriter(new OutputStreamWriter(os));
     }
 
     @Override
-    public Response execute(String param) {
-        String message = "";
+    public void execute() {
         try {
-            getService().loadFeeds(getCommander().getCurrentBank(), param); //"./feeds" - path
-            message = "execute successfully";
+            out.println("path to feed");
+            out.flush();
+            String path = in.readLine();
+            getService().loadFeeds(getCommander().getCurrentBank(), path); //"./feeds" - path
+            out.println("execute successfully");
         } catch (Exception e) {
-            message = e.getMessage();
+            out.println(e.getMessage());
         }
-        setResponse(null, message);
-        return getResponse();
+        out.flush();
     }
 
     @Override

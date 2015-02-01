@@ -76,7 +76,7 @@ public class ClientService {
      * @param account account that will be set as active
      */
     public void setActiveAccount(Client client, Account account) throws DaoException {
-        DaoFactory.getClientDao().setActiveAccount(client, account);
+        client.setActiveAccount(account);
     }
 
     /**
@@ -84,7 +84,7 @@ public class ClientService {
      * @param client client's active account will be null
      */
     public void removeActiveAccount(Client client) throws DaoException {
-        DaoFactory.getClientDao().removeActiveAccount(client);
+        client.setActiveAccount(null);
     }
 
     /**

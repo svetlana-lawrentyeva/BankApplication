@@ -38,6 +38,7 @@ public class Bank implements Report{
 
             public void onClientAdded(Client c) {
                 clientsMapByName.put(c.getName(), c);
+                c.setBank(Bank.this);
             }
         });
     }

@@ -1,31 +1,53 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.AbstractCommand;
+import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
+
+import java.io.*;
 
 public class WithdrawCommand extends AbstractCommand implements Command {
 
+    private BufferedReader in;
+    private PrintWriter out;
+    private InputStream is;
+    private OutputStream os;
 
-    public WithdrawCommand(Commander commander) {
+    public WithdrawCommand(Commander commander, InputStream is, OutputStream os) {
         super(commander);
+        this.is = is;
+        this.os = os;
+        in = new BufferedReader(new InputStreamReader(is));
+        out = new PrintWriter(new OutputStreamWriter(os));
     }
 
     @Override
-    public Response execute(String param) {
-        float x = Float.parseFloat(param);
-        StringBuilder message = new StringBuilder();
+    public void execute() {
         try {
+            Client client = null;
+            while ((client = getCommander().getCurrentClient()) == null) {
+                FindClientCommand command = new FindClientCommand(getCommander(), is, os);
+                command.execute();
+            }
+            out.println("choose account number:");
+            out.flush();
+            Command showAccounts = new ShowAllAccounts(getCommander(), is, os);
+            showAccounts.execute();
+            long idAccount = Long.parseLong(in.readLine());
+            getCommander().getCurrentClient().setActiveAccount(ServiceFactory.getAccountService().getById(idAccount));
+            out.println("money to withdraw:");
+            out.flush();
+            float x = Float.parseFloat(in.readLine());
             ServiceFactory.getAccountService().withdraw(getCommander().getCurrentClient().getActiveAccount(), x);
-            message.append("Current client's active account " +
-                    ServiceFactory.getAccountService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount()));
+            out.println("Current client's active account " +
+                    getCommander().getCurrentClient().getActiveAccount() + "balance: " +
+                    getCommander().getCurrentClient().getActiveAccount().getBalance());
         } catch (Exception e) {
-            message.append(e.getMessage()).append(":");
+            out.println(e.getMessage());
         }
-        setResponse(null,message.toString());
-        return getResponse();
+        out.flush();
     }
 
     @Override

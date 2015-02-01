@@ -2,7 +2,7 @@ package com.luxoft.bankapp.commander;
 
 public interface Command {
 
-    Response execute(String param);
+    void execute();
 
     String printCommandInfo();
 }

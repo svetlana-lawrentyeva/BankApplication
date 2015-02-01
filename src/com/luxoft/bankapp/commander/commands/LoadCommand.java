@@ -1,30 +1,37 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
+import java.io.*;
+
 public class LoadCommand extends AbstractCommand implements Command {
-    public LoadCommand(Commander commander) {
+
+    private BufferedReader in;
+    private PrintWriter out;
+
+    public LoadCommand(Commander commander, InputStream is, OutputStream os) {
         super(commander);
+        in = new BufferedReader(new InputStreamReader(is));
+        out = new PrintWriter(new OutputStreamWriter(os));
     }
 
     @Override
-    public Response execute(String param) {  //"./objects"
-        Client client = null;
-        String message = "";
-        try{
-        client = ServiceFactory.getClientService().loadFromDisk(param);
-        getCommander().setCurrentClient(client);
-            message = client.toString() + " is loaded";
+    public void execute() {  //"./objects"
+        try {
+            Client client = null;
+            out.println("path:");
+            out.flush();
+            client = ServiceFactory.getClientService().loadFromDisk(in.readLine());
+            getCommander().setCurrentClient(client);
+               out.println(client.toString() + " is loaded");
         } catch (Exception e){
-            message = e.getMessage();
+           out.println(e.getMessage());
         }
-        setResponse(client, message);
-        return getResponse();
+        out.flush();
 
     }
 

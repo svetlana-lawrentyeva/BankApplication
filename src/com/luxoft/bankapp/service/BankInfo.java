@@ -62,7 +62,7 @@ public class BankInfo implements Serializable{
                 builder.append("number of accounts: ").append(accountsNumber).append("\n");
                 builder.append("list of clients:\n");
                 for(Client client:clientsSorted){
-                    builder.append(client).append("\n");
+                    builder.append(client).append(" ").append(client.getBalance()).append("\n");
                 }
                 builder.append("credit sum: ").append(getBankCreditSum()).append("\n");
                 builder.append("list of clients by city:\n");

@@ -3,34 +3,38 @@ package com.luxoft.bankapp.commander;
 import com.luxoft.bankapp.commander.commands.*;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
+import java.io.*;
 import java.util.*;
 
 public class Commander{
 
     private Client currentClient;
-    private Bank currentBank;
+    private Bank currentBank = ServiceFactory.getBankService().getByName("My bank");
     private Map<Integer, Command> commandMap = new HashMap<>();
-    private String[] commandRequest = new String[12];
+    private static InputStream is = System.in;
+    private static OutputStream os = System.out;
+    private static BufferedReader in = new BufferedReader(new InputStreamReader(is));
+    private static PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
 
     public Commander() {
-        commandMap.put(0, new FindClientCommand(this));
-        commandMap.put(1, new GetActiveAccountCommand(this));
-        commandMap.put(2, new WithdrawCommand(this));
-        commandMap.put(3, new DepositCommand(this));
-        commandMap.put(4, new TransferCommand(this));
-        commandMap.put(5, new AddClientCommand(this));
-        commandMap.put(6, new RemoveClientCommand(this));
-        commandMap.put(7, new BankFeedCommand(this));
-        commandMap.put(8, new LoadCommand(this));
-        commandMap.put(9, new SaveCommand(this));
-        commandMap.put(10, new BankInfoCommand(this));
-        commandMap.put(11, new Command() {
-
+        commandMap.put(0, new FindClientCommand(this, is, os));
+        commandMap.put(1, new ShowAllAccounts(this, is, os));
+        commandMap.put(2, new DepositCommand(this, is, os));
+        commandMap.put(3, new WithdrawCommand(this, is, os));
+        commandMap.put(4, new TransferCommand(this, is, os));
+        commandMap.put(5, new AddClientCommand(this, is, os));
+        commandMap.put(6, new AddAccountCommand(this, is, os));
+        commandMap.put(7, new RemoveClientCommand(this, is, os));
+        commandMap.put(8, new LoadCommand(this, is, os));
+        commandMap.put(9, new SaveCommand(this, is, os));
+        commandMap.put(10, new BankInfoCommand(this, is, os));
+        commandMap.put(11, new BankFeedCommand(this, is, os));
+        commandMap.put(12, new Command() {
             @Override
-            public Response execute(String ask) {
+            public void execute() {
                 System.exit(0);
-                return null;
             }
 
             @Override
@@ -38,19 +42,25 @@ public class Commander{
                 return "Exit";
             }
         });
+    }
 
-        commandRequest[0] = "name:";
-        commandRequest[1] = "";
-        commandRequest[2] = "money to withdraw:";
-        commandRequest[3] = "money to deposit:";
-        commandRequest[4] = "name:&money to transfer:";
-        commandRequest[5] = "account type(c|s):&balance:&overdraft:&name:&gender(m|f):&city:";
-        commandRequest[6] = "name:";
-        commandRequest[7] = "feed, path from:";
-        commandRequest[8] = "path to load:";
-        commandRequest[9] = "path to save:";
-        commandRequest[10] = "";
-        commandRequest[11] = "exit";
+    public static void main(String[] args) {
+        Commander commander = new Commander();
+        while(true){
+            Set<Integer>commandSet = commander.commandMap.keySet();
+            for(int i = 0; i < commandSet.size(); ++i){
+                out.println(i + ". " + commander.commandMap.get(i).printCommandInfo());
+            }
+            out.println("your choice:");
+            out.flush();
+            int choice = 0;
+            try{
+                choice = Integer.parseInt(in.readLine());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            commander.commandMap.get(choice).execute();
+        }
     }
 
     public Client getCurrentClient() {
@@ -85,7 +95,19 @@ public class Commander{
         return Collections.unmodifiableMap(commandMap);
     }
 
-    public List<String> getCommandRequest() {
-        return Arrays.asList(commandRequest);
+    public InputStream getIs() {
+        return is;
+    }
+
+    public void setIs(InputStream is) {
+        this.is = is;
+    }
+
+    public OutputStream getOs() {
+        return os;
+    }
+
+    public void setOs(OutputStream os) {
+        this.os = os;
     }
 }

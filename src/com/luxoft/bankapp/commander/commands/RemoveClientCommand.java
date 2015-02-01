@@ -1,31 +1,41 @@
 package com.luxoft.bankapp.commander.commands;
 
-import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
 import com.luxoft.bankapp.commander.AbstractCommand;
+import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
+import java.io.*;
+
 public class RemoveClientCommand extends AbstractCommand {
 
-    public RemoveClientCommand(Commander commander) {
+    private BufferedReader in;
+    private PrintWriter out;
+    private InputStream is;
+    private OutputStream os;
+
+    public RemoveClientCommand(Commander commander, InputStream is, OutputStream os) {
         super(commander);
+        this.is = is;
+        this.os = os;
+        in = new BufferedReader(new InputStreamReader(is));
+        out = new PrintWriter(new OutputStreamWriter(os));
     }
 
-    @Override public Response execute(String param) {
-            String name = param;
-            Client client = null;
-            String message = "";
+    @Override public void execute() {
             try {
-                client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), name);
+                Client client = null;
+                while ((client = getCommander().getCurrentClient()) == null) {
+                    FindClientCommand command = new FindClientCommand(getCommander(), is, os);
+                    command.execute();
+                }
                 ServiceFactory.getClientService().remove(client);
-                message = "Client " + client.getClientSalutation() + " is deleted";
+                out.print("Client " + client.getClientSalutation() + " is deleted");
                 getCommander().setCurrentClient(null);
             } catch (Exception e) {
-                message = e.getMessage();
+                out.println(e.getMessage());
             }
-            setResponse(client, message);
-            return getResponse();
+        out.flush();
     }
 
     @Override public String printCommandInfo() {

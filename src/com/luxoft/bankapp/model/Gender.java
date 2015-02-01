@@ -17,4 +17,15 @@ public enum Gender implements Serializable {
     public String getSalutation() {
         return salutation;
     }
+
+    public static Gender getGender(String shortName){
+        switch (shortName){
+            case "m":
+                return Gender.MALE;
+            case "f":
+                return Gender.FEMALE;
+            default:
+                throw new IllegalArgumentException("error: wrong gender");
+        }
+    }
 }
