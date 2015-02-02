@@ -11,22 +11,17 @@ import java.io.*;
  */
 public class BankInfoCommand extends AbstractCommand {
 
-    private BufferedReader in;
-    private PrintWriter out;
-
-    public BankInfoCommand(Commander commander, InputStream is, OutputStream os) {
+    public BankInfoCommand(Commander commander) {
         super(commander);
-        in = new BufferedReader(new InputStreamReader(is));
-        out = new PrintWriter(new OutputStreamWriter(os));
     }
 
     @Override
-    public void execute() {
-        try{
+    public void execute(InputStream is, OutputStream os) {
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+            out.flush();
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
             out.println(ServiceFactory.getBankService().getBankInfo(getCommander().getCurrentBank()));
-        } catch(Exception e){
-            out.println(e.getMessage());
-        }
+        out.println("");
         out.flush();
     }
 

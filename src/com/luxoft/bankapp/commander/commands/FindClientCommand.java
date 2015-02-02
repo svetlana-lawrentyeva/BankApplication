@@ -2,6 +2,8 @@ package com.luxoft.bankapp.commander.commands;
 
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Commander;
+import com.luxoft.bankapp.dao.exceptions.DaoException;
+import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
@@ -9,26 +11,21 @@ import java.io.*;
 
 public class FindClientCommand extends AbstractCommand {
 
-    private BufferedReader in;
-    private PrintWriter out;
-
-    public FindClientCommand(Commander commander, InputStream is, OutputStream os) {
+    public FindClientCommand(Commander commander) {
         super(commander);
-        in = new BufferedReader(new InputStreamReader(is));
-        out = new PrintWriter(new OutputStreamWriter(os));
     }
 
-    public void execute() {
-        Client client = null;
-        try {
-            out.println("name:");
+    public void execute(InputStream is, OutputStream os) throws IOException, ClientNotExistsException, DaoException {
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
             out.flush();
-            client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), in.readLine());
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            out.println("name:");
+        out.println("");
+            out.flush();
+            Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), in.readLine());
             getCommander().setCurrentClient(client);
             out.println("Client " + client.getClientSalutation() + " is checked");
-        } catch (Exception e) {
-            out.println(e.getMessage());
-        }
+        out.println("");
         out.flush();
     }
 

@@ -14,51 +14,27 @@ public class BankClientRemoteOffice {
     }
 
     public void start() {
-        InputStream is = null;
-        OutputStream os = null;
-//        BufferedReader in = null;
-//        PrintWriter out = null;
-        ObjectInputStream in = null;
-        ObjectOutputStream out = null;
+        BufferedReader in = null;
+        PrintWriter out = null;
         try {
-            socket = new Socket("localhost", 2998);
-            os = socket.getOutputStream();
-            is = socket.getInputStream();
-//            in = new BufferedReader(new InputStreamReader(is));
-//            out = new PrintWriter(new OutputStreamWriter(os));
-            in = new ObjectInputStream(is);
-            out = new ObjectOutputStream(os);
+            socket = new Socket("localhost", 1998);
+            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             out.flush();
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             Scanner sc = new Scanner(System.in);
-            String request = "";
-            String response = "";
             while(true){
-//                while((response = in.readLine()) != "your choice:"){
-                while ((response = (String) in.readObject()) != null) {
-                System.out.println(response);
+                String request = "";
+                String response = "";
+                while (!(response =  in.readLine()).equals("") ) {
+                    System.out.println(response);
                 }
-                int i = 0;
                 request = sc.nextLine();
-                out.writeObject(request);
-//                out.println(request);
+                out.println(request);
                 out.flush();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
+
             if (out != null) {
                 try {
                     out.close();

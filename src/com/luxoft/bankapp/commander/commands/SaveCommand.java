@@ -3,6 +3,9 @@ package com.luxoft.bankapp.commander.commands;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
+import com.luxoft.bankapp.dao.exceptions.DaoException;
+import com.luxoft.bankapp.model.exceptions.ClientExistsException;
+import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
@@ -10,32 +13,23 @@ import java.io.*;
 
 public class SaveCommand extends AbstractCommand implements Command {
 
-    private BufferedReader in;
-    private PrintWriter out;
-    private InputStream is;
-    private OutputStream os;
-
-    public SaveCommand(Commander commander, InputStream is, OutputStream os) {
+    public SaveCommand(Commander commander) {
         super(commander);
-        this.is = is;
-        this.os = os;
-        in = new BufferedReader(new InputStreamReader(is));
-        out = new PrintWriter(new OutputStreamWriter(os));
     }
 
     @Override
-    public void execute() {  // "./objects"
-        try{
+    public void execute(InputStream is, OutputStream os) throws ClientExistsException, DaoException, IOException, ClientNotExistsException {  // "./objects"
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+        out.flush();
+        BufferedReader in = new BufferedReader(new InputStreamReader(is));
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
-                FindClientCommand command = new FindClientCommand(getCommander(), is, os);
-                command.execute();
+                FindClientCommand command = new FindClientCommand(getCommander());
+                command.execute(is, os);
             }
             ServiceFactory.getClientService().save(client);
             out.println("Client " + client.getClientSalutation() + " successfully saved");
-        } catch (Exception e){
-            out.println(e.getMessage());
-        }
+        out.println("");
         out.flush();
     }
 

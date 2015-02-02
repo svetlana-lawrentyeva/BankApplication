@@ -21,7 +21,7 @@ public class BankServerCommander {
         BankServerCommander serverCommander = new BankServerCommander();
         try {
             serverCommander.commander = new Commander();
-            serverCommander.serverSocket = new ServerSocket(2998);
+            serverCommander.serverSocket = new ServerSocket(1998);
             serverCommander.socket = serverCommander.serverSocket.accept();
             serverCommander.start();
         } catch (IOException e) {

@@ -15,34 +15,26 @@ public class Commander{
     private Map<Integer, Command> commandMap = new HashMap<>();
     private InputStream is = System.in;
     private OutputStream os = System.out;
-    ObjectInputStream in;
-    ObjectOutputStream out;
-//    private BufferedReader in = new BufferedReader(new InputStreamReader(is));
-//    private PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+    private BufferedReader in;
+    private PrintWriter out;
 
     public Commander() {
-        try {
-            in = new ObjectInputStream(is);
-            out = new ObjectOutputStream(os);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        commandMap.put(0, new FindClientCommand(this, is, os));
-        commandMap.put(1, new ShowAllAccounts(this, is, os));
-        commandMap.put(2, new DepositCommand(this, is, os));
-        commandMap.put(3, new WithdrawCommand(this, is, os));
-        commandMap.put(4, new TransferCommand(this, is, os));
-        commandMap.put(5, new AddClientCommand(this, is, os));
-        commandMap.put(6, new AddAccountCommand(this, is, os));
-        commandMap.put(7, new RemoveClientCommand(this, is, os));
-        commandMap.put(8, new LoadCommand(this, is, os));
-        commandMap.put(9, new SaveCommand(this, is, os));
-        commandMap.put(10, new BankInfoCommand(this, is, os));
-        commandMap.put(11, new BankFeedCommand(this, is, os));
+
+        commandMap.put(0, new FindClientCommand(this));
+        commandMap.put(1, new ShowAllAccounts(this));
+        commandMap.put(2, new DepositCommand(this));
+        commandMap.put(3, new WithdrawCommand(this));
+        commandMap.put(4, new TransferCommand(this));
+        commandMap.put(5, new AddClientCommand(this));
+        commandMap.put(6, new AddAccountCommand(this));
+        commandMap.put(7, new RemoveClientCommand(this));
+        commandMap.put(8, new LoadCommand(this));
+        commandMap.put(9, new SaveCommand(this));
+        commandMap.put(10, new BankInfoCommand(this));
+        commandMap.put(11, new BankFeedCommand(this));
         commandMap.put(12, new Command() {
             @Override
-            public void execute() {
+            public void execute(InputStream is, OutputStream os) {
                 System.exit(0);
             }
 
@@ -58,27 +50,30 @@ public class Commander{
         commander.start();
     }
 
-    public void start(){
+    public void start(){try {
+            out = new PrintWriter(new OutputStreamWriter(os));
+            out.flush();
+            in = new BufferedReader(new InputStreamReader(is));
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         while (true) {
             try {
             Set<Integer> commandSet = commandMap.keySet();
             for (int i = 0; i < commandSet.size(); ++i) {
-                out.writeObject((i + ". " + commandMap.get(i).printCommandInfo()));
-//                out.println(i + ". " + commandMap.get(i).printCommandInfo());
+                out.println((i + ". " + commandMap.get(i).printCommandInfo()));
                 out.flush();
             }
-                out.writeObject("your choice:");
-//            out.println("your choice:");
+            out.println("your choice:");
+            out.println("");
             out.flush();
             int choice = 0;
-                choice = Integer.parseInt((String) in.readObject());
-//                choice = Integer.parseInt(in.readLine());
-                commandMap.get(choice).execute();
+                choice = Integer.parseInt(in.readLine());
+                commandMap.get(choice).execute(is, os);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
     }
 
     public Client getCurrentClient() {
@@ -119,12 +114,6 @@ public class Commander{
 
     public void setIs(InputStream is) {
         this.is = is;
-//        in = new BufferedReader(new InputStreamReader(is));
-        try {
-            in = new ObjectInputStream(is);
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
     }
 
     public OutputStream getOs() {
@@ -133,11 +122,5 @@ public class Commander{
 
     public void setOs(OutputStream os) {
         this.os = os;
-//        out = new PrintWriter(new OutputStreamWriter(os));
-        try {
-            out = new ObjectOutputStream(os);
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
     }
 }
