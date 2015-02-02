@@ -5,7 +5,7 @@ import com.luxoft.bankapp.model.impl.Client;
 
 import java.util.Map;
 
-public interface Account extends Report {
+public interface Account extends Report, MyClass {
 
     long getId();
 

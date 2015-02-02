@@ -1,17 +1,21 @@
 package com.luxoft.bankapp.model.impl;
 
 import com.luxoft.bankapp.model.ClientRegistrationListener;
+import com.luxoft.bankapp.model.MyClass;
 import com.luxoft.bankapp.model.Report;
 import com.luxoft.bankapp.model.exceptions.ClientExistsException;
 
 import java.util.*;
 
-public class Bank implements Report{
+public class Bank implements Report, MyClass {
 
+    @NoDB
     private long id = -1;
     private String name;
     private Set<Client> clients = new HashSet<>();
+    @NoDB
     private List<ClientRegistrationListener> listeners = new ArrayList<>();
+    @NoDB
     private Map<String, Client> clientsMapByName = new HashMap<>();
 
     //-----------------------------------------------------------------------------

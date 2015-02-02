@@ -101,12 +101,4 @@ public class SavingAccountTest {
         feed.put("city", "moscow");
         account.parseFeed(feed);
     }
-
-    @Test
-    public void testToString() throws Exception {
-        account = new SavingAccount();
-        account.setBalance(0.5f);
-        String expectedReport = "Saving account " + account.getId() + " with balance: 0.5";
-        assertTrue(account.toString().equals(expectedReport));
-    }
 }

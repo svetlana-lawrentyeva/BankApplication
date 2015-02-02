@@ -2,7 +2,7 @@ package com.luxoft.bankapp.model;
 
 import java.io.Serializable;
 
-public enum Gender implements Serializable {
+public enum Gender implements Serializable, MyClass {
     MALE("Mr."), FEMALE("Mrs.");
 
     private final String salutation;

@@ -263,7 +263,9 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
     @Override
     public void remove(Client client) throws DaoException {
         try {
-            DaoFactory.getAccountDao().removeAllByClient(client);
+            try{
+                DaoFactory.getAccountDao().removeAllByClient(client);
+            } catch (DaoException e){}
 
             Connection conn = openConnection();
             String sql = "delete from clients where id = (?)";

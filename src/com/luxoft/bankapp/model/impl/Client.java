@@ -2,6 +2,7 @@ package com.luxoft.bankapp.model.impl;
 
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.Gender;
+import com.luxoft.bankapp.model.MyClass;
 import com.luxoft.bankapp.model.Report;
 import com.luxoft.bankapp.model.exceptions.FeedException;
 
@@ -10,7 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Client implements Report {
+public class Client implements Report, MyClass {
     private long id = -1;
     private String name = "";
     private String city = "";
