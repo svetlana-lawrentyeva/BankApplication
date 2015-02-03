@@ -1,11 +1,14 @@
 package com.luxoft.bankapp.model.impl;
 
 import com.luxoft.bankapp.model.Account;
+import com.luxoft.bankapp.model.MyClass;
 import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
 
-public abstract class AbstractAccount implements Account {
+public abstract class AbstractAccount implements Account, MyClass, Comparable {
+    @NoDB
     private long id = -1;
     private float balance;
+    @RefDB
     private Client client;
 
     @Override
@@ -75,4 +78,14 @@ public abstract class AbstractAccount implements Account {
         return (this.id == account.id);
     }
 
+    @Override
+    public int compareTo(Object o) {
+        AbstractAccount account = (AbstractAccount)o;
+        if(this.balance < account.balance){
+            return -1;
+        } else if(this.balance > account.balance){
+            return 1;
+        }
+        return 0;
+    }
 }

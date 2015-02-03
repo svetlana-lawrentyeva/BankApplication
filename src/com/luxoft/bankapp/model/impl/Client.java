@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Client implements Report, MyClass {
+    @NoDB
     private long id = -1;
     private String name = "";
     private String city = "";
@@ -19,9 +20,12 @@ public class Client implements Report, MyClass {
     private String phone = "";
     private float overdraft;
     private Gender gender = null;
+    @RefDB
     private Bank bank = null;
     private Set<Account> accounts = new HashSet<>();
+    @NoDB
     private Account activeAccount = null;
+    @NoDB
     private AccountRegistrationListener listener = new OverdraftSetterListener();
 
     private static class OverdraftSetterListener implements AccountRegistrationListener{
