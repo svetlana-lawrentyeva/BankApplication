@@ -16,6 +16,17 @@ import java.util.*;
 
 public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
+    private static BankDao instance;
+
+    private BankDaoImpl(){}
+
+    public static BankDao getInstance(){
+        if(instance == null){
+            instance = new BankDaoImpl();
+        }
+        return instance;
+    }
+
     @Override
     public Bank getBankByName(String name) throws DaoException {
         Bank bank = null;
@@ -39,6 +50,9 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
             rs.close();
             preparedStatement.close();
+
+            List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
+            bank.setClients(new HashSet<Client>(clients));
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
@@ -65,9 +79,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             bank = new Bank();
             bank.setId(id);
             bank.setName(bankName);
-
             rs.close();
             preparedStatement.close();
+
+            List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
+            bank.setClients(new HashSet<Client>(clients));
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
@@ -96,7 +112,6 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
             for (Client client : bank.getClients()) {
                 DaoFactory.getClientDao().save(client);
-                DaoFactory.getClientDao().addClientToBank(bank, client);
             }
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
@@ -131,6 +146,30 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             closeConnection();
         }
         return bank;
+    }
+
+    public void delete(Bank bank) throws DaoException {
+        if (bank.getId() != -1){
+            try {
+                for (Client client : bank.getClients()) {
+                    DaoFactory.getClientDao().remove(client);
+                }
+                Connection conn = openConnection();
+                String sql = "delete from banks where id = (?)";
+                final PreparedStatement preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setLong(1, bank.getId());
+
+                if (preparedStatement.executeUpdate() == 0) {
+                    throw new DaoException("impossible to delete bank in db. transaction is rolled back");
+                }
+                preparedStatement.close();
+            } catch (SQLException e) {
+                throw new DaoException(e.getMessage());
+            } catch (DaoException e) {
+                e.printStackTrace();
+            }
+            closeConnection();
+        }
     }
 
     @Override

@@ -20,6 +20,17 @@ import java.util.Set;
 
 public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
+    private static ClientDao instance;
+
+    private ClientDaoImpl(){}
+
+    public static ClientDao getInstance(){
+        if(instance == null){
+            instance = new ClientDaoImpl();
+        }
+        return instance;
+    }
+
     @Override
     public Client getByName(Bank bank, String name) throws ClientNotExistsException, DaoException {
         Connection conn = openConnection();
@@ -298,28 +309,6 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
-    }
-
-    @Override
-    public void addClientToBank(Bank bank, Client client) throws DaoException {
-        Connection conn = openConnection();
-
-        String sql = "update clients set id_bank = (?) where id = (?)";
-        try {
-            PreparedStatement preparedStatement = conn.prepareStatement(sql);
-
-            preparedStatement.setLong(1, bank.getId());
-            preparedStatement.setLong(2, client.getId());
-
-            if(preparedStatement.executeUpdate() == 0){
-                throw new DaoException("impossible to add client. transaction is rolled back");
-            }
-            preparedStatement.close();
-        } catch (SQLException e) {
-            throw new DaoException("error while adding client "+ client.getId() + " to bank " + client.getId());
-        }
-
         closeConnection();
     }
 }

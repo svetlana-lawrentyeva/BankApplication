@@ -39,6 +39,8 @@ public interface BankDao {
      */
     Bank save(Bank bank) throws DaoException;
 
+    void delete(Bank bank) throws DaoException;
+
     /**
      * Get Bank Info
      * @param bank The bank to get bank info

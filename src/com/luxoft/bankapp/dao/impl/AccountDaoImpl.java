@@ -17,6 +17,17 @@ import java.util.List;
 
 public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
+    private static AccountDao instance;
+
+    private AccountDaoImpl(){}
+
+    public static AccountDao getInstance(){
+        if(instance == null){
+            instance = new AccountDaoImpl();
+        }
+        return instance;
+    }
+
     private Account insert(Account account) throws DaoException {
         Connection conn = openConnection();
         String sql = "insert into accounts (balance, overdraft, id_client) values (?, ?, ?)";

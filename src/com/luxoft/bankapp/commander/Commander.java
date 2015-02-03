@@ -8,17 +8,15 @@ import com.luxoft.bankapp.service.impl.ServiceFactory;
 import java.io.*;
 import java.util.*;
 
-public class Commander{
+public class Commander {
 
     private Client currentClient;
     private Bank currentBank = ServiceFactory.getBankService().getByName("My bank");
     private Map<Integer, Command> commandMap = new HashMap<>();
     private InputStream is = System.in;
     private OutputStream os = System.out;
-    private BufferedReader in;
-    private PrintWriter out;
 
-    public Commander() {
+    private void init() {
 
         commandMap.put(0, new FindClientCommand(this));
         commandMap.put(1, new ShowAllAccounts(this));
@@ -43,36 +41,35 @@ public class Commander{
                 return "Exit";
             }
         });
+
     }
 
     public static void main(String[] args) {
         Commander commander = new Commander();
+        commander.init();
         commander.start();
     }
 
-    public void start(){try {
-            out = new PrintWriter(new OutputStreamWriter(os));
+    public void start() {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
-            in = new BufferedReader(new InputStreamReader(is));
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        while (true) {
-            try {
-            Set<Integer> commandSet = commandMap.keySet();
-            for (int i = 0; i < commandSet.size(); ++i) {
-                out.println((i + ". " + commandMap.get(i).printCommandInfo()));
+            ObjectInputStream in = new ObjectInputStream(is);
+            StringBuilder command = new StringBuilder();
+            while (true) {
+                Set<Integer> commandSet = commandMap.keySet();
+                for (int i = 0; i < commandSet.size(); ++i) {
+                    command.append(i).append(". ").append(commandMap.get(i).printCommandInfo());
+                }
+                command.append("your choice:");
+                out.writeObject(command);
                 out.flush();
-            }
-            out.println("your choice:");
-            out.println("");
-            out.flush();
-            int choice = 0;
-                choice = Integer.parseInt(in.readLine());
+                int choice = 0;
+                choice = (int) in.readObject();
                 commandMap.get(choice).execute(is, os);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -101,7 +98,7 @@ public class Commander{
     }
 
     public void setCommandMap(Map<Integer, Command> map) {
-        this.commandMap.putAll(map);
+        this.commandMap = map;
     }
 
     public Map<Integer, Command> getCommandMap() {

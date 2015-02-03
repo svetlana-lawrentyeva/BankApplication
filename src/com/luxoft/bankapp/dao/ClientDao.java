@@ -50,10 +50,4 @@ public interface ClientDao {
          * @param bank bank to remove clients from
      */
     void removeAllByBank(Bank bank) throws DaoException;
-
-    /**
-     * remove all clients from the bank
-     * @param bank bank to remove clients from
-     */
-    void addClientToBank(Bank bank, Client client) throws DaoException;
 }

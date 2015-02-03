@@ -14,22 +14,22 @@ public class BankClientRemoteOffice {
     }
 
     public void start() {
-        BufferedReader in = null;
-        PrintWriter out = null;
+        ObjectInputStream in = null;
+        ObjectOutputStream out = null;
         try {
             socket = new Socket("localhost", 1998);
-            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            in = new ObjectInputStream(socket.getInputStream());
             Scanner sc = new Scanner(System.in);
             while(true){
                 String request = "";
                 String response = "";
-                while (!(response =  in.readLine()).equals("") ) {
+                while (!(response = (String) in.readObject()).equals("") ) {
                     System.out.println(response);
                 }
                 request = sc.nextLine();
-                out.println(request);
+                out.writeObject(request);
                 out.flush();
             }
         } catch (Exception e) {

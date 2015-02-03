@@ -20,17 +20,16 @@ public class AddAccountCommand extends AbstractCommand {
 
     @Override
     public void execute(InputStream is, OutputStream os) throws IOException, ClientNotExistsException, DaoException {
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+        try{
+            ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            out.println("type of account (c|s):");
-        out.println("");
+            ObjectInputStream in = new ObjectInputStream(is);
+            out.writeObject("type of account (c|s):");
             out.flush();
-            String typeAccount = in.readLine();
-            out.println("start balance:");
-        out.println("");
+            String typeAccount = (String) in.readObject();
+            out.writeObject("start balance:");
             out.flush();
-            float startBalance = Float.parseFloat(in.readLine());
+            float startBalance = Float.parseFloat((String) in.readObject());
             Client client = null;
             while((client = getCommander().getCurrentClient()) == null){
                 FindClientCommand command = new FindClientCommand(getCommander());
@@ -50,9 +49,11 @@ public class AddAccountCommand extends AbstractCommand {
             account.setBalance(startBalance);
             client.addAccount(account);
             ServiceFactory.getAccountService().save(account);
-            out.println("success");
-        out.println("");
+            out.writeObject("success");
         out.flush();
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override

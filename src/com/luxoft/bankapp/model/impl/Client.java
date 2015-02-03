@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Client implements Report, MyClass {
+public class Client implements Report, MyClass, Comparable {
     @NoDB
     private long id = -1;
     private String name = "";
@@ -27,6 +27,12 @@ public class Client implements Report, MyClass {
     private Account activeAccount = null;
     @NoDB
     private AccountRegistrationListener listener = new OverdraftSetterListener();
+
+    @Override
+    public int compareTo(Object o) {
+        Client client = (Client)o;
+        return this.name.compareTo(client.name);
+    }
 
     private static class OverdraftSetterListener implements AccountRegistrationListener{
 

@@ -1,110 +1,110 @@
-package test.service;
+package com.luxoft.bankapp.service;
 
 import com.luxoft.bankapp.model.Account;
+import com.luxoft.bankapp.model.AccountType;
 import com.luxoft.bankapp.model.Gender;
 import com.luxoft.bankapp.model.MyClass;
 import com.luxoft.bankapp.model.impl.*;
-import junit.framework.Assert;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-/**
- * Created by SCJP on 02.02.15.
- */
 public class TestService {
 
     @Test
     public void bankEquals(){
-
         Bank b1 = new Bank();
         b1.setName("my bank");
 
-        Client client1 = new Client();
-        client1.setName("harry");
-        client1.setCity("dnepr");
-        client1.setGender(Gender.MALE);
-
-        Account account1 = new SavingAccount();
-        account1.setBalance(10);
-        client1.addAccount(account1);
-        client1.setActiveAccount(account1);
-
-        Account account11 = new CheckingAccount();
-        account11.setBalance(20);
-        client1.addAccount(account11);
-
+        Client client1 = createClient("harry", "dnepr", Gender.MALE, "111-1111111", "qqq@qq.qq", 1000);
+        addAccount(AccountType.SAVING_ACCOUNT, 1200, client1);
+        addAccount(AccountType.CHECKING_ACCOUNT, 2000, client1);
         b1.addClient(client1);
+
+        Client client2 = createClient("mary", "moscow", Gender.FEMALE, "222-2222222", "www@ww.ww", 1500);
+        addAccount(AccountType.SAVING_ACCOUNT, 2300, client2);
+        addAccount(AccountType.CHECKING_ACCOUNT, 3100, client2);
+        b1.addClient(client2);
 
         Bank b2 = new Bank();
         b2.setName("my bank");
 
-        Client client2 = new Client();
-        client2.setName("harry");
-        client2.setCity("dnepr");
-        client2.setGender(Gender.MALE);
+        Client client3 = createClient("harry", "dnepr", Gender.MALE, "111-1111111", "qqq@qq.qq", 1000);
+        addAccount(AccountType.SAVING_ACCOUNT, 1200, client3);
+        addAccount(AccountType.CHECKING_ACCOUNT, 2000, client3);
+        b2.addClient(client3);
 
-        Account account2 = new SavingAccount();
-        account2.setBalance(10);
-        client2.addAccount(account2);
-        client2.setActiveAccount(account2);
-
-        Account account22 = new CheckingAccount();
-        account22.setBalance(20);
-        client2.addAccount(account22);
-
-        b2.addClient(client2);
+        Client client4 = createClient("mary", "moscow", Gender.FEMALE, "222-2222222", "www@ww.ww", 1500);
+        addAccount(AccountType.SAVING_ACCOUNT, 2300, client4);
+        addAccount(AccountType.CHECKING_ACCOUNT, 3100, client4);
+        b2.addClient(client4);
 
         assertTrue(isEquals(b1, b2));
 
     }
+
     @Test
     public void bankNotEquals(){
         Bank b1 = new Bank();
         b1.setName("my bank");
 
-        Client client1 = new Client();
-        client1.setName("harry");
-        client1.setCity("dnepr");
-        client1.setGender(Gender.MALE);
-
-        Account account1 = new CheckingAccount();
-        account1.setBalance(120);
-        client1.addAccount(account1);
-        client1.setActiveAccount(account1);
-
-        Account account11 = new SavingAccount();
-        account11.setBalance(20);
-        client1.addAccount(account11);
-
+        Client client1 = createClient("harry", "dnepr", Gender.MALE, "111-1111111", "qqq@qq.qq", 1000);
+        addAccount(AccountType.SAVING_ACCOUNT, 1200, client1);
+        addAccount(AccountType.CHECKING_ACCOUNT, 2000, client1);
         b1.addClient(client1);
+
+        Client client2 = createClient("mary", "moscow", Gender.FEMALE, "222-2222222", "www@ww.ww", 1500);
+        addAccount(AccountType.SAVING_ACCOUNT, 2300, client2);
+        addAccount(AccountType.CHECKING_ACCOUNT, 3100, client2);
+        b1.addClient(client2);
 
         Bank b2 = new Bank();
         b2.setName("my bank");
 
-        Client client2 = new Client();
-        client2.setName("harry");
-        client2.setCity("dnepr");
-        client2.setGender(Gender.MALE);
+        Client client3 = createClient("harry", "dnepr", Gender.MALE, "111-1111111", "qqq@qq.qq", 1000);
+        addAccount(AccountType.SAVING_ACCOUNT, 1200, client3);
+        addAccount(AccountType.CHECKING_ACCOUNT, 2000, client3);
+        b2.addClient(client3);
 
-        Account account2 = new SavingAccount();
-        account2.setBalance(10);
-        client2.addAccount(account2);
-        client2.setActiveAccount(account2);
-
-        Account account22 = new SavingAccount();
-        account22.setBalance(20);
-        client2.addAccount(account22);
-        b2.addClient(client2);
+        Client client4 = createClient("mary", "moscow", Gender.FEMALE, "222-2222232", "www@ww.ww", 1500);
+        addAccount(AccountType.SAVING_ACCOUNT, 2300, client4);
+        addAccount(AccountType.CHECKING_ACCOUNT, 3100, client4);
+        b2.addClient(client4);
 
         assertFalse(isEquals(b1, b2));
 
+    }
+
+    private Client createClient(String name, String city, Gender gender, String phone, String email, float overdraft){
+        Client client = new Client();
+        client.setName(name);
+        client.setGender(gender);
+        client.setCity(city);
+        client.setPhone(phone);
+        client.setEmail(email);
+        client.setOverdraft(overdraft);
+        return client;
+    }
+
+    private void addAccount(AccountType accountType, float balance, Client client){
+        Account account;
+        switch (accountType){
+            case SAVING_ACCOUNT:
+                account = new SavingAccount();
+                break;
+            case CHECKING_ACCOUNT:
+                account = new CheckingAccount();
+                break;
+            default:
+                account = new SavingAccount();
+        }
+        account.setBalance(balance);
+        client.addAccount(account);
     }
 
     private static boolean compareFields(Field f, Object o1, Object o2){
@@ -123,11 +123,11 @@ public class TestService {
                 result = id1.equals(id2);
 
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         } else if(noDB==null){
             try {
@@ -167,7 +167,7 @@ public class TestService {
                     Arrays.sort(arr2);
                     if(member1 instanceof MyClass){
                         for(int i = 0; i < arr1.length; ++i){
-                            return isEquals(arr1[0], arr2[0]);
+                            result = isEquals(arr1[i], arr2[i]);
                         }
                     }else{
                         result = Arrays.equals(arr1, arr2);
@@ -189,7 +189,7 @@ public class TestService {
 
 
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         }
         return result;
@@ -200,22 +200,16 @@ public class TestService {
         Class cl1 = o1.getClass();
         Class cl2 = o2.getClass();
         if(!cl1.equals(cl2)){
-            return false;
+            result = false;
         }
         Field []superClassFields = cl1.getSuperclass().getDeclaredFields();
         for(Field f:superClassFields){
             result = compareFields(f, o1, o2);
-            if(!result){
-                return false;
-            }
         }
 
         Field []fields = cl1.getDeclaredFields();
         for(Field f:fields){
             result = compareFields(f, o1, o2);
-            if(!result){
-                return false;
-            }
         }
         return result;
     }
