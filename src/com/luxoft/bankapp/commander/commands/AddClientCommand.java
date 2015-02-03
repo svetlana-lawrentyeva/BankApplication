@@ -19,48 +19,46 @@ public class AddClientCommand extends AbstractCommand implements Command {
 
     @Override
     public void execute(InputStream is, OutputStream os) throws ClientExistsException, DaoException, IOException {
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            ObjectInputStream in = new ObjectInputStream(is);
             String message;
             Client client = new Client();
             String value;
-            out.println("name:");
-        out.println("");
+            out.writeObject("name:");
             out.flush();
-            while (client.getName()=="") {
-                client.setName(in.readLine());
+            while (client.getName().equals("")) {
+                client.setName((String) in.readObject());
             }
-            out.println("city:");
-        out.println("");
+            out.writeObject("city:");
             out.flush();
-            client.setCity(in.readLine());
-            out.println("email:");
-        out.println("");
+            client.setCity((String) in.readObject());
+            out.writeObject("email:");
             out.flush();
-            while (client.getEmail() == "") {
-                client.setEmail(in.readLine());
+            while (client.getEmail().equals("")) {
+                client.setEmail((String) in.readObject());
             }
-            out.println("phone:");
-        out.println("");
+            out.writeObject("phone:");
             out.flush();
-            while (client.getPhone() == "") {
-                client.setPhone(in.readLine());
+            while (client.getPhone().equals("")) {
+                client.setPhone((String) in.readObject());
             }
-            out.println("overdraft:");
-        out.println("");
+            out.writeObject("overdraft:");
             out.flush();
-            client.setOverdraft(Float.parseFloat(in.readLine()));
-            out.println("gender (m|f):");
-        out.println("");
+            client.setOverdraft(Float.parseFloat((String) in.readObject()));
+            out.writeObject("gender (m|f):");
             out.flush();
-            client.setGender(Gender.getGender(in.readLine()));
+            client.setGender(Gender.getGender((String) in.readObject()));
 
             getCommander().getCurrentBank().addClient(client);
             client = ServiceFactory.getClientService().save(client);
             getCommander().setCurrentClient(client);
-           out.println("Client " + client.getClientSalutation() + " successfully added");
+           out.writeObject("Client " + client.getClientSalutation() + " successfully added");
         out.flush();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 

@@ -59,13 +59,13 @@ public class Commander {
             while (true) {
                 Set<Integer> commandSet = commandMap.keySet();
                 for (int i = 0; i < commandSet.size(); ++i) {
-                    command.append(i).append(". ").append(commandMap.get(i).printCommandInfo());
+                    command.append(i).append(". ").append(commandMap.get(i).printCommandInfo()).append("\n");
                 }
                 command.append("your choice:");
-                out.writeObject(command);
+                out.writeObject(command.toString());
                 out.flush();
                 int choice = 0;
-                choice = (int) in.readObject();
+                choice = Integer.parseInt((String) in.readObject());
                 commandMap.get(choice).execute(is, os);
             }
         } catch (Exception e) {

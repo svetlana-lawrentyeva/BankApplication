@@ -17,12 +17,15 @@ public class BankInfoCommand extends AbstractCommand {
 
     @Override
     public void execute(InputStream is, OutputStream os) {
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            out.println(ServiceFactory.getBankService().getBankInfo(getCommander().getCurrentBank()));
-        out.println("");
+            ObjectInputStream in = new ObjectInputStream(is);
+            out.writeObject(ServiceFactory.getBankService().getBankInfo(getCommander().getCurrentBank()));
         out.flush();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override

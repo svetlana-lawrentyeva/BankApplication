@@ -25,9 +25,10 @@ public class ShowAllAccounts extends AbstractCommand {
 
     @Override
     public void execute(InputStream is, OutputStream os) throws DaoException, IOException, ClientNotExistsException {
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            ObjectInputStream in = new ObjectInputStream(is);
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
@@ -35,10 +36,12 @@ public class ShowAllAccounts extends AbstractCommand {
             }
             List<Account> accounts = ServiceFactory.getAccountService().getAllByClient(getCommander().getCurrentClient());
             for(Account account:accounts){
-                out.println(account+" "+account.getBalance()+"\n");
+                out.writeObject(account+" "+account.getBalance()+"\n");
             }
-        out.println("");
         out.flush();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override public String printCommandInfo() {

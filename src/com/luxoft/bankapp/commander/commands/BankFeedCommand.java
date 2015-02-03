@@ -15,17 +15,19 @@ public class BankFeedCommand extends AbstractCommand implements Command {
 
     @Override
     public void execute(InputStream is, OutputStream os) throws IOException, BankException {
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            out.println("path to feed");
-        out.println("");
+            ObjectInputStream in = new ObjectInputStream(is);
+            out.writeObject("path to feed");
             out.flush();
-            String path = in.readLine();
+            String path = (String) in.readObject();
             getService().loadFeeds(getCommander().getCurrentBank(), path); //"./feeds" - path
-            out.println("execute successfully");
-        out.println("");
+            out.writeObject("execute successfully");
         out.flush();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override

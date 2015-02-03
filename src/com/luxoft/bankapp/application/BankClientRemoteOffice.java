@@ -23,13 +23,8 @@ public class BankClientRemoteOffice {
             in = new ObjectInputStream(socket.getInputStream());
             Scanner sc = new Scanner(System.in);
             while(true){
-                String request = "";
-                String response = "";
-                while (!(response = (String) in.readObject()).equals("") ) {
-                    System.out.println(response);
-                }
-                request = sc.nextLine();
-                out.writeObject(request);
+                System.out.println((String) in.readObject());
+                out.writeObject(sc.nextLine());
                 out.flush();
             }
         } catch (Exception e) {

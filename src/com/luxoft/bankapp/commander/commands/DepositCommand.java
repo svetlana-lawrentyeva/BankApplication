@@ -5,7 +5,6 @@ import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.exceptions.BankException;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
@@ -19,30 +18,32 @@ public class DepositCommand extends AbstractCommand implements Command {
 
     @Override
     public void execute(InputStream is, OutputStream os) throws DaoException, BankException, IOException {
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            ObjectInputStream in = new ObjectInputStream(is);
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
                 command.execute(is, os);
             }
-            out.println("choose account number:");
+            out.writeObject("choose account number:");
             out.flush();
             Command showAccounts = new ShowAllAccounts(getCommander());
             showAccounts.execute(is, os);
-            long idAccount = Long.parseLong(in.readLine());
+            long idAccount = Long.parseLong((String) in.readObject());
             getCommander().getCurrentClient().setActiveAccount(ServiceFactory.getAccountService().getById(idAccount));
-            out.println("money to deposit:");
-        out.println("");
+            out.writeObject("money to deposit:");
             out.flush();
-            float x = Float.parseFloat(in.readLine());
+            float x = Float.parseFloat((String) in.readObject());
             ServiceFactory.getAccountService().deposit(getCommander().getCurrentClient().getActiveAccount(), x);
-            out.println("Current client's active account " +
+            out.writeObject("Current client's active account " +
                     getCommander().getCurrentClient().getActiveAccount() + "balance: " +
                     getCommander().getCurrentClient().getActiveAccount().getBalance());
-        out.println("");
         out.flush();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override

@@ -5,8 +5,6 @@ import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.exceptions.BankException;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
-import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
@@ -20,47 +18,45 @@ public class TransferCommand extends AbstractCommand implements Command {
 
     @Override
     public void execute(InputStream is, OutputStream os) throws DaoException, IOException, BankException {
-        PrintWriter out;
-        BufferedReader in;
-        out = new PrintWriter(new OutputStreamWriter(os));
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(os);
+            out.flush();
+            ObjectInputStream in = new ObjectInputStream(is);
         out.flush();
-        in = new BufferedReader(new InputStreamReader(is));
             Client currentClient = null;
             while ((currentClient = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
                 command.execute(is, os);
             }
             if(currentClient.getActiveAccount() == null){
-                out.println("choose account number:");
-                out.println("");
+                out.writeObject("choose account number:");
                 out.flush();
                 Command showAccounts = new ShowAllAccounts(getCommander());
                 showAccounts.execute(is, os);
-                long idAccount = Long.parseLong(in.readLine());
+                long idAccount = Long.parseLong((String) in.readObject());
                 currentClient.setActiveAccount(ServiceFactory.getAccountService().getById(idAccount));
             }
-            out.println("name of client to transfer:");
-        out.println("");
+            out.writeObject("name of client to transfer:");
             out.flush();
-            Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), in.readLine());
+            Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), (String) in.readObject());
             if(client.getActiveAccount() == null){
-                out.println("choose account number:");
-                out.println("");
+                out.writeObject("choose account number:");
                 out.flush();
                 Command showAccounts = new ShowAllAccounts(getCommander());
                 showAccounts.execute(is, os);
-                long idAccount = Long.parseLong(in.readLine());
+                long idAccount = Long.parseLong((String) in.readObject());
                 client.setActiveAccount(ServiceFactory.getAccountService().getById(idAccount));
             }
-            out.println("money to transfer:");
-        out.println("");
+            out.writeObject("money to transfer:");
             out.flush();
-            float x = Float.parseFloat(in.readLine());
+            float x = Float.parseFloat((String) in.readObject());
             ServiceFactory.getAccountService().transfer(currentClient.getActiveAccount(), client.getActiveAccount(), x);
-            out.println("Current client's active account " +
+            out.writeObject("Current client's active account " +
                     ServiceFactory.getAccountService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount()));
-        out.println("");
         out.flush();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override

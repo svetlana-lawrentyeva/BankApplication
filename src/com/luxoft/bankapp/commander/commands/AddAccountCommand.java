@@ -20,7 +20,7 @@ public class AddAccountCommand extends AbstractCommand {
 
     @Override
     public void execute(InputStream is, OutputStream os) throws IOException, ClientNotExistsException, DaoException {
-        try{
+        try {
             ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
             ObjectInputStream in = new ObjectInputStream(is);
@@ -31,12 +31,12 @@ public class AddAccountCommand extends AbstractCommand {
             out.flush();
             float startBalance = Float.parseFloat((String) in.readObject());
             Client client = null;
-            while((client = getCommander().getCurrentClient()) == null){
+            while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
                 command.execute(is, os);
             }
             Account account;
-            switch (typeAccount){
+            switch (typeAccount) {
                 case "c":
                     account = new CheckingAccount();
                     break;
@@ -48,10 +48,10 @@ public class AddAccountCommand extends AbstractCommand {
             }
             account.setBalance(startBalance);
             client.addAccount(account);
-            ServiceFactory.getAccountService().save(account);
+            ServiceFactory.getClientService().save(client);
             out.writeObject("success");
-        out.flush();
-        } catch (Exception e){
+            out.flush();
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }

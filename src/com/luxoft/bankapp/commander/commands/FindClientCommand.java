@@ -16,17 +16,19 @@ public class FindClientCommand extends AbstractCommand {
     }
 
     public void execute(InputStream is, OutputStream os) throws IOException, ClientNotExistsException, DaoException {
-            PrintWriter out = new PrintWriter(new OutputStreamWriter(os));
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(os);
             out.flush();
-            BufferedReader in = new BufferedReader(new InputStreamReader(is));
-            out.println("name:");
-        out.println("");
+            ObjectInputStream in = new ObjectInputStream(is);
+            out.writeObject("name:");
             out.flush();
-            Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), in.readLine());
+            Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), (String) in.readObject());
             getCommander().setCurrentClient(client);
-            out.println("Client " + client.getClientSalutation() + " is checked");
-        out.println("");
-        out.flush();
+            out.writeObject("Client " + client.getClientSalutation() + " is checked");
+            out.flush();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
