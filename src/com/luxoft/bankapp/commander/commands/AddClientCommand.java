@@ -18,14 +18,9 @@ public class AddClientCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) throws ClientExistsException, DaoException, IOException {
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws ClientExistsException, DaoException, IOException {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
-            String message;
             Client client = new Client();
-            String value;
             out.writeObject("name:");
             out.flush();
             while (client.getName().equals("")) {

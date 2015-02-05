@@ -16,11 +16,8 @@ public class BankInfoCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) {
+    public void execute(ObjectInputStream in, ObjectOutputStream out) {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
             out.writeObject(ServiceFactory.getBankService().getBankInfo(getCommander().getCurrentBank()));
         out.flush();
         } catch (Exception e) {

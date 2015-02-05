@@ -15,11 +15,9 @@ public class FindClientCommand extends AbstractCommand {
         super(commander);
     }
 
-    public void execute(InputStream is, OutputStream os) throws IOException, ClientNotExistsException, DaoException {
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClientNotExistsException, DaoException {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
+
             out.writeObject("name:");
             out.flush();
             Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), (String) in.readObject());

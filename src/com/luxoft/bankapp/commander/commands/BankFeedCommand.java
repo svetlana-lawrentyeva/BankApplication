@@ -14,11 +14,8 @@ public class BankFeedCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) throws IOException, BankException {
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws IOException, BankException {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
             out.writeObject("path to feed");
             out.flush();
             String path = (String) in.readObject();

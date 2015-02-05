@@ -19,11 +19,8 @@ public class AddAccountCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) throws IOException, ClientNotExistsException, DaoException {
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClientNotExistsException, DaoException {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
             out.writeObject("type of account (c|s):");
             out.flush();
             String typeAccount = (String) in.readObject();
@@ -33,7 +30,7 @@ public class AddAccountCommand extends AbstractCommand {
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
-                command.execute(is, os);
+                command.execute(in, out);
             }
             Account account;
             switch (typeAccount) {

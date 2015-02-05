@@ -18,16 +18,13 @@ public class SaveCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) throws ClientExistsException, DaoException, IOException,
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws ClientExistsException, DaoException, IOException,
             ClientNotExistsException {  // "./objects"
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
-                command.execute(is, os);
+                command.execute(in, out);
             }
             ServiceFactory.getClientService().save(client);
             out.writeObject("Client " + client.getClientSalutation() + " successfully saved");

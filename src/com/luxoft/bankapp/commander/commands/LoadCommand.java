@@ -16,11 +16,8 @@ public class LoadCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) throws IOException, BankException {  //"./objects"
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws IOException, BankException {  //"./objects"
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
             Client client = null;
             out.writeObject("path:");
             out.flush();

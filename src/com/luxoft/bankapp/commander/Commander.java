@@ -32,7 +32,7 @@ public class Commander {
         commandMap.put(11, new BankFeedCommand(this));
         commandMap.put(12, new Command() {
             @Override
-            public void execute(InputStream is, OutputStream os) {
+            public void execute(ObjectInputStream in, ObjectOutputStream out) {
                 System.exit(0);
             }
 
@@ -66,7 +66,7 @@ public class Commander {
                 out.flush();
                 int choice = 0;
                 choice = Integer.parseInt((String) in.readObject());
-                commandMap.get(choice).execute(is, os);
+                commandMap.get(choice).execute(in, out);
             }
         } catch (Exception e) {
             e.printStackTrace();

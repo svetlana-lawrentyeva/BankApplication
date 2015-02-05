@@ -16,15 +16,12 @@ public class RemoveClientCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) throws DaoException, IOException, ClientNotExistsException {
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws DaoException, IOException, ClientNotExistsException {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
                 Client client = null;
                 while ((client = getCommander().getCurrentClient()) == null) {
                     FindClientCommand command = new FindClientCommand(getCommander());
-                    command.execute(is, os);
+                    command.execute(in, out);
                 }
                 ServiceFactory.getClientService().remove(client);
                 out.writeObject("Client " + client.getClientSalutation() + " is deleted");

@@ -17,22 +17,19 @@ public class TransferCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) throws DaoException, IOException, BankException {
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws DaoException, IOException, BankException {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
         out.flush();
             Client currentClient = null;
             while ((currentClient = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
-                command.execute(is, os);
+                command.execute(in, out);
             }
             if(currentClient.getActiveAccount() == null){
                 out.writeObject("choose account number:");
                 out.flush();
                 Command showAccounts = new ShowAllAccounts(getCommander());
-                showAccounts.execute(is, os);
+                showAccounts.execute(in, out);
                 long idAccount = Long.parseLong((String) in.readObject());
                 currentClient.setActiveAccount(ServiceFactory.getAccountService().getById(idAccount));
             }
@@ -43,7 +40,7 @@ public class TransferCommand extends AbstractCommand implements Command {
                 out.writeObject("choose account number:");
                 out.flush();
                 Command showAccounts = new ShowAllAccounts(getCommander());
-                showAccounts.execute(is, os);
+                showAccounts.execute(in, out);
                 long idAccount = Long.parseLong((String) in.readObject());
                 client.setActiveAccount(ServiceFactory.getAccountService().getById(idAccount));
             }

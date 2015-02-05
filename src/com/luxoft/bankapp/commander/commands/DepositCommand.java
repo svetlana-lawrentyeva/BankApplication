@@ -17,20 +17,17 @@ public class DepositCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(InputStream is, OutputStream os) throws DaoException, BankException, IOException {
+    public void execute(ObjectInputStream in, ObjectOutputStream out) throws DaoException, BankException, IOException {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
-                command.execute(is, os);
+                command.execute(in, out);
             }
             out.writeObject("choose account number:");
             out.flush();
             Command showAccounts = new ShowAllAccounts(getCommander());
-            showAccounts.execute(is, os);
+            showAccounts.execute(in, out);
             long idAccount = Long.parseLong((String) in.readObject());
             getCommander().getCurrentClient().setActiveAccount(ServiceFactory.getAccountService().getById(idAccount));
             out.writeObject("money to deposit:");

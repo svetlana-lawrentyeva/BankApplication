@@ -5,8 +5,8 @@ import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.commands.*;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class BankServerCommander {
         commandMap.put(7, new BankInfoCommand(commander));
         commandMap.put(8, new Command() {
             @Override
-            public void execute(InputStream is, OutputStream os) {
+            public void execute(ObjectInputStream in, ObjectOutputStream out) {
                 System.exit(0);
             }
 
