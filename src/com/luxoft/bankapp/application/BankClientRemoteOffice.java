@@ -1,12 +1,9 @@
 package com.luxoft.bankapp.application;
 
-import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class BankClientRemoteOffice {
-
-    private Socket socket;
 
     public static void main(String[] args) {
         BankClientRemoteOffice remoteOffice = new BankClientRemoteOffice();
@@ -14,37 +11,19 @@ public class BankClientRemoteOffice {
     }
 
     public void start() {
-        ObjectInputStream in = null;
-        ObjectOutputStream out = null;
+        Io io = IoFactory.getStream("socket");
         try {
-            socket = new Socket("localhost", 1998);
-            out = new ObjectOutputStream(socket.getOutputStream());
-            out.flush();
-            in = new ObjectInputStream(socket.getInputStream());
+            Socket socket = new Socket("localhost", 1998);
+            io.setStreams(socket.getInputStream(), socket.getOutputStream());
             Scanner sc = new Scanner(System.in);
             while(true){
-                System.out.println((String) in.readObject());
-                out.writeObject(sc.nextLine());
-                out.flush();
+                String message = io.read();
+                System.out.println(message);
+                io.write(sc.nextLine());
             }
         } catch (Exception e) {
             e.printStackTrace();
-
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (Exception e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
-
         }
+        io.closeStreams();
     }
 }

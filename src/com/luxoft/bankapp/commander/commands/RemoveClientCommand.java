@@ -1,5 +1,6 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
@@ -16,17 +17,18 @@ public class RemoveClientCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(ObjectInputStream in, ObjectOutputStream out) throws DaoException, IOException, ClientNotExistsException {
+    public void execute(Io io) {
         try {
-                Client client = null;
-                while ((client = getCommander().getCurrentClient()) == null) {
-                    FindClientCommand command = new FindClientCommand(getCommander());
-                    command.execute(in, out);
-                }
-                ServiceFactory.getClientService().remove(client);
-                out.writeObject("Client " + client.getClientSalutation() + " is deleted");
-                getCommander().setCurrentClient(null);
-        out.flush();
+            Client client = null;
+            while ((client = getCommander().getCurrentClient()) == null) {
+                FindClientCommand command = new FindClientCommand(getCommander());
+                command.execute(io);
+            }
+            ServiceFactory.getClientService().remove(client);
+            io.write("Client " + client.getClientSalutation() + " is deleted\nenter for continue");
+            io.read();
+            getCommander().setCurrentClient(null);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

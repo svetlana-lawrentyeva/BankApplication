@@ -1,16 +1,13 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
-
-import java.io.*;
 
 public class AddAccountCommand extends AbstractCommand {
 
@@ -19,18 +16,18 @@ public class AddAccountCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(ObjectInputStream in, ObjectOutputStream out) throws IOException, ClientNotExistsException, DaoException {
+    public void execute(Io io) {
         try {
-            out.writeObject("type of account (c|s):");
-            out.flush();
-            String typeAccount = (String) in.readObject();
-            out.writeObject("start balance:");
-            out.flush();
-            float startBalance = Float.parseFloat((String) in.readObject());
-            Client client = null;
+            io.write("type of account (c|s):");
+            
+            String typeAccount = (String) io.read();
+            io.write("start balance:");
+            
+            float startBalance = Float.parseFloat((String) io.read());
+            Client client;
             while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
-                command.execute(in, out);
+                command.execute(io);
             }
             Account account;
             switch (typeAccount) {
@@ -46,8 +43,9 @@ public class AddAccountCommand extends AbstractCommand {
             account.setBalance(startBalance);
             client.addAccount(account);
             ServiceFactory.getClientService().save(client);
-            out.writeObject("success");
-            out.flush();
+            io.write("success\nenter for continue");
+            io.read();
+            
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

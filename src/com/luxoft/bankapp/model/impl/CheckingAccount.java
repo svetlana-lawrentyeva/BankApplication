@@ -30,6 +30,20 @@ public class CheckingAccount extends AbstractAccount {
         }
     }
 
+    @Override public int hashCode() {
+        return (int) (getClient().hashCode()+getBalance()+overdraft);
+    }
+
+    @Override public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (this.getClass() != obj.getClass()) return false;
+        CheckingAccount account = (CheckingAccount) obj;
+        return (this.getBalance() == account.getBalance() &&
+                this.overdraft == account.overdraft &&
+                this.getClient().equals(account.getClient()));
+    }
+
     //--------------------------------------------------
 
     @Override

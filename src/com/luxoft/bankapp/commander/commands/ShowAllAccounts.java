@@ -1,14 +1,12 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
-import java.io.*;
 import java.util.List;
 
 /**
@@ -24,24 +22,31 @@ public class ShowAllAccounts extends AbstractCommand {
     }
 
     @Override
-    public void execute(ObjectInputStream in, ObjectOutputStream out) throws DaoException, IOException, ClientNotExistsException {
+    public void execute(Io io) {
         try {
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
-                command.execute(in, out);
+                command.execute(io);
             }
             List<Account> accounts = ServiceFactory.getAccountService().getAllByClient(getCommander().getCurrentClient());
+            StringBuilder builder = new StringBuilder();
+            builder.append("choose account number:\n");
             for(Account account:accounts){
-                out.writeObject(account+" "+account.getBalance()+"\n");
+                builder.append(account).append(" ").append(account.getBalance()).append("\n");
             }
-        out.flush();
+            io.write(builder.toString());
+            String accNumber = io.read();
+            getCommander().getCurrentClient().setActiveAccount(ServiceFactory.getAccountService().getById(Long.parseLong(accNumber)));
+            io.write("active account is "+accNumber+"\nenter for continue ");
+            io.read();
+        
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     @Override public String printCommandInfo() {
-        return "show all accounts";
+        return "Show all accounts";
     }
 }

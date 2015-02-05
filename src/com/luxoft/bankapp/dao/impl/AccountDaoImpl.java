@@ -3,7 +3,6 @@ package com.luxoft.bankapp.dao.impl;
 import com.luxoft.bankapp.dao.AccountDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
@@ -123,7 +122,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
     @Override
     public List<Account> getAllByClient(Client client) throws DaoException {
-        List<Account>accounts = null;
+        List<Account>accounts;
         Connection conn = openConnection();
         String sql = "select * from accounts where id_client = (?)";
         try {
@@ -199,8 +198,6 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
-        } catch (ClientNotExistsException e) {
-            e.printStackTrace();
         }
         closeConnection();
         return account;
@@ -231,7 +228,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
     @Override public float getBalance(Account account) throws DaoException {
         Connection conn = openConnection();
         String sql = "select balance from accounts where id = (?)";
-        float balance = 0;
+        float balance;
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, account.getId());

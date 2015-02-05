@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class BankService {
     /**
-     * Get bank by name from darabase
+     * Get bank by name from database
      * @param name name to get the bank
      */
     public Bank getByName(String name){

@@ -1,9 +1,6 @@
 package com.luxoft.bankapp.model.impl;
 
-import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.Gender;
-import com.luxoft.bankapp.model.MyClass;
-import com.luxoft.bankapp.model.Report;
+import com.luxoft.bankapp.model.*;
 import com.luxoft.bankapp.model.exceptions.FeedException;
 
 import java.util.Collections;
@@ -168,23 +165,29 @@ public class Client implements Report, MyClass, Comparable {
     public void parseFeed(Map<String, String> feed) {
         try {
             String gen = feed.get("gender");
-            if (gen.equals("m")) {
-                this.gender = Gender.MALE;
-            } else if (gen.equals("f")) {
-                this.gender = Gender.FEMALE;
-            } else {
-                throw new FeedException("wrong parameter: gender");
+            switch (gen) {
+                case "m":
+                    this.gender = Gender.MALE;
+                    break;
+                case "f":
+                    this.gender = Gender.FEMALE;
+                    break;
+                default:
+                    throw new FeedException("wrong parameter: gender");
             }
             this.setCity(feed.get("city"));
             this.name = feed.get("name");
             this.overdraft = Float.parseFloat(feed.get("overdraft"));
             String accountType = feed.get("accounttype");
-            if (accountType.equals("c")) {
-                this.activeAccount = new CheckingAccount();
-            } else if (accountType.equals("s")) {
-                this.activeAccount = new SavingAccount();
-            } else {
-                throw new FeedException("wrong parameter: account type");
+            switch (accountType) {
+                case "c":
+                    this.activeAccount = new CheckingAccount();
+                    break;
+                case "s":
+                    this.activeAccount = new SavingAccount();
+                    break;
+                default:
+                    throw new FeedException("wrong parameter: account type");
             }
             this.accounts.add(this.activeAccount);
             this.activeAccount.parseFeed(feed);

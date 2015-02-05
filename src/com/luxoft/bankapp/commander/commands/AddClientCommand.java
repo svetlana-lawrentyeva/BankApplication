@@ -1,5 +1,6 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
@@ -18,39 +19,40 @@ public class AddClientCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(ObjectInputStream in, ObjectOutputStream out) throws ClientExistsException, DaoException, IOException {
+    public void execute(Io io) {
         try {
             Client client = new Client();
-            out.writeObject("name:");
-            out.flush();
+            
             while (client.getName().equals("")) {
-                client.setName((String) in.readObject());
+                io.write("name:");
+                client.setName(io.read());
             }
-            out.writeObject("city:");
-            out.flush();
-            client.setCity((String) in.readObject());
-            out.writeObject("email:");
-            out.flush();
+
+            io.write("city:");
+            client.setCity(io.read());
+
             while (client.getEmail().equals("")) {
-                client.setEmail((String) in.readObject());
+                io.write("email:");
+                client.setEmail(io.read());
             }
-            out.writeObject("phone:");
-            out.flush();
+            
             while (client.getPhone().equals("")) {
-                client.setPhone((String) in.readObject());
+                io.write("phone:");
+                client.setPhone(io.read());
             }
-            out.writeObject("overdraft:");
-            out.flush();
-            client.setOverdraft(Float.parseFloat((String) in.readObject()));
-            out.writeObject("gender (m|f):");
-            out.flush();
-            client.setGender(Gender.getGender((String) in.readObject()));
+
+            io.write("overdraft:");
+            client.setOverdraft(Float.parseFloat(io.read()));
+
+            io.write("gender (m|f):");
+            client.setGender(Gender.getGender(io.read()));
 
             getCommander().getCurrentBank().addClient(client);
             client = ServiceFactory.getClientService().save(client);
             getCommander().setCurrentClient(client);
-           out.writeObject("Client " + client.getClientSalutation() + " successfully added");
-        out.flush();
+            io.write("Client " + client.getClientSalutation() + " successfully added\nenter for continue");
+            io.read();
+        
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

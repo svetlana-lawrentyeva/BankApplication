@@ -1,5 +1,6 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
@@ -16,15 +17,16 @@ public class LoadCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(ObjectInputStream in, ObjectOutputStream out) throws IOException, BankException {  //"./objects"
+    public void execute(Io io) {  //"./objects"
         try {
             Client client = null;
-            out.writeObject("path:");
-            out.flush();
-            client = ServiceFactory.getClientService().loadFromDisk((String) in.readObject());
+            io.write("path:");
+            
+            client = ServiceFactory.getClientService().loadFromDisk((String) io.read());
             getCommander().setCurrentClient(client);
-               out.writeObject(client.toString() + " is loaded");
-        out.flush();
+               io.write(client.toString() + " is loaded\nenter for continue");
+            io.read();
+        
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

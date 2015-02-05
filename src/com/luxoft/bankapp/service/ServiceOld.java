@@ -18,19 +18,21 @@ public class ServiceOld {
         File dir = new File(folder);
         if (dir.exists()) {
             File[] files = dir.listFiles();
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    loadFeeds(bank, f.getName());
-                } else {
-                    try {
-                        BufferedReader br = new BufferedReader(new FileReader(f));
-                        String line = "";
-                        while ((line = br.readLine()) != null) {
-                            parseFeed(bank, line);
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isDirectory()) {
+                        loadFeeds(bank, f.getName());
+                    } else {
+                        try {
+                            BufferedReader br = new BufferedReader(new FileReader(f));
+                            String line = "";
+                            while ((line = br.readLine()) != null) {
+                                parseFeed(bank, line);
+                            }
+                            br.close();
+                        } catch (Exception e) {
+                            throw  new BankException(e.getMessage());
                         }
-                        br.close();
-                    } catch (Exception e) {
-                        throw  new BankException(e.getMessage());
                     }
                 }
             }
@@ -39,14 +41,13 @@ public class ServiceOld {
 
     public Client parseFeed(Bank bank, String feed) throws ClientExistsException {
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         String[] parameters = feed.split(";");
         for (String str : parameters) {
             String[] mapData = str.split("=");
             map.put(mapData[0], mapData[1]);
         }
-        Client client = bank.parseFeed(map);
-        return client;
+        return bank.parseFeed(map);
     }
 
     public BankInfo getBankInfo(Bank bank){

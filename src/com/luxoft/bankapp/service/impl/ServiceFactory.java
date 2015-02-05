@@ -1,11 +1,10 @@
 package com.luxoft.bankapp.service.impl;
 
 /**
- * Created with IntelliJ IDEA.
- * User: nau
+ * Created:
+ * User: Svetlana Lawrentyeva
  * Date: 30.01.15
  * Time: 7:54
- * To change this template use File | Settings | File Templates.
  */
 public class ServiceFactory {
     private static AccountService accountService;

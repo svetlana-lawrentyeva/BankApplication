@@ -4,7 +4,6 @@ import com.luxoft.bankapp.dao.ClientDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.Gender;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 
@@ -32,10 +31,10 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
     }
 
     @Override
-    public Client getByName(Bank bank, String name) throws ClientNotExistsException, DaoException {
+    public Client getByName(Bank bank, String name) throws DaoException {
         Connection conn = openConnection();
         String sql = "select * from clients where id_bank = (?) and name = (?)";
-        Client client = null;
+        Client client;
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, bank.getId());
@@ -55,12 +54,15 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             String genderLetter = rs.getString(7);
 
             Gender gender;
-            if (genderLetter.equals("m")) {
-                gender = Gender.MALE;
-            } else if (genderLetter.equals("f")) {
-                gender = Gender.FEMALE;
-            } else {
-                throw new DaoException("incorrect data in db, impossible to load the client");
+            switch (genderLetter) {
+                case "m":
+                    gender = Gender.MALE;
+                    break;
+                case "f":
+                    gender = Gender.FEMALE;
+                    break;
+                default:
+                    throw new DaoException("incorrect data in db, impossible to load the client");
             }
             client = new Client();
             client.setId(idClient);
@@ -86,7 +88,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
     }
 
     @Override
-    public Client getById(long idClient) throws ClientNotExistsException, DaoException {
+    public Client getById(long idClient) throws DaoException {
         Connection conn = openConnection();
         String sql = "select * from clients where id = (?)";
         Client client = null;
@@ -108,12 +110,15 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 long idBank = rs.getLong(8);
 
                 Gender gender;
-                if (genderLetter.equals("m")) {
-                    gender = Gender.MALE;
-                } else if (genderLetter.equals("f")) {
-                    gender = Gender.FEMALE;
-                } else {
-                    throw new DaoException("incorrect data in db, impossible to load the client");
+                switch (genderLetter) {
+                    case "m":
+                        gender = Gender.MALE;
+                        break;
+                    case "f":
+                        gender = Gender.FEMALE;
+                        break;
+                    default:
+                        throw new DaoException("incorrect data in db, impossible to load the client");
                 }
 
                 client = new Client();
@@ -169,12 +174,15 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 String genderLetter = rs.getString(7);
 
                 Gender gender;
-                if (genderLetter.equals("m")) {
-                    gender = Gender.MALE;
-                } else if (genderLetter.equals("f")) {
-                    gender = Gender.FEMALE;
-                } else {
-                    throw new DaoException("incorrect data in db, impossible to load the client");
+                switch (genderLetter) {
+                    case "m":
+                        gender = Gender.MALE;
+                        break;
+                    case "f":
+                        gender = Gender.FEMALE;
+                        break;
+                    default:
+                        throw new DaoException("incorrect data in db, impossible to load the client");
                 }
 
                 client.setId(idClient);

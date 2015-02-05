@@ -1,5 +1,6 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
@@ -18,17 +19,17 @@ public class SaveCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public void execute(ObjectInputStream in, ObjectOutputStream out) throws ClientExistsException, DaoException, IOException,
-            ClientNotExistsException {  // "./objects"
+    public void execute(Io io) {  // "./objects"
         try {
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand(getCommander());
-                command.execute(in, out);
+                command.execute(io);
             }
             ServiceFactory.getClientService().save(client);
-            out.writeObject("Client " + client.getClientSalutation() + " successfully saved");
-        out.flush();
+            io.write("Client " + client.getClientSalutation() + " successfully saved\nenter for continue");
+            io.read();
+        
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

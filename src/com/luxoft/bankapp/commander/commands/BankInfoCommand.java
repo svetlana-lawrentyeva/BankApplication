@@ -1,10 +1,9 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
-
-import java.io.*;
 
 /**
  * Created by nau on 22.01.15.
@@ -16,10 +15,10 @@ public class BankInfoCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(ObjectInputStream in, ObjectOutputStream out) {
+    public void execute(Io io) {
         try {
-            out.writeObject(ServiceFactory.getBankService().getBankInfo(getCommander().getCurrentBank()));
-        out.flush();
+            io.write(ServiceFactory.getBankService().getBankInfo(getCommander().getCurrentBank()).toString()+ "\nenter for continue ");
+            io.read();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

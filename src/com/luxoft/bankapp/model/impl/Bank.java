@@ -3,7 +3,6 @@ package com.luxoft.bankapp.model.impl;
 import com.luxoft.bankapp.model.ClientRegistrationListener;
 import com.luxoft.bankapp.model.MyClass;
 import com.luxoft.bankapp.model.Report;
-import com.luxoft.bankapp.model.exceptions.ClientExistsException;
 
 import java.util.*;
 
@@ -45,6 +44,18 @@ public class Bank implements Report, MyClass {
                 c.setBank(Bank.this);
             }
         });
+    }
+
+    @Override public int hashCode() {
+        return getName().hashCode();
+    }
+
+    @Override public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (this.getClass() != obj.getClass()) return false;
+        Bank bank = (Bank) obj;
+        return getName().equals(bank.getName());
     }
 
     public long getId() {
@@ -115,7 +126,7 @@ public class Bank implements Report, MyClass {
      * Parse feed map to load data
      * @param feed map for parsing for get data
      */
-    public Client parseFeed(Map<String, String> feed) throws ClientExistsException {
+    public Client parseFeed(Map<String, String> feed) {
         Client client = new Client();
         client.parseFeed(feed);
         if(hasClient(client)){

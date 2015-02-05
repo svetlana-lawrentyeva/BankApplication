@@ -5,8 +5,6 @@ import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.commands.*;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -19,24 +17,23 @@ import java.util.Map;
  * Time: 11:34 PM
  */
 public class BankServerCommander {
-    Commander commander;
-    ServerSocket serverSocket;
-    Socket socket;
+    private Commander commander;
+    private ServerSocket serverSocket;
+    private Socket socket;
 
     public static void main(String[] args) {
         BankServerCommander serverCommander = new BankServerCommander();
         try {
             serverCommander.commander = new Commander();
-            serverCommander.init();
             serverCommander.serverSocket = new ServerSocket(1998);
             serverCommander.socket = serverCommander.serverSocket.accept();
-            serverCommander.start();
+            serverCommander.init();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            System.out.println(e.getMessage());
         }
     }
 
-    private void init(){
+    private void init() {
         Map<Integer, Command> commandMap = new HashMap<>();
         commandMap.put(0, new FindClientCommand(commander));
         commandMap.put(1, new ShowAllAccounts(commander));
@@ -48,7 +45,7 @@ public class BankServerCommander {
         commandMap.put(7, new BankInfoCommand(commander));
         commandMap.put(8, new Command() {
             @Override
-            public void execute(ObjectInputStream in, ObjectOutputStream out) {
+            public void execute(Io io) {
                 System.exit(0);
             }
 
@@ -58,15 +55,13 @@ public class BankServerCommander {
             }
         });
         commander.setCommandMap(commandMap);
-    }
-
-    private void start(){
+        Io io = IoFactory.getStream("socket");
         try {
-            commander.setIs(socket.getInputStream());
-            commander.setOs(socket.getOutputStream());
-            commander.start();
+            io.setStreams(socket.getInputStream(), socket.getOutputStream());
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            System.out.println(e.getMessage());
         }
+        commander.setIo(io);
+        commander.start();
     }
 }

@@ -1,20 +1,23 @@
 package com.luxoft.bankapp.commander;
 
+import com.luxoft.bankapp.application.Io;
+import com.luxoft.bankapp.application.IoFactory;
 import com.luxoft.bankapp.commander.commands.*;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
-import java.io.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Commander {
 
     private Client currentClient;
     private Bank currentBank = ServiceFactory.getBankService().getByName("My bank");
     private Map<Integer, Command> commandMap = new HashMap<>();
-    private InputStream is = System.in;
-    private OutputStream os = System.out;
+    private Io io;
 
     private void init() {
 
@@ -32,7 +35,7 @@ public class Commander {
         commandMap.put(11, new BankFeedCommand(this));
         commandMap.put(12, new Command() {
             @Override
-            public void execute(ObjectInputStream in, ObjectOutputStream out) {
+            public void execute(Io io) {
                 System.exit(0);
             }
 
@@ -41,6 +44,8 @@ public class Commander {
                 return "Exit";
             }
         });
+        io = IoFactory.getStream("console");
+        io.setStreams(System.in, System.out);
 
     }
 
@@ -48,25 +53,22 @@ public class Commander {
         Commander commander = new Commander();
         commander.init();
         commander.start();
+        commander.io.closeStreams();
     }
 
     public void start() {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(os);
-            out.flush();
-            ObjectInputStream in = new ObjectInputStream(is);
-            StringBuilder command = new StringBuilder();
             while (true) {
+                StringBuilder command = new StringBuilder();
                 Set<Integer> commandSet = commandMap.keySet();
                 for (int i = 0; i < commandSet.size(); ++i) {
                     command.append(i).append(". ").append(commandMap.get(i).printCommandInfo()).append("\n");
                 }
                 command.append("your choice:");
-                out.writeObject(command.toString());
-                out.flush();
+                io.write(command.toString());
                 int choice = 0;
-                choice = Integer.parseInt((String) in.readObject());
-                commandMap.get(choice).execute(in, out);
+                choice = Integer.parseInt(io.read());
+                commandMap.get(choice).execute(io);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,19 +107,7 @@ public class Commander {
         return Collections.unmodifiableMap(commandMap);
     }
 
-    public InputStream getIs() {
-        return is;
-    }
-
-    public void setIs(InputStream is) {
-        this.is = is;
-    }
-
-    public OutputStream getOs() {
-        return os;
-    }
-
-    public void setOs(OutputStream os) {
-        this.os = os;
+    public void setIo(Io io){
+        this.io = io;
     }
 }

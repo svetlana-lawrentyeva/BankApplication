@@ -1,7 +1,6 @@
 package com.luxoft.bankapp.dao;
 
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 
@@ -19,13 +18,13 @@ public interface ClientDao {
      * @param bank bank to find client in
      * @param name name of client
      */
-    Client getByName(Bank bank, String name) throws ClientNotExistsException, DaoException;
+    Client getByName(Bank bank, String name) throws DaoException;
 
     /**
      * Get client by id
      * @param idClient id of client
      */
-    Client getById(long idClient) throws ClientNotExistsException, DaoException;
+    Client getById(long idClient) throws DaoException;
 
     /**
      * Get all clients in bank

@@ -29,7 +29,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
     @Override
     public Bank getBankByName(String name) throws DaoException {
-        Bank bank = null;
+        Bank bank;
         Connection conn = openConnection();
         String sql = "select * from banks where name = (?)";
         try {
@@ -52,7 +52,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             preparedStatement.close();
 
             List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
-            bank.setClients(new HashSet<Client>(clients));
+            bank.setClients(new HashSet<>(clients));
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
@@ -62,7 +62,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
     @Override
     public Bank getBankById(long bankId) throws DaoException {
-        Bank bank = null;
+        Bank bank;
         Connection conn = openConnection();
         String sql = "select * from banks where id = (?)";
         try {
@@ -83,7 +83,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             preparedStatement.close();
 
             List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
-            bank.setClients(new HashSet<Client>(clients));
+            bank.setClients(new HashSet<>(clients));
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
@@ -191,7 +191,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
     @Override
     public String getBankReport(Bank bank) throws DaoException {
         List<Client> clients = (DaoFactory.getClientDao().getAllClients(bank));
-        bank.setClients(new HashSet<Client>(clients));
+        bank.setClients(new HashSet<>(clients));
         int clientsNumber = getClientsNumber(bank);
         int accountNumber = getAccountsNumber(bank);
         Set<Client> sortedByBalance = getClientsSorted(bank);
