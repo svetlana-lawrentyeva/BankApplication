@@ -1,8 +1,6 @@
 package com.luxoft.bankapp.model.impl;
 
-import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.Gender;
-import com.luxoft.bankapp.model.Report;
+import com.luxoft.bankapp.model.*;
 import com.luxoft.bankapp.model.exceptions.FeedException;
 
 import java.util.Collections;
@@ -10,18 +8,28 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Client implements Report {
+public class Client implements Report, MyClass, Comparable {
+    @NoDB
     private long id = -1;
     private String name = "";
-    private String city = "none";
+    private String city = "";
     private String email = "";
     private String phone = "";
     private float overdraft;
-    private Gender gender = Gender.FEMALE;
+    private Gender gender = null;
+    @RefDB
     private Bank bank = null;
     private Set<Account> accounts = new HashSet<>();
+    @NoDB
     private Account activeAccount = null;
+    @NoDB
     private AccountRegistrationListener listener = new OverdraftSetterListener();
+
+    @Override
+    public int compareTo(Object o) {
+        Client client = (Client)o;
+        return this.name.compareTo(client.name);
+    }
 
     private static class OverdraftSetterListener implements AccountRegistrationListener{
 
@@ -45,15 +53,19 @@ public class Client implements Report {
         return name;
     }
 
-    public void setName(String name) {
+    public boolean setName(String name) {
+        boolean result = false;
         String NAME_PATTERN = "[a-zA-z]+([ '-][a-zA-Z]+)*";
         if (name.matches(NAME_PATTERN)) {
             this.name = name;
+            result = true;
         }
+        return result;
     }
 
     public void  addAccount(Account account) {
         accounts.add(account);
+        account.setClient(this);
         listener.onAccountAdded(this, account);
     }
 
@@ -88,23 +100,29 @@ public class Client implements Report {
         return email;
     }
 
-    public void setEmail(String email) {
+    public boolean setEmail(String email) {
+        boolean result = false;
         String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                 + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         if (email.matches(EMAIL_PATTERN)) {
             this.email = email;
+            result = true;
         }
+        return result;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public boolean setPhone(String phone) {
+        boolean result = false;
         String PHONE_PATTERN = "\\d{3}-\\d{7}";
         if (phone.matches(PHONE_PATTERN)) {
             this.phone = phone;
+            result = true;
         }
+        return result;
     }
 
     public float getOverdraft() {
@@ -147,23 +165,29 @@ public class Client implements Report {
     public void parseFeed(Map<String, String> feed) {
         try {
             String gen = feed.get("gender");
-            if (gen.equals("m")) {
-                this.gender = Gender.MALE;
-            } else if (gen.equals("f")) {
-                this.gender = Gender.FEMALE;
-            } else {
-                throw new FeedException("wrong parameter: gender");
+            switch (gen) {
+                case "m":
+                    this.gender = Gender.MALE;
+                    break;
+                case "f":
+                    this.gender = Gender.FEMALE;
+                    break;
+                default:
+                    throw new FeedException("wrong parameter: gender");
             }
             this.setCity(feed.get("city"));
             this.name = feed.get("name");
             this.overdraft = Float.parseFloat(feed.get("overdraft"));
             String accountType = feed.get("accounttype");
-            if (accountType.equals("c")) {
-                this.activeAccount = new CheckingAccount();
-            } else if (accountType.equals("s")) {
-                this.activeAccount = new SavingAccount();
-            } else {
-                throw new FeedException("wrong parameter: account type");
+            switch (accountType) {
+                case "c":
+                    this.activeAccount = new CheckingAccount();
+                    break;
+                case "s":
+                    this.activeAccount = new SavingAccount();
+                    break;
+                default:
+                    throw new FeedException("wrong parameter: account type");
             }
             this.accounts.add(this.activeAccount);
             this.activeAccount.parseFeed(feed);
@@ -197,23 +221,33 @@ public class Client implements Report {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("\nclient: ").append(gender.getSalutation()).append(" ").append(name).append("\n");
-        if(accounts.size()>0){
+        builder.append("client #").append(id).append(" ").append(getClientSalutation());
+        return builder.toString();
+    }
+
+    @Override public String printReport() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\nclient #").append(id).append(" ").append(getClientSalutation()).append("\n");
+        if (accounts.size() > 0) {
             builder.append("accounts:");
             builder.append("\n............................");
-            for(Account account:accounts){
+            for (Account account : accounts) {
                 builder.append(account);
-                if(activeAccount!=null & account.equals(activeAccount)){
+                if (activeAccount != null & account.equals(activeAccount)) {
                     builder.append(" < =====active=====");
                 }
                 builder.append("\n............................");
             }
         }
+        System.out.println(builder);
         return builder.toString();
     }
 
-    @Override public void printReport() {
-        System.out.println(this);
+    public float getBalance(){
+        float balance = 0;
+        for(Account account:accounts){
+            balance += account.getBalance();
+        }
+        return balance;
     }
-
 }

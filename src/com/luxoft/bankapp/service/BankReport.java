@@ -74,7 +74,7 @@ public class BankReport implements Serializable{
     }
 
     public Map<String, List<Client>> getClientsByCity() {
-        Map<String, List<Client>> resultMap = new TreeMap<String, List<Client>>();
+        Map<String, List<Client>> resultMap = new TreeMap<>();
         for (Client client : bank.getClients()) {
             if (resultMap.containsKey(client.getCity())) {
                 resultMap.get(client.getCity()).add(client);
@@ -87,7 +87,7 @@ public class BankReport implements Serializable{
         for (String city : resultMap.keySet()) {
             List<Client> clientsByCity = resultMap.get(city);
             for (Client client : clientsByCity) {
-                report.append(city + "::" + client).append("\n");
+                report.append(city).append("::").append(client).append("\n");
                 System.out.println(city + "::" + client);
             }
         }

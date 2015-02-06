@@ -11,9 +11,6 @@ import com.luxoft.bankapp.dao.ClientDao;
  * Time: 9:04 PM
  */
 public class DaoFactory {
-    private static AccountDao accountDao;
-    private static ClientDao clientDao;
-    private static BankDao bankDao;
 
     private DaoFactory (){}
 
@@ -21,29 +18,20 @@ public class DaoFactory {
      * Get AccountDao
      */
     public static AccountDao getAccountDao(){
-        if(accountDao == null){
-            accountDao = new AccountDaoImpl();
-        }
-        return accountDao;
+        return AccountDaoImpl.getInstance();
     }
 
     /**
      * Get ClientDao
      */
     public static ClientDao getClientDao(){
-        if(clientDao == null){
-            clientDao = new ClientDaoImpl();
-        }
-        return clientDao;
+       return ClientDaoImpl.getInstance();
     }
 
     /**
      * Get BankDao
      */
     public static BankDao getBankDao(){
-        if(bankDao == null){
-            bankDao = new BankDaoImpl();
-        }
-        return bankDao;
+       return BankDaoImpl.getInstance();
     }
 }

@@ -23,11 +23,6 @@ public class CheckingAccountTest {
         account.setBalance(0.5f);
         assertEquals(0.5f, account.getBalance(), 0);
     }
-    @Test (expected = IllegalArgumentException.class)
-    public void testSetNegativeBalanceInConstructor() {
-        account = new CheckingAccount();
-        account.setBalance(-1.0f);
-    }
 
     @Test
     public void testDeposit() {

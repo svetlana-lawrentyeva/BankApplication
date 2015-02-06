@@ -4,7 +4,6 @@ import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.dao.impl.DaoFactory;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.exceptions.BankException;
-import com.luxoft.bankapp.model.exceptions.ClientExistsException;
 import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
@@ -21,7 +20,7 @@ public class ClientService {
      * Save client to database
      * @param client client that will be saved
      */
-    public Client save(Client client) throws ClientExistsException, DaoException {
+    public Client save(Client client) throws DaoException {
         return DaoFactory.getClientDao().save(client);
     }
 
@@ -75,16 +74,16 @@ public class ClientService {
      * @param client client to set active account
      * @param account account that will be set as active
      */
-    public void setActiveAccount(Client client, Account account) throws DaoException {
-        DaoFactory.getClientDao().setActiveAccount(client, account);
+    public void setActiveAccount(Client client, Account account) {
+        client.setActiveAccount(account);
     }
 
     /**
      * Remove active account from the client
      * @param client client's active account will be null
      */
-    public void removeActiveAccount(Client client) throws DaoException {
-        DaoFactory.getClientDao().removeActiveAccount(client);
+    public void removeActiveAccount(Client client) {
+        client.setActiveAccount(null);
     }
 
     /**
@@ -107,7 +106,7 @@ public class ClientService {
      * @param path path to load client from
      */
     public Client loadFromDisk(String path) throws BankException {
-        Client client = new Client();
+        Client client = null;
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
             client = (Client) ois.readObject();

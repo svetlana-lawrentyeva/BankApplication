@@ -22,8 +22,8 @@ public class DepositCommand extends AbstractCommand implements Command {
                 FindClientCommand command = new FindClientCommand(getCommander());
                 command.execute(io);
             }
-            Account account = getCommander().getCurrentClient().getActiveAccount();
-            while(account == null){
+            Account account = null;
+            while((account = getCommander().getCurrentClient().getActiveAccount()) == null){
                 ShowAllAccounts command = new ShowAllAccounts(getCommander());
                 command.execute(io);
             }
@@ -37,7 +37,7 @@ public class DepositCommand extends AbstractCommand implements Command {
             io.read();
         
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 

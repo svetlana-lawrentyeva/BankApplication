@@ -1,8 +1,6 @@
 package com.luxoft.bankapp.dao;
 
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 
@@ -20,13 +18,13 @@ public interface ClientDao {
      * @param bank bank to find client in
      * @param name name of client
      */
-    Client getByName(Bank bank, String name) throws ClientNotExistsException, DaoException;
+    Client getByName(Bank bank, String name) throws DaoException;
 
     /**
      * Get client by id
      * @param idClient id of client
      */
-    Client getById(long idClient) throws ClientNotExistsException, DaoException;
+    Client getById(long idClient) throws DaoException;
 
     /**
      * Get all clients in bank
@@ -51,26 +49,4 @@ public interface ClientDao {
          * @param bank bank to remove clients from
      */
     void removeAllByBank(Bank bank) throws DaoException;
-
-    /**
-     * remove all clients from the bank
-     * @param bank bank to remove clients from
-     */
-    void addClientToBank(Bank bank, Client client) throws DaoException;
-
-    /**
-     * Set client's active account
-     *
-     * @param client  client
-     * @param account account
-     */
-    void setActiveAccount(Client client, Account account) throws DaoException;
-
-    /**
-     * Remove the active account from the Client
-     *
-     * @param client client
-     */
-    void removeActiveAccount(Client client) throws DaoException;
-
 }

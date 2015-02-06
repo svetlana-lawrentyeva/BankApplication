@@ -24,8 +24,7 @@ public class BankTest {
 
     @Before
     public void init(){
-        bank = new Bank();
-        bank.setName("My bank");
+        bank = ServiceFactory.getBankService().getByName("My bank");
 
         Client client = new Client();
         client.setName("mark");
@@ -65,16 +64,18 @@ public class BankTest {
     @Test
     public void testRemoveClient() throws Exception {
         Client client = new Client();
-        client.setName("harry");
-        client.setCity("dnepr");
-        client.setGender(Gender.MALE);
-        Account account = new SavingAccount();
-        account.setBalance(10);
-        client.addAccount(account);
-        client.setActiveAccount(account);
-        bank.addClient(client);
-        Client client1 = ServiceFactory.getClientService().getByName(bank, "mark");
+        client.setName("name");
+        client.setGender(Gender.FEMALE);
+        client.setCity("city");
+        client.setPhone("111-1111111");
+        client.setEmail("email@email.com");
+        client.setBank(bank);
+        client.setOverdraft(123);
+        ServiceFactory.getClientService().save(client);
+        int startSize = ServiceFactory.getBankService().getClientsNumber(bank);
+        Client client1 = ServiceFactory.getClientService().getByName(bank, "name");
         ServiceFactory.getClientService().remove(client1);
-        assertEquals(1, bank.getClients().size());
+        int endSize = ServiceFactory.getBankService().getClientsNumber(bank);
+        assertEquals(startSize - endSize, 1);
     }
 }

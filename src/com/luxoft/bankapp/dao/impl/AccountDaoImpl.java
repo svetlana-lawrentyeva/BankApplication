@@ -3,7 +3,6 @@ package com.luxoft.bankapp.dao.impl;
 import com.luxoft.bankapp.dao.AccountDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
@@ -17,13 +16,25 @@ import java.util.List;
 
 public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
+    private static AccountDao instance;
+
+    private AccountDaoImpl(){}
+
+    public static AccountDao getInstance(){
+        if(instance == null){
+            instance = new AccountDaoImpl();
+        }
+        return instance;
+    }
+
     private Account insert(Account account) throws DaoException {
         Connection conn = openConnection();
-        String sql = "insert into accounts (balance, overdraft) values (?, ?)";
+        String sql = "insert into accounts (balance, overdraft, id_client) values (?, ?, ?)";
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setFloat(1, account.getBalance());
             preparedStatement.setFloat(2, account.getOverdraft());
+            preparedStatement.setLong(3, account.getClient().getId());
 
             if(preparedStatement.executeUpdate() == 0){
                 throw new DaoException("impossible to save account in db. transaction is rolled back");
@@ -111,7 +122,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
     @Override
     public List<Account> getAllByClient(Client client) throws DaoException {
-        List<Account>accounts = null;
+        List<Account>accounts;
         Connection conn = openConnection();
         String sql = "select * from accounts where id_client = (?)";
         try {
@@ -187,8 +198,6 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
-        } catch (ClientNotExistsException e) {
-            e.printStackTrace();
         }
         closeConnection();
         return account;
@@ -214,6 +223,33 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
         }
 
         closeConnection();
+    }
+
+    @Override public float getBalance(Account account) throws DaoException {
+        Connection conn = openConnection();
+        String sql = "select balance from accounts where id = (?)";
+        float balance;
+        try {
+            final PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setLong(1, account.getId());
+
+            if (!preparedStatement.execute()) {
+                throw new DaoException("impossible to get the account from db.");
+            }
+            ResultSet rs = preparedStatement.getResultSet();
+            if (!rs.next()) {
+                throw new DaoException("impossible to get the account from db.");
+            }
+            balance = rs.getFloat(1);
+
+            rs.close();
+            preparedStatement.close();
+
+        } catch (SQLException e) {
+            throw new DaoException(e.getMessage());
+        }
+        closeConnection();
+        return  balance;
     }
 
 }

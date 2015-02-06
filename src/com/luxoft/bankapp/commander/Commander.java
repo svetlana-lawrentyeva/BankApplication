@@ -65,13 +65,13 @@ public class Commander {
                     command.append(i).append(". ").append(commandMap.get(i).printCommandInfo()).append("\n");
                 }
                 command.append("your choice:");
-                io.write(command.toString());
+                io.write(command.toString()); // when connection closed server tried to send menu one more time
                 int choice = 0;
-                choice = Integer.parseInt(io.read());
+                choice = Integer.parseInt(io.read()); // and here it tried to read the answer from the client
                 commandMap.get(choice).execute(io);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("error: "+e.getMessage());
         }
     }
 

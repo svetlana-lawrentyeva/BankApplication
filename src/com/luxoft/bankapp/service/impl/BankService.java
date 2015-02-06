@@ -3,12 +3,16 @@ package com.luxoft.bankapp.service.impl;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.dao.impl.DaoFactory;
 import com.luxoft.bankapp.model.impl.Bank;
+import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.BankInfo;
 
-import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class BankService {
     /**
-     * Get bank by name from darabase
+     * Get bank by name from database
      * @param name name to get the bank
      */
     public Bank getByName(String name){
@@ -52,4 +56,31 @@ public class BankService {
         bank = getByName(bank.getName());
         return DaoFactory.getBankDao().getBankReport(bank);
     }
+
+    public BankInfo getBankInfo(Bank bank){
+        bank = getByName(bank.getName());
+        return DaoFactory.getBankDao().getBankInfo(bank);
+    }
+
+    public int getClientsNumber(Bank bank) throws DaoException {
+        return DaoFactory.getBankDao().getClientsNumber(bank);
+    }
+
+    public int getAccountsNumber(Bank bank) throws DaoException{
+        return DaoFactory.getBankDao().getAccountsNumber(bank);
+    }
+
+    public float getBankCreditSum(Bank bank) throws DaoException{
+        return DaoFactory.getBankDao().getBankCreditSum(bank);
+    }
+
+    public Map<String, List<Client>> getClientsByCity(Bank bank){
+        return DaoFactory.getBankDao().getClientsByCity(bank);
+    }
+
+    public Set<Client> getClientsSorted(Bank bank) throws DaoException{
+        return DaoFactory.getBankDao().getClientsSorted(bank);
+    }
+
+
 }

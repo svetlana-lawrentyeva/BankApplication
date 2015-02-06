@@ -7,5 +7,5 @@ public interface Report extends Serializable {
     /**
      * Print report
      */
-    void printReport();
+    String printReport();
 }

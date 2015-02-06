@@ -6,6 +6,8 @@ import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
 import com.luxoft.bankapp.model.impl.Client;
 
+import java.util.List;
+
 public class AccountService {
     /**
      * Save account to database
@@ -35,8 +37,8 @@ public class AccountService {
      * Get all accounts of the client from database
      * @param client client whose accounts will be get
      */
-    public void getAllByClient(Client client) throws DaoException {
-        DaoFactory.getAccountDao().getAllByClient(client);
+    public List<Account> getAllByClient(Client client) throws DaoException {
+        return DaoFactory.getAccountDao().getAllByClient(client);
     }
 
     /**
@@ -84,6 +86,14 @@ public class AccountService {
         account1.transfer(account2, x);
         DaoFactory.getAccountDao().save(account1);
         DaoFactory.getAccountDao().save(account2);
+    }
+
+    /**
+     * Get balance of the account
+     * @param account account to get balance
+     */
+    public float getBalance(Account account) throws DaoException {
+        return DaoFactory.getAccountDao().getBalance(account);
     }
 
 }

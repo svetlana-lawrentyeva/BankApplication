@@ -1,9 +1,12 @@
 package com.luxoft.bankapp.model.impl;
 
+import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.Gender;
+import com.luxoft.bankapp.model.exceptions.ClientExistsException;
 import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,27 +23,43 @@ import java.util.Set;
  */
 public class ClientTest {
 
+    private Bank bank;
     private Client client;
 
     @Before
     public void init(){
+        bank = ServiceFactory.getBankService().getByName("My bank");
         client = new Client();
-        client.setName("mark");
-        client.setGender(Gender.MALE);
+        client.setName("name");
+        client.setGender(Gender.FEMALE);
+        client.setCity("city");
+        client.setPhone("111-1111111");
+        client.setEmail("email@email.com");
+        client.setBank(bank);
         client.setOverdraft(10);
-        client.setPhone("888-8888888");
-        client.setCity("moscow");
-        client.setEmail("mark@mmm.ru");
-
-        Set<Account> accounts = new HashSet<>();
+        try {
+            ServiceFactory.getClientService().save(client);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
         Account account = new CheckingAccount();
         account.setBalance(50);
-        accounts.add(account);
+        client.addAccount(account);
         client.setActiveAccount(account);
-        Account account1 = new SavingAccount();
-        account1.setBalance(600);
-        accounts.add(account1);
-        client.setAccounts(accounts);
+        try {
+            ServiceFactory.getClientService().save(client);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @After
+    public void clear(){
+        try {
+            ServiceFactory.getClientService().remove(client);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -81,13 +100,7 @@ public class ClientTest {
         Account account = new SavingAccount();
         account.setBalance(9);
         client.addAccount(account);
-        assertEquals(3, client.getAccounts().size());
-    }
-
-    @Test
-    public void testToString() throws Exception {
-        String expecktedString = "Mr. mark  50.0";
-        assertTrue(client.toString().equals(expecktedString));
+        assertEquals(2, client.getAccounts().size());
     }
 
     @Test
@@ -99,41 +112,53 @@ public class ClientTest {
     @Test
     public void testTransfer() throws Exception {
         Client client1 = new Client();
-        client1.setName("elena");
+        client1.setName("name");
         client1.setGender(Gender.FEMALE);
-        client1.setOverdraft(50);
-        client1.setPhone("999-9999999");
-        client1.setCity("kharkov");
-        client1.setEmail("elena@mmm.ru");
-
-        Set<Account> accounts = new HashSet<>();
+        client1.setCity("city");
+        client1.setPhone("111-1111111");
+        client1.setEmail("email@email.com");
+        client1.setBank(bank);
+        client1.setOverdraft(10);
+        try {
+            ServiceFactory.getClientService().save(client1);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
         Account account = new CheckingAccount();
-        account.setBalance(20);
-        accounts.add(account);
+        account.setBalance(50);
+        client1.addAccount(account);
         client1.setActiveAccount(account);
-        client1.setAccounts(accounts);
 
         ServiceFactory.getAccountService().transfer(client.getActiveAccount(), client1.getActiveAccount(), 20);
 
-        assertEquals(30, client.getActiveAccount().getBalance(), 0);
-        assertEquals(40, client1.getActiveAccount().getBalance(), 0);
+        assertEquals(-10, client.getActiveAccount().getBalance(), 0);
+        assertEquals(70, client1.getActiveAccount().getBalance(), 0);
     }
 
     @Test
     public void testTransferTakenOverdraft() throws Exception {
         Client client1 = new Client();
-        client1.setName("elena");
+        client1.setName("name");
         client1.setGender(Gender.FEMALE);
-        client1.setOverdraft(50);
-        client1.setPhone("999-9999999");
-        client1.setCity("kharkov");
-        client1.setEmail("elena@mmm.ru");
-
-        Set<Account> accounts = new HashSet<>();
+        client1.setCity("city");
+        client1.setPhone("111-1111111");
+        client1.setEmail("email@email.com");
+        client1.setBank(bank);
+        client1.setOverdraft(10);
+        try {
+            ServiceFactory.getClientService().save(client);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
         Account account = new CheckingAccount();
-        accounts.add(account);
+        account.setBalance(50);
+        client1.addAccount(account);
         client1.setActiveAccount(account);
-        client1.setAccounts(accounts);
+        try {
+            ServiceFactory.getClientService().save(client1);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
 
         ServiceFactory.getAccountService().transfer(client.getActiveAccount(), client1.getActiveAccount(), 55);
 

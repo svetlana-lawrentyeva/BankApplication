@@ -30,6 +30,20 @@ public class CheckingAccount extends AbstractAccount {
         }
     }
 
+    @Override public int hashCode() {
+        return (int) (getClient().hashCode()+getBalance()+overdraft);
+    }
+
+    @Override public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (this.getClass() != obj.getClass()) return false;
+        CheckingAccount account = (CheckingAccount) obj;
+        return (this.getBalance() == account.getBalance() &&
+                this.overdraft == account.overdraft &&
+                this.getClient().equals(account.getClient()));
+    }
+
     //--------------------------------------------------
 
     @Override
@@ -55,15 +69,18 @@ public class CheckingAccount extends AbstractAccount {
     }
 
     @Override
-    public void printReport() {
-        System.out.println(this);
+    public String printReport() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n").append("Checking account #").append(getId()).append(". balance: ");
+        builder.append(getBalance()).append(", overdraft: ").append(overdraft);
+        System.out.println(builder);
+        return builder.toString();
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("\n").append("Checking account #").append(getId()).append(". balance: ");
-        builder.append(getBalance()).append(", overdraft: ").append(overdraft);
+        builder.append("Checking account #").append(getId());
         return builder.toString();
     }
 

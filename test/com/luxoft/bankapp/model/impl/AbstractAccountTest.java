@@ -48,8 +48,9 @@ public class AbstractAccountTest {
         }
 
         @Override
-        public void printReport() {
+        public String printReport() {
             System.out.println(this);
+            return  this.toString();
         }
 
         public String toString() {
@@ -64,12 +65,6 @@ public class AbstractAccountTest {
         sut = new TestingAccount();
         sut.setBalance(1.0f);
         assertEquals(1.0f, sut.getBalance(), 0);
-    }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void testSetNegativeBalanceInConstructor() {
-        sut = new TestingAccount();
-        sut.setBalance(-1.0f);
     }
 
     @Test
@@ -88,24 +83,4 @@ public class AbstractAccountTest {
         boolean res = sut.equals(sutTest);
         assertEquals(sut, sutTest);
     }
-
-    @Test
-    public void testEqualsWrongId() throws Exception {
-        sut = new TestingAccount();
-        sut.setBalance(0.5f);
-        TestingAccount sutTest = new TestingAccount();
-        sutTest.setBalance(0.5f);
-        assertFalse(sut.equals(sutTest));
-    }
-
-    @Test
-    public void testEqualsWrongBalance() throws Exception {
-        sut = new TestingAccount();
-        sut.setBalance(0.5f);
-        TestingAccount sutTest = new TestingAccount();
-        sutTest.setBalance(1.5f);
-        sutTest.setId(sut.getId());
-        assertFalse(sut.equals(sutTest));
-    }
-
 }

@@ -8,7 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 
-public class BaseDaoImpl implements BaseDao {
+public abstract class BaseDaoImpl implements BaseDao {
 
     private Connection connection;
     private final String CONNECTION_STRING = "jdbc:h2:tcp://localhost/~/BankApplication";

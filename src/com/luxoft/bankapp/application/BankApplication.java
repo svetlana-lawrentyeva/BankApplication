@@ -19,7 +19,9 @@ public class BankApplication {
 
     public static void main(String[] args) {
 
-        BankApplication bankApplication = new BankApplication();
+        try {
+
+       BankApplication bankApplication = new BankApplication();
         bankApplication.bank = ServiceFactory.getBankService().save(bankApplication.bank);
 
         bankApplication.clearBank();
@@ -31,6 +33,9 @@ public class BankApplication {
 
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ after modification ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         bankApplication.printBankReport();
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void clearBank(){
@@ -79,7 +84,7 @@ public class BankApplication {
 
             ServiceFactory.getAccountService().transfer(client1.getActiveAccount(), client2.getActiveAccount(), 10000);
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            System.out.println(e.getMessage());
         }
     }
 

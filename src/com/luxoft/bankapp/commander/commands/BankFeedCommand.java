@@ -21,7 +21,7 @@ public class BankFeedCommand extends AbstractCommand implements Command {
             io.write("execute successfully");
         
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 

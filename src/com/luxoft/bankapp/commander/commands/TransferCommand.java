@@ -56,7 +56,7 @@ public class TransferCommand extends AbstractCommand implements Command {
             io.read();
         
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 
