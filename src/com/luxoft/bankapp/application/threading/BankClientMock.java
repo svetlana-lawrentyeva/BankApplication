@@ -2,9 +2,9 @@ package com.luxoft.bankapp.application.threading;
 
 import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.application.io.IoFactory;
+import com.luxoft.bankapp.model.impl.Client;
 
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  * Created by SCJP on 06.02.15.
@@ -12,10 +12,14 @@ import java.util.Scanner;
 public class BankClientMock implements Runnable {
 
     public int name;
-    private String[]commandsArray = {"3", "Mike Greg", "\n", "409", "\n", "1", "\n", "8"};
+    private Client client;
+    private String[]commandsArray;
 
-    public BankClientMock(int name){
+    public BankClientMock(Client client, int name){
+        this.client = client;
         this.name = name;
+        commandsArray = new String[]{"3", client.getName(), "\n", String.valueOf(client.getActiveAccount().getId()),
+                "\n", "1", "\n", "8"};
     }
 
     @Override
