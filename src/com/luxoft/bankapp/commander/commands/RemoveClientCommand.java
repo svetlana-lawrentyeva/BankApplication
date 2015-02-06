@@ -1,14 +1,10 @@
 package com.luxoft.bankapp.commander.commands;
 
-import com.luxoft.bankapp.application.Io;
+import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
-
-import java.io.*;
 
 public class RemoveClientCommand extends AbstractCommand {
 
@@ -30,7 +26,7 @@ public class RemoveClientCommand extends AbstractCommand {
             getCommander().setCurrentClient(null);
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 

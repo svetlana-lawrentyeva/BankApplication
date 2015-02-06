@@ -1,5 +1,7 @@
 package com.luxoft.bankapp.application;
 
+import com.luxoft.bankapp.application.io.Io;
+import com.luxoft.bankapp.application.io.IoFactory;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.commander.commands.*;
@@ -23,45 +25,60 @@ public class BankServerCommander {
 
     public static void main(String[] args) {
         BankServerCommander serverCommander = new BankServerCommander();
+        serverCommander.commander = new Commander();
         try {
-            serverCommander.commander = new Commander();
             serverCommander.serverSocket = new ServerSocket(1998);
-            serverCommander.socket = serverCommander.serverSocket.accept();
-            serverCommander.init();
+            serverCommander.initConnection(serverCommander.serverSocket.accept());
+            serverCommander.initCommands();
+            serverCommander.initIo();
+            serverCommander.getCommander().start();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 
-    private void init() {
+    public  void initConnection(Socket socket){
+            this.socket = socket;
+    }
+
+    public void initCommands() {
         Map<Integer, Command> commandMap = new HashMap<>();
-        commandMap.put(0, new FindClientCommand(commander));
-        commandMap.put(1, new ShowAllAccounts(commander));
-        commandMap.put(2, new DepositCommand(commander));
-        commandMap.put(3, new WithdrawCommand(commander));
-        commandMap.put(4, new TransferCommand(commander));
-        commandMap.put(5, new AddClientCommand(commander));
-        commandMap.put(6, new RemoveClientCommand(commander));
-        commandMap.put(7, new BankInfoCommand(commander));
+        commandMap.put(0, new FindClientCommand(getCommander()));
+        commandMap.put(1, new ShowAllAccounts(getCommander()));
+        commandMap.put(2, new DepositCommand(getCommander()));
+        commandMap.put(3, new WithdrawCommand(getCommander()));
+        commandMap.put(4, new TransferCommand(getCommander()));
+        commandMap.put(5, new AddClientCommand(getCommander()));
+        commandMap.put(6, new RemoveClientCommand(getCommander()));
+        commandMap.put(7, new BankInfoCommand(getCommander()));
         commandMap.put(8, new Command() {
             @Override
             public void execute(Io io) {
-                System.exit(0);
+                io.write("stop");
             }
-
             @Override
             public String printCommandInfo() {
                 return "Exit";
             }
         });
-        commander.setCommandMap(commandMap);
+        getCommander().setCommandMap(commandMap);
+    }
+
+    public void initIo(){
         Io io = IoFactory.getStream("socket");
         try {
             io.setStreams(socket.getInputStream(), socket.getOutputStream());
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
-        commander.setIo(io);
-        commander.start();
+        getCommander().setIo(io);
+    }
+
+    public Commander getCommander() {
+        return commander;
+    }
+
+    public void setCommander(Commander commander) {
+        this.commander = commander;
     }
 }

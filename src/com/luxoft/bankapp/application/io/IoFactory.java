@@ -1,4 +1,4 @@
-package com.luxoft.bankapp.application;
+package com.luxoft.bankapp.application.io;
 
 /**
  * Created:

@@ -1,6 +1,6 @@
 package com.luxoft.bankapp.commander.commands;
 
-import com.luxoft.bankapp.application.Io;
+import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.model.Account;
@@ -47,7 +47,7 @@ public class AddAccountCommand extends AbstractCommand {
             io.read();
             
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 

@@ -1,4 +1,4 @@
-package com.luxoft.bankapp.application;
+package com.luxoft.bankapp.application.io;
 
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -1,14 +1,11 @@
 package com.luxoft.bankapp.commander.commands;
 
-import com.luxoft.bankapp.application.Io;
+import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.model.exceptions.BankException;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
-
-import java.io.*;
 
 public class LoadCommand extends AbstractCommand implements Command {
 
@@ -28,7 +25,7 @@ public class LoadCommand extends AbstractCommand implements Command {
             io.read();
         
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
 
     }

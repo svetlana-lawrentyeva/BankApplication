@@ -39,8 +39,6 @@ public class ClientTest {
         client.setOverdraft(10);
         try {
             ServiceFactory.getClientService().save(client);
-        } catch (ClientExistsException e) {
-            e.printStackTrace();
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -50,8 +48,6 @@ public class ClientTest {
         client.setActiveAccount(account);
         try {
             ServiceFactory.getClientService().save(client);
-        } catch (ClientExistsException e) {
-            e.printStackTrace();
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -125,8 +121,6 @@ public class ClientTest {
         client1.setOverdraft(10);
         try {
             ServiceFactory.getClientService().save(client1);
-        } catch (ClientExistsException e) {
-            e.printStackTrace();
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -153,8 +147,6 @@ public class ClientTest {
         client1.setOverdraft(10);
         try {
             ServiceFactory.getClientService().save(client);
-        } catch (ClientExistsException e) {
-            e.printStackTrace();
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -164,8 +156,6 @@ public class ClientTest {
         client1.setActiveAccount(account);
         try {
             ServiceFactory.getClientService().save(client1);
-        } catch (ClientExistsException e) {
-            e.printStackTrace();
         } catch (DaoException e) {
             e.printStackTrace();
         }

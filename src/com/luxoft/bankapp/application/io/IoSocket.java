@@ -1,4 +1,4 @@
-package com.luxoft.bankapp.application;
+package com.luxoft.bankapp.application.io;
 
 import java.io.*;
 
@@ -18,7 +18,7 @@ public class IoSocket implements Io {
             out.flush();
             in = new ObjectInputStream(is);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 
@@ -27,7 +27,7 @@ public class IoSocket implements Io {
             out.writeObject(message);
             out.flush();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 
@@ -36,8 +36,10 @@ public class IoSocket implements Io {
         try {
             message = (String) in.readObject();
         } catch (IOException e) {
+            System.out.println("error: "+e.getMessage());
             message = e.getMessage();
         } catch (ClassNotFoundException e) {
+            System.out.println("error: "+e.getMessage());
             message = e.getMessage();
         }
         return message;
@@ -48,7 +50,7 @@ public class IoSocket implements Io {
             in.close();
             out.close();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("error: "+e.getMessage());
         }
     }
 }

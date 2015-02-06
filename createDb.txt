@@ -103,3 +103,5 @@ update accounts set balance=(
 select a.balance from accounts as a where id=10)+200 where id=10;
 
 
+
+alter table clients drop column id_active_account;

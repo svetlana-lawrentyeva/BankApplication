@@ -1,5 +1,8 @@
 package com.luxoft.bankapp.application;
 
+import com.luxoft.bankapp.application.io.Io;
+import com.luxoft.bankapp.application.io.IoFactory;
+
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -13,11 +16,11 @@ public class BankClientRemoteOffice {
     public void start() {
         Io io = IoFactory.getStream("socket");
         try {
-            Socket socket = new Socket("localhost", 1998);
+            Socket socket = new Socket("localhost", 1999);
             io.setStreams(socket.getInputStream(), socket.getOutputStream());
             Scanner sc = new Scanner(System.in);
-            while(true){
-                String message = io.read();
+            String message;
+            while(!(message = io.read()).equals("stop")){
                 System.out.println(message);
                 io.write(sc.nextLine());
             }
