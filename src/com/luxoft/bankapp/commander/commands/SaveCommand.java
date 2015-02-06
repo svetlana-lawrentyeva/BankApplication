@@ -1,30 +1,33 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.io.Io;
+import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class SaveCommand extends AbstractCommand implements Command {
+
     public SaveCommand(Commander commander) {
         super(commander);
     }
 
     @Override
-    public Response execute(String param) {  // "./objects"
-        Client currentClient = null;
-        String message = null;
-        try{
-        currentClient = getCommander().getCurrentClient();
-        ServiceFactory.getClientService().save(currentClient);
-        message = "Client " + currentClient.getClientSalutation() + " successfully saved";
-        } catch (Exception e){
-            message = e.getMessage();
+    public void execute(Io io) {  // "./objects"
+        try {
+            Client client = null;
+            while ((client = getCommander().getCurrentClient()) == null) {
+                FindClientCommand command = new FindClientCommand(getCommander());
+                command.execute(io);
+            }
+            ServiceFactory.getClientService().save(client);
+            io.write("Client " + client.getClientSalutation() + " successfully saved\nenter for continue");
+            io.read();
+        
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-        setResponse(currentClient, message);
-        return getResponse();
     }
 
     @Override

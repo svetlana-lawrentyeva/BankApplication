@@ -1,8 +1,10 @@
 package com.luxoft.bankapp.commander;
 
+import com.luxoft.bankapp.application.io.Io;
+
 public interface Command {
 
-    Response execute(String param);
+    void execute(Io io);
 
     String printCommandInfo();
 }

@@ -1,30 +1,32 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.io.Io;
+import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class LoadCommand extends AbstractCommand implements Command {
+
     public LoadCommand(Commander commander) {
         super(commander);
     }
 
     @Override
-    public Response execute(String param) {  //"./objects"
-        Client client = null;
-        String message = "";
-        try{
-        client = ServiceFactory.getClientService().loadFromDisk(param);
-        getCommander().setCurrentClient(client);
-            message = client.toString() + " is loaded";
-        } catch (Exception e){
-            message = e.getMessage();
+    public void execute(Io io) {  //"./objects"
+        try {
+            Client client = null;
+            io.write("path:");
+            
+            client = ServiceFactory.getClientService().loadFromDisk((String) io.read());
+            getCommander().setCurrentClient(client);
+               io.write(client.toString() + " is loaded\nenter for continue");
+            io.read();
+        
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-        setResponse(client, message);
-        return getResponse();
 
     }
 

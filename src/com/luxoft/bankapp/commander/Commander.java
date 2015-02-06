@@ -1,36 +1,42 @@
 package com.luxoft.bankapp.commander;
 
+import com.luxoft.bankapp.application.io.Io;
+import com.luxoft.bankapp.application.io.IoFactory;
 import com.luxoft.bankapp.commander.commands.*;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-public class Commander{
+public class Commander {
 
     private Client currentClient;
-    private Bank currentBank;
+    private Bank currentBank = ServiceFactory.getBankService().getByName("My bank");
     private Map<Integer, Command> commandMap = new HashMap<>();
-    private String[] commandRequest = new String[12];
+    private Io io;
 
-    public Commander() {
+    private void init() {
+
         commandMap.put(0, new FindClientCommand(this));
-        commandMap.put(1, new GetActiveAccountCommand(this));
-        commandMap.put(2, new WithdrawCommand(this));
-        commandMap.put(3, new DepositCommand(this));
+        commandMap.put(1, new ShowAllAccounts(this));
+        commandMap.put(2, new DepositCommand(this));
+        commandMap.put(3, new WithdrawCommand(this));
         commandMap.put(4, new TransferCommand(this));
         commandMap.put(5, new AddClientCommand(this));
-        commandMap.put(6, new RemoveClientCommand(this));
-        commandMap.put(7, new BankFeedCommand(this));
+        commandMap.put(6, new AddAccountCommand(this));
+        commandMap.put(7, new RemoveClientCommand(this));
         commandMap.put(8, new LoadCommand(this));
         commandMap.put(9, new SaveCommand(this));
         commandMap.put(10, new BankInfoCommand(this));
-        commandMap.put(11, new Command() {
-
+        commandMap.put(11, new BankFeedCommand(this));
+        commandMap.put(12, new Command() {
             @Override
-            public Response execute(String ask) {
+            public void execute(Io io) {
                 System.exit(0);
-                return null;
             }
 
             @Override
@@ -38,19 +44,35 @@ public class Commander{
                 return "Exit";
             }
         });
+        io = IoFactory.getStream("console");
+        io.setStreams(System.in, System.out);
 
-        commandRequest[0] = "name:";
-        commandRequest[1] = "";
-        commandRequest[2] = "money to withdraw:";
-        commandRequest[3] = "money to deposit:";
-        commandRequest[4] = "name:&money to transfer:";
-        commandRequest[5] = "account type(c|s):&balance:&overdraft:&name:&gender(m|f):&city:";
-        commandRequest[6] = "name:";
-        commandRequest[7] = "feed, path from:";
-        commandRequest[8] = "path to load:";
-        commandRequest[9] = "path to save:";
-        commandRequest[10] = "";
-        commandRequest[11] = "exit";
+    }
+
+    public static void main(String[] args) {
+        Commander commander = new Commander();
+        commander.init();
+        commander.start();
+        commander.io.closeStreams();
+    }
+
+    public void start() {
+        try {
+            while (true) {
+                StringBuilder command = new StringBuilder();
+                Set<Integer> commandSet = commandMap.keySet();
+                for (int i = 0; i < commandSet.size(); ++i) {
+                    command.append(i).append(". ").append(commandMap.get(i).printCommandInfo()).append("\n");
+                }
+                command.append("your choice:");
+                io.write(command.toString());
+                int choice = 0;
+                choice = Integer.parseInt(io.read());
+                commandMap.get(choice).execute(io);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Client getCurrentClient() {
@@ -78,14 +100,14 @@ public class Commander{
     }
 
     public void setCommandMap(Map<Integer, Command> map) {
-        this.commandMap.putAll(map);
+        this.commandMap = map;
     }
 
     public Map<Integer, Command> getCommandMap() {
         return Collections.unmodifiableMap(commandMap);
     }
 
-    public List<String> getCommandRequest() {
-        return Arrays.asList(commandRequest);
+    public void setIo(Io io){
+        this.io = io;
     }
 }

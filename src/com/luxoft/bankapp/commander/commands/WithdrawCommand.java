@@ -1,31 +1,43 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.io.Io;
+import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.AbstractCommand;
+import com.luxoft.bankapp.model.Account;
+import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class WithdrawCommand extends AbstractCommand implements Command {
-
 
     public WithdrawCommand(Commander commander) {
         super(commander);
     }
 
     @Override
-    public Response execute(String param) {
-        float x = Float.parseFloat(param);
-        StringBuilder message = new StringBuilder();
+    public void execute(Io io) {
         try {
+            Client client = null;
+            while ((client = getCommander().getCurrentClient()) == null) {
+                FindClientCommand command = new FindClientCommand(getCommander());
+                command.execute(io);
+            }
+            Account account = getCommander().getCurrentClient().getActiveAccount();
+            while (account == null) {
+                ShowAllAccounts command = new ShowAllAccounts(getCommander());
+                command.execute(io);
+            }
+            io.write("money to withdraw:");
+            float x = Float.parseFloat((String) io.read());
             ServiceFactory.getAccountService().withdraw(getCommander().getCurrentClient().getActiveAccount(), x);
-            message.append("Current client's active account " +
-                    ServiceFactory.getAccountService().getAccountInfo(getCommander().getCurrentClient().getActiveAccount()));
+            io.write("Current client's active account " +
+                    getCommander().getCurrentClient().getActiveAccount() + " balance: " +
+                    getCommander().getCurrentClient().getActiveAccount().getBalance() + "\nenter for continue ");
+            io.read();
         } catch (Exception e) {
-            message.append(e.getMessage()).append(":");
+            System.out.println(e.getMessage());
         }
-        setResponse(null,message.toString());
-        return getResponse();
+
     }
 
     @Override

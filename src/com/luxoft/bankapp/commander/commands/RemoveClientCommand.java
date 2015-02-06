@@ -1,8 +1,8 @@
 package com.luxoft.bankapp.commander.commands;
 
-import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
+import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
+import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
@@ -12,20 +12,22 @@ public class RemoveClientCommand extends AbstractCommand {
         super(commander);
     }
 
-    @Override public Response execute(String param) {
-            String name = param;
+    @Override
+    public void execute(Io io) {
+        try {
             Client client = null;
-            String message = "";
-            try {
-                client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), name);
-                ServiceFactory.getClientService().remove(client);
-                message = "Client " + client.getClientSalutation() + " is deleted";
-                getCommander().setCurrentClient(null);
-            } catch (Exception e) {
-                message = e.getMessage();
+            while ((client = getCommander().getCurrentClient()) == null) {
+                FindClientCommand command = new FindClientCommand(getCommander());
+                command.execute(io);
             }
-            setResponse(client, message);
-            return getResponse();
+            ServiceFactory.getClientService().remove(client);
+            io.write("Client " + client.getClientSalutation() + " is deleted\nenter for continue");
+            io.read();
+            getCommander().setCurrentClient(null);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override public String printCommandInfo() {

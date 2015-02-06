@@ -1,8 +1,8 @@
 package com.luxoft.bankapp.commander.commands;
 
-import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
+import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
+import com.luxoft.bankapp.commander.Commander;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
@@ -12,24 +12,23 @@ public class FindClientCommand extends AbstractCommand {
         super(commander);
     }
 
-    public Response execute(String param) {
-        String name = param;
-        Client client = null;
-        String message = "";
+    public void execute(Io io) {
         try {
-            client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), name);
-            message = "Client " + client.getClientSalutation() + " is checked";
+
+            io.write("name:");
+            
+            Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), io.read());
             getCommander().setCurrentClient(client);
+            io.write("Client " + client.getClientSalutation() + " is checked\nenter for continue");
+            io.read();
+            
         } catch (Exception e) {
-            message = e.getMessage();
+            System.out.println(e.getMessage());
         }
-        setResponse(client, message);
-        return getResponse();
     }
 
     @Override
     public String printCommandInfo() {
         return "Find client";
     }
-
 }

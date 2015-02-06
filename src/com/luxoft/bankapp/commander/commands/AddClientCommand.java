@@ -1,10 +1,12 @@
 package com.luxoft.bankapp.commander.commands;
 
+import com.luxoft.bankapp.application.io.Io;
+import com.luxoft.bankapp.commander.AbstractCommand;
 import com.luxoft.bankapp.commander.Command;
 import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
-import com.luxoft.bankapp.commander.AbstractCommand;
+import com.luxoft.bankapp.model.Gender;
 import com.luxoft.bankapp.model.impl.Client;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class AddClientCommand extends AbstractCommand implements Command {
 
@@ -13,27 +15,45 @@ public class AddClientCommand extends AbstractCommand implements Command {
     }
 
     @Override
-    public Response execute(String param) {
-        Client client = null;
-        String message = "";
-        String[] params = param.split("&");
-        StringBuilder builder = new StringBuilder();
-        builder.append("accounttype=").append(params[0]).append(";");
-        builder.append("balance=").append(params[1]).append(";");
-        builder.append("overdraft=").append(params[2]).append(";");
-        builder.append("name=").append(params[3]).append(";");
-        builder.append("gender=").append(params[4]).append(";");
-        builder.append("city=").append(params[5]).append(";");
+    public void execute(Io io) {
         try {
-            client = this.getService().parseFeed(getCommander().getCurrentBank(), builder.toString());
+            Client client = new Client();
+            
+            while (client.getName().equals("")) {
+                io.write("name:");
+                client.setName(io.read());
+            }
+
+            io.write("city:");
+            client.setCity(io.read());
+
+            while (client.getEmail().equals("")) {
+                io.write("email:");
+                client.setEmail(io.read());
+            }
+            
+            while (client.getPhone().equals("")) {
+                io.write("phone:");
+                client.setPhone(io.read());
+            }
+
+            io.write("overdraft:");
+            client.setOverdraft(Float.parseFloat(io.read()));
+
+            io.write("gender (m|f):");
+            client.setGender(Gender.getGender(io.read()));
+
+            getCommander().getCurrentBank().addClient(client);
+            client = ServiceFactory.getClientService().save(client);
             getCommander().setCurrentClient(client);
-            message = "Client " + client.getClientSalutation() + " successfully added";
+            io.write("Client " + client.getClientSalutation() + " successfully added\nenter for continue");
+            io.read();
+        
         } catch (Exception e) {
-            message = e.getMessage();
+            System.out.println(e.getMessage());
         }
-        setResponse(client, message);
-        return getResponse();
     }
+
 
     @Override
     public String printCommandInfo() {

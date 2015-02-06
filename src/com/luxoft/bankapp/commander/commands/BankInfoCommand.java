@@ -1,9 +1,9 @@
 package com.luxoft.bankapp.commander.commands;
 
-import com.luxoft.bankapp.commander.Commander;
-import com.luxoft.bankapp.commander.Response;
+import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.commander.AbstractCommand;
-import com.luxoft.bankapp.service.BankInfo;
+import com.luxoft.bankapp.commander.Commander;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 /**
  * Created by nau on 22.01.15.
@@ -15,11 +15,13 @@ public class BankInfoCommand extends AbstractCommand {
     }
 
     @Override
-    public Response execute(String param) {
-        BankInfo bankInfo = getService().getBankInfo(getCommander().getCurrentBank());
-        String message = "Bank info";
-        setResponse(bankInfo, message);
-        return getResponse();
+    public void execute(Io io) {
+        try {
+            io.write(ServiceFactory.getBankService().getBankInfo(getCommander().getCurrentBank()).toString()+ "\nenter for continue ");
+            io.read();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
