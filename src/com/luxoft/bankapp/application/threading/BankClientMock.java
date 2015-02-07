@@ -16,6 +16,7 @@ public class BankClientMock implements Runnable {
     private String[]commandsArray;
 
     public BankClientMock(Client client, int name){
+//        System.out.println("thread "+name+" start");
         this.client = client;
         this.name = name;
         commandsArray = new String[]{"3", client.getName(), "\n", String.valueOf(client.getActiveAccount().getId()),
@@ -31,12 +32,14 @@ public class BankClientMock implements Runnable {
             String message;
             for(String command:commandsArray){
                 message = io.read();
-                System.out.println("thread " + name +" command "+ command);
                 io.write(command);
+                String answer = command.equals("\n") ? "enter" : command;
+                System.out.println(message+":"+answer);
             }
         } catch (Exception e) {
-            System.out.println("error: " + e.getMessage());
+//            System.out.println("error: " + e.getMessage());
         }
         io.closeStreams();
+//        System.out.println("thread " + name + " finish");
     }
 }

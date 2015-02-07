@@ -1,6 +1,5 @@
 package com.luxoft.bankapp.application.threading;
 
-import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.AccountType;
 import com.luxoft.bankapp.model.Gender;
@@ -9,8 +8,6 @@ import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -20,27 +17,27 @@ public class BankServerThreadedTest {
     private static Bank bank;
     private static Client client;
 
-    @BeforeClass
-    public static void createMockClient(){
-        bank = ServiceFactory.getBankService().getByName("My bank");
-        client = createClient("Ivan Ivanov", Gender.MALE, "Moscow", "123-4567890", "ivanov@gmail.com", 5000);
-        Account account = createAccount(client, 50000, AccountType.CHECKING_ACCOUNT);
-        client.setActiveAccount(account);
-        try {
-            ServiceFactory.getClientService().save(client);
-        } catch (DaoException e) {
-            System.out.println("error class: BankServerThreadedTest, method: createMockClient() - " + e.getMessage());
-        }
-    }
-
-    @AfterClass
-    public static void removeClient(){
-        try {
-            ServiceFactory.getClientService().remove(client);
-        } catch (DaoException e) {
-            System.out.println("error class: BankServerThreadedTest, method: removeClient() - " + e.getMessage());
-        }
-    }
+//    @BeforeClass
+//    public static void createMockClient(){
+//        bank = ServiceFactory.getBankService().getByName("My bank");
+//        client = createClient("Ivan Ivanov", Gender.MALE, "Moscow", "123-4567890", "ivanov@gmail.com", 5000);
+//        Account account = createAccount(client, 50000, AccountType.CHECKING_ACCOUNT);
+//        client.setActiveAccount(account);
+//        try {
+//            ServiceFactory.getClientService().save(client);
+//        } catch (DaoException e) {
+//            System.out.println("error class: BankServerThreadedTest, method: createMockClient() - " + e.getMessage());
+//        }
+//    }
+//
+//    @AfterClass
+//    public static void removeClient(){
+//        try {
+//            ServiceFactory.getClientService().remove(client);
+//        } catch (DaoException e) {
+//            System.out.println("error class: BankServerThreadedTest, method: removeClient() - " + e.getMessage());
+//        }
+//    }
 
     private static Client createClient(String name, Gender gender, String city, String phone, String email, float overdraft) {
         Client client = new Client();
@@ -72,15 +69,28 @@ public class BankServerThreadedTest {
 
     @Test
     public void clientWithdrawTest(){
-        for(int i = 0;i<1000;++i){
+        bank = ServiceFactory.getBankService().getByName("My bank");
+        try {
+            client = ServiceFactory.getClientService().getByName(bank, "Ivan Ivanov");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        Account account = client.getAccounts().iterator().next();
+        float difference = account.getBalance();
+        System.out.println("Ivan Ivanov at the beginning had "+difference+" money");
+        client.setActiveAccount(account);
+        for(int i = 0;i<1;++i){
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 System.out.println("error class: BankServerThreadedTest, method: clientWithdrawTest() - "+e.getMessage());
             }
-            System.out.println(i);
-            new Thread(new BankClientMock(client, i)).start();
+            BankClientMock mock = new BankClientMock(client, i);
+            Thread thread = new Thread(mock);
+            thread.start();
         }
+        System.out.println("Ivan Ivanov in the end had " + account.getBalance() + " money");
+        System.out.println("the difference is "+(difference-account.getBalance()));
     }
 
 }

@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BankServerThreaded {
     private static int PORT = 1999;
-    private static int POOL_SIZE = 2;
+    private static int POOL_SIZE = 10;
     private ServerSocket serverSocket;
     private ExecutorService pool;
     private boolean running = true;
