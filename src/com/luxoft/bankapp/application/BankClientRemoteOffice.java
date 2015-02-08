@@ -2,6 +2,7 @@ package com.luxoft.bankapp.application;
 
 import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.application.io.IoFactory;
+import com.luxoft.bankapp.application.threading.BankServerThreaded;
 
 import java.net.Socket;
 import java.util.Scanner;
@@ -16,7 +17,7 @@ public class BankClientRemoteOffice {
     public void start() {
         Io io = IoFactory.getStream("socket");
         try {
-            Socket socket = new Socket("localhost", 1999);
+            Socket socket = new Socket("localhost", BankServerThreaded.PORT);
             io.setStreams(socket.getInputStream(), socket.getOutputStream());
             Scanner sc = new Scanner(System.in);
             String message;
@@ -25,7 +26,7 @@ public class BankClientRemoteOffice {
                 io.write(sc.nextLine());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         io.closeStreams();
     }

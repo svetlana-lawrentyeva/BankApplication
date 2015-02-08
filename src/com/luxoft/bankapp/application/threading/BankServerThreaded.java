@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BankServerThreaded {
-    private static int PORT = 1999;
+    public static int PORT = 2579;
     private static int POOL_SIZE = 10;
     private ServerSocket serverSocket;
     private ExecutorService pool;
@@ -42,7 +42,7 @@ public class BankServerThreaded {
                 pool.execute(new ServerThread(clientSocket));
             }
         } catch (IOException e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         } finally {
             pool.shutdown();
         }

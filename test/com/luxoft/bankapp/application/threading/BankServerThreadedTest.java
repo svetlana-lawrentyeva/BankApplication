@@ -1,14 +1,20 @@
 package com.luxoft.bankapp.application.threading;
 
+import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.AccountType;
 import com.luxoft.bankapp.model.Gender;
+import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * Created by SCJP on 06.02.15.
@@ -67,30 +73,63 @@ public class BankServerThreadedTest {
         return account;
     }
 
-    @Test
-    public void clientWithdrawTest(){
+//    @Test
+//    public void clientWithdrawTest(){
+    public static void main(String[] args) {
         bank = ServiceFactory.getBankService().getByName("My bank");
         try {
             client = ServiceFactory.getClientService().getByName(bank, "Ivan Ivanov");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         Account account = client.getAccounts().iterator().next();
-        float difference = account.getBalance();
-        System.out.println("Ivan Ivanov at the beginning had "+difference+" money");
+        int rounds = 40;
+        float startBalance = account.getBalance();
         client.setActiveAccount(account);
-        for(int i = 0;i<1;++i){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                System.out.println("error class: BankServerThreadedTest, method: clientWithdrawTest() - "+e.getMessage());
-            }
+        ExecutorService pool = Executors.newFixedThreadPool(10);
+        List<Future> futureList = new ArrayList<>();
+        for(int i = 0;i<rounds;++i){
             BankClientMock mock = new BankClientMock(client, i);
-            Thread thread = new Thread(mock);
-            thread.start();
+            futureList.add(pool.submit(mock));
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
         }
-        System.out.println("Ivan Ivanov in the end had " + account.getBalance() + " money");
-        System.out.println("the difference is "+(difference-account.getBalance()));
+        for(Future f:futureList){
+            try {
+                f.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        pool.shutdown();
+        try {
+            account = ServiceFactory.getAccountService().getById(account.getId());
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
+        float finishBalance = account.getBalance();
+        float difference = startBalance - finishBalance;
+        System.out.println("differense: "+difference);
+    }
+
+//    @Test
+    public void test2(){
+        try {
+            bank = ServiceFactory.getBankService().getByName("My bank");
+            client = ServiceFactory.getClientService().getByName(bank, "Ivan Ivanov");
+            Account account = client.getAccounts().iterator().next();
+            client.setActiveAccount(account);
+        } catch (ClientNotExistsException e) {
+            e.printStackTrace();
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
+        new Thread(new BankClientMock(client, 100)).start();
     }
 
 }

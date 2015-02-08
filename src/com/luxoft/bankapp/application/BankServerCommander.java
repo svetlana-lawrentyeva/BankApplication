@@ -31,10 +31,11 @@ public class BankServerCommander {
             serverCommander.initConnection(serverCommander.serverSocket.accept());
             serverCommander.initCommands();
             serverCommander.initIo();
-            serverCommander.getCommander().start();
+            serverCommander.start();
         } catch (IOException e) {
             System.out.println("error: "+e.getMessage());
         }
+        serverCommander.commander.closeIo();
     }
 
     public  void initConnection(Socket socket){
@@ -61,7 +62,7 @@ public class BankServerCommander {
                 return "Exit";
             }
         });
-        getCommander().setCommandMap(commandMap);
+        commander.setCommandMap(commandMap);
     }
 
     public void initIo(){
@@ -71,7 +72,7 @@ public class BankServerCommander {
         } catch (IOException e) {
             System.out.println("error: "+e.getMessage());
         }
-        getCommander().setIo(io);
+       commander.setIo(io);
     }
 
     public Commander getCommander() {
@@ -80,5 +81,13 @@ public class BankServerCommander {
 
     public void setCommander(Commander commander) {
         this.commander = commander;
+    }
+
+    public void start(){
+        commander.start();
+    }
+
+    public void closeIo(){
+        commander.closeIo();
     }
 }

@@ -7,8 +7,11 @@ import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
 import com.luxoft.bankapp.model.impl.Client;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AccountService {
+    Lock lock = new ReentrantLock();
     /**
      * Save account to database
      * @param account account to be saved
@@ -63,8 +66,11 @@ public class AccountService {
      * @param x money to deposit
      */
     public void deposit(Account account, float x) throws DaoException {
+        lock.lock();
+        account.setBalance(getBalance(account));
         account.deposit(x);
         DaoFactory.getAccountDao().save(account);
+        lock.unlock();
     }
 
     /**
@@ -73,8 +79,11 @@ public class AccountService {
      * @param x money to withdraw
      */
     public void withdraw(Account account, float x) throws NotEnoughFundsException, DaoException {
+        lock.lock();
+        account.setBalance(getBalance(account));
         account.withdraw(x);
         DaoFactory.getAccountDao().save(account);
+        lock.unlock();
     }
 
     /**
@@ -83,9 +92,13 @@ public class AccountService {
      * @param account2 account money to which will be put
      */
     public void transfer(Account account1, Account account2, float x) throws NotEnoughFundsException, DaoException {
+        lock.lock();
+        account1.setBalance(getBalance(account1));
+        account2.setBalance(getBalance(account2));
         account1.transfer(account2, x);
         DaoFactory.getAccountDao().save(account1);
         DaoFactory.getAccountDao().save(account2);
+        lock.unlock();
     }
 
     /**

@@ -20,7 +20,7 @@ public class BankInfoCommand extends AbstractCommand {
             io.write(ServiceFactory.getBankService().getBankInfo(getCommander().getCurrentBank()).toString() + "\nenter for continue ");
             io.read();
         } catch (Exception e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
     }
 

@@ -22,6 +22,7 @@ public class ServerThread implements Runnable {
         BankServerThreaded.getCounter().decrementAndGet();
         serverCommander.initCommands();
         serverCommander.initIo();
-        serverCommander.getCommander().start();
+        serverCommander.start();
+        serverCommander.closeIo();
     }
 }

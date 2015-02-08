@@ -37,7 +37,7 @@ public class DepositCommand extends AbstractCommand implements Command {
             io.read();
         
         } catch (Exception e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
     }
 

@@ -12,13 +12,17 @@ public class IoSocket implements Io {
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
+    public IoSocket(){
+//        System.out.println(Thread.currentThread().getName()+" new io socket created...");
+    }
+
     @Override public void setStreams(InputStream is, OutputStream os){
         try {
             out = new ObjectOutputStream(os);
             out.flush();
             in = new ObjectInputStream(is);
         } catch (IOException e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -27,7 +31,7 @@ public class IoSocket implements Io {
             out.writeObject(message);
             out.flush();
         } catch (IOException e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -39,8 +43,8 @@ public class IoSocket implements Io {
             System.out.println("error: "+e.getMessage());
             message = e.getMessage();
         } catch (ClassNotFoundException e) {
-            System.out.println("error: "+e.getMessage());
-            message = e.getMessage();
+            e.printStackTrace();
+            message = "from other side received error: "+e.getMessage();
         }
         return message;
     }
@@ -49,8 +53,9 @@ public class IoSocket implements Io {
         try {
             in.close();
             out.close();
+//            System.out.println("streams are closed...");
         } catch (IOException e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
     }
 }

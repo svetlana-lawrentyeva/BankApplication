@@ -13,21 +13,30 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
-    private static AccountDao instance;
+    private static volatile AccountDao instance;
+    private static Object accountMonitor = new Object();
+    private Lock lock = BaseDaoImpl.lock;
 
     private AccountDaoImpl(){}
 
     public static AccountDao getInstance(){
         if(instance == null){
-            instance = new AccountDaoImpl();
+            synchronized (accountMonitor) {
+                if(instance==null) {
+                    instance = new AccountDaoImpl();
+                }
+            }
         }
         return instance;
     }
 
     private Account insert(Account account) throws DaoException {
+        lock.lock();
         Connection conn = openConnection();
         String sql = "insert into accounts (balance, overdraft, id_client) values (?, ?, ?)";
         try {
@@ -51,14 +60,15 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             throw new DaoException(e.getMessage());
         }
         closeConnection();
+        lock.unlock();
 
         return account;
     }
 
     @Override
     public Account save(Account account) throws DaoException {
+        lock.lock();
         Connection conn = openConnection();
-
         if(account.getId() == -1){
             account = insert(account);
         } else {
@@ -80,12 +90,14 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             }
         }
         closeConnection();
+        lock.unlock();
 
         return account;
     }
 
     @Override
     public void remove(Account account) throws DaoException {
+        lock.lock();
         Connection conn = openConnection();
         String sql = "delete from accounts where id = (?)";
         try {
@@ -100,10 +112,12 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             throw new DaoException(e.getMessage());
         }
         closeConnection();
+        lock.unlock();
     }
 
     @Override
     public void removeAllByClient(Client client) throws DaoException {
+        lock.lock();
         Connection conn = openConnection();
         String sql = "delete from accounts where id_client = (?)";
         try {
@@ -118,10 +132,12 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             throw new DaoException(e.getMessage());
         }
         closeConnection();
+        lock.unlock();
     }
 
     @Override
     public List<Account> getAllByClient(Client client) throws DaoException {
+        lock.lock();
         List<Account>accounts;
         Connection conn = openConnection();
         String sql = "select * from accounts where id_client = (?)";
@@ -157,11 +173,13 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             throw new DaoException(e.getMessage());
         }
         closeConnection();
+        lock.unlock();
         return accounts;
     }
 
     @Override
     public Account getById(long idAccount) throws DaoException {
+        lock.lock();
         Account account = null;
         Connection conn = openConnection();
         String sql = "select * from accounts where id = (?)";
@@ -200,11 +218,13 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             throw new DaoException(e.getMessage());
         }
         closeConnection();
+        lock.unlock();
         return account;
     }
 
     @Override
     public void addAccountToClient(Client client, Account account) throws DaoException {
+        lock.lock();
         Connection conn = openConnection();
 
         String sql = "update accounts set id_client = (?) where id = (?)";
@@ -223,9 +243,11 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
         }
 
         closeConnection();
+        lock.unlock();
     }
 
     @Override public float getBalance(Account account) throws DaoException {
+        lock.lock();
         Connection conn = openConnection();
         String sql = "select balance from accounts where id = (?)";
         float balance;
@@ -249,6 +271,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             throw new DaoException(e.getMessage());
         }
         closeConnection();
+        lock.unlock();
         return  balance;
     }
 

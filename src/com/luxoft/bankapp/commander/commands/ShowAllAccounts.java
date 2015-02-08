@@ -42,7 +42,7 @@ public class ShowAllAccounts extends AbstractCommand {
             io.read();
         
         } catch (Exception e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
     }
 

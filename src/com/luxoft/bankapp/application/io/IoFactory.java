@@ -7,7 +7,7 @@ package com.luxoft.bankapp.application.io;
  * Time: 7:22 PM
  */
 public class IoFactory {
-    public static Io getStream(String type){
+    public synchronized static Io getStream(String type){
         switch (type){
             case "socket":
                 return new IoSocket();

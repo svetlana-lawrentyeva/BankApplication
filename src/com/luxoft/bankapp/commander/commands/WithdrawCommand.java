@@ -35,7 +35,7 @@ public class WithdrawCommand extends AbstractCommand implements Command {
                     getCommander().getCurrentClient().getActiveAccount().getBalance() + "\nenter for continue ");
             io.read();
         } catch (Exception e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
 
     }

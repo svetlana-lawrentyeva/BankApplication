@@ -53,12 +53,13 @@ public class Commander {
         Commander commander = new Commander();
         commander.init();
         commander.start();
-        commander.io.closeStreams();
+        commander.closeIo();
     }
 
     public void start() {
+        boolean _continue = true;
         try {
-            while (true) {
+            while (_continue) {
                 StringBuilder command = new StringBuilder();
                 Set<Integer> commandSet = commandMap.keySet();
                 for (int i = 0; i < commandSet.size(); ++i) {
@@ -67,11 +68,15 @@ public class Commander {
                 command.append("your choice:");
                 io.write(command.toString()); // when connection closed server tried to send menu one more time
                 int choice = 0;
-                choice = Integer.parseInt(io.read()); // and here it tried to read the answer from the client
+                String choiceString = io.read();
+                choice = Integer.parseInt(choiceString); // and here it tried to read the answer from the client
                 commandMap.get(choice).execute(io);
+                if(!(choice<commandMap.size()-1)){
+                    _continue = false;
+                }
             }
         } catch (Exception e) {
-            System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -109,5 +114,9 @@ public class Commander {
 
     public void setIo(Io io){
         this.io = io;
+    }
+
+    public void closeIo(){
+        io.closeStreams();
     }
 }
