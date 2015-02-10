@@ -19,25 +19,18 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
     private static volatile BankDao instance;
-    private static Object bankMonitor = new Object();
-    private Lock lock = BaseDaoImpl.lock;
 
     private BankDaoImpl(){}
 
     public static BankDao getInstance(){
         if(instance == null){
-            synchronized (bankMonitor) {
-                if(instance==null) {
                     instance = new BankDaoImpl();
-                }
-            }
         }
         return instance;
     }
 
     @Override
     public Bank getBankByName(String name) throws DaoException {
-        lock.lock();
         Bank bank;
         Connection conn = openConnection();
         String sql = "select * from banks where name = (?)";
@@ -63,19 +56,16 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
+        closeConnection(conn);
 
         List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
         bank.setClients(new HashSet<>(clients));
-
-        lock.unlock();
         return bank;
     }
 
     @Override
     public Bank getBankById(long bankId) throws DaoException {
         Bank bank;
-        lock.lock();
         Connection conn = openConnection();
         String sql = "select * from banks where id = (?)";
         try {
@@ -98,15 +88,13 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
+        closeConnection(conn);
         List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
         bank.setClients(new HashSet<>(clients));
-        lock.unlock();
         return bank;
     }
 
     private Bank insert(Bank bank) throws DaoException {
-        lock.lock();
         Connection conn = openConnection();
         String sql = "insert into banks (name) values (?)";
         try {
@@ -128,17 +116,15 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
+        closeConnection(conn);
         for (Client client : bank.getClients()) {
             DaoFactory.getClientDao().save(client);
         }
-        lock.unlock();
         return bank;
     }
 
     @Override
     public Bank save(Bank bank) throws DaoException {
-        lock.lock();
         if (bank.getId() == -1) {
             bank = insert(bank);
         } else {
@@ -156,17 +142,15 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
                     throw new DaoException("impossible to save bank in db. transaction is rolled back");
                 }
                 preparedStatement.close();
+                closeConnection(conn);
             } catch (SQLException e) {
                 throw new DaoException(e.getMessage());
             }
-            closeConnection();
         }
-        lock.unlock();
         return bank;
     }
 
     public void delete(Bank bank) throws DaoException {
-        lock.lock();
         if (bank.getId() != -1){
             try {
                 for (Client client : bank.getClients()) {
@@ -181,20 +165,18 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
                     throw new DaoException("impossible to delete bank in db. transaction is rolled back");
                 }
                 preparedStatement.close();
+                closeConnection(conn);
             } catch (SQLException e) {
                 throw new DaoException(e.getMessage());
             } catch (DaoException e) {
                 e.printStackTrace();
             }
-            closeConnection();
-            lock.unlock();
         }
     }
 
     @Override
     public BankInfo getBankInfo(Bank bank) {
         BankInfo bankInfo = new BankInfo();
-        lock.lock();
         try {
             bankInfo.setClientsNumber(getClientsNumber(bank));
             bankInfo.setAccountsNumber(getAccountsNumber(bank));
@@ -204,13 +186,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         } catch (DaoException e) {
             e.printStackTrace();
         }
-        lock.unlock();
         return bankInfo;
     }
 
     @Override
     public String getBankReport(Bank bank) throws DaoException {
-        lock.lock();
         List<Client> clients = (DaoFactory.getClientDao().getAllClients(bank));
         bank.setClients(new HashSet<>(clients));
         int clientsNumber = getClientsNumber(bank);
@@ -246,12 +226,10 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
                 }
             }
         }
-        lock.unlock();
         return builder.toString();
     }
 
     public int getClientsNumber(Bank bank) throws DaoException {
-        lock.lock();
         Connection conn = openConnection();
         int clientsNumber = 0;
         String sql = "select count(id) from clients where id_bank = (?);";
@@ -270,13 +248,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        closeConnection();
-        lock.unlock();
+        closeConnection(conn);
         return clientsNumber;
     }
 
     public int getAccountsNumber(Bank bank) throws DaoException {
-        lock.lock();
         Connection conn = openConnection();
         int accountsNumber = 0;
         String sql = "select count(a.id) from accounts as a join clients as c on a.id_client = c.id where c.id_bank = (?);";
@@ -295,13 +271,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        closeConnection();
-        lock.unlock();
+        closeConnection(conn);
         return accountsNumber;
     }
 
     public float getBankCreditSum(Bank bank) throws DaoException {
-        lock.lock();
         Connection conn = openConnection();
         float creditSum = 0;
 
@@ -323,13 +297,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             e.printStackTrace();
         }
 
-        closeConnection();
-        lock.unlock();
+        closeConnection(conn);
         return creditSum;
     }
 
     public Map<String, List<Client>> getClientsByCity(Bank bank) {
-        lock.lock();
         Map<String, List<Client>> map = new TreeMap<>();
         try {
             List<Client> clients = DaoFactory.getClientDao().getAllClients(bank);
@@ -346,16 +318,13 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         } catch (DaoException e) {
             e.printStackTrace();
         }
-        lock.unlock();
         return map;
     }
 
     public Set<Client> getClientsSorted(Bank bank) throws DaoException {
         Comparator<Client> c = new ClientComparator();
         Set<Client> sortedClients = new TreeSet<>(c);
-        lock.lock();
         List<Client> clients = DaoFactory.getClientDao().getAllClients(bank);
-        lock.unlock();
         sortedClients.addAll(clients);
         return sortedClients;
     }

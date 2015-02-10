@@ -22,25 +22,18 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
     private static volatile ClientDao instance;
-    private static Object clientMonitor = new Object();
-    private Lock lock = BaseDaoImpl.lock;
 
     private ClientDaoImpl(){}
 
     public static ClientDao getInstance(){
         if(instance == null){
-            synchronized (clientMonitor) {
-                if(instance==null) {
                     instance = new ClientDaoImpl();
-                }
-            }
         }
         return instance;
     }
 
     @Override
     public Client getByName(Bank bank, String name) throws DaoException {
-        lock.lock();
         Connection conn = openConnection();
         String sql = "select * from clients where id_bank = (?) and name = (?)";
         Client client;
@@ -89,19 +82,16 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
+        closeConnection(conn);
 
         Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
         client.setAccounts(accounts);
         client.setBank(bank);
-
-        lock.unlock();
         return client;
     }
 
     @Override
     public Client getById(long idClient) throws DaoException {
-        lock.lock();
         Connection conn = openConnection();
         String sql = "select * from clients where id = (?)";
         Client client = null;
@@ -151,20 +141,17 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
+        closeConnection(conn);
 
         Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
         client.setAccounts(accounts);
         Bank bank = DaoFactory.getBankDao().getBankById(idBank);
         client.setBank(bank);
-
-        lock.unlock();
         return client;
     }
 
     @Override
     public List<Client> getAllClients(Bank bank) throws DaoException {
-        lock.lock();
         List<Client> clients = null;
         Connection conn = openConnection();
         String sql = "select * from clients where id_bank = (?)";
@@ -215,18 +202,16 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
+        closeConnection(conn);
 
         for(Client client:clients){
             Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
             client.setAccounts(accounts);
         }
-        lock.unlock();
         return clients;
     }
 
     private Client insert(Client client) throws DaoException {
-        lock.lock();
         Long id=-1l;
         Connection conn = openConnection();
         String sql = "insert into clients (name, city, email, phone, overdraft, gender, id_bank)" +
@@ -254,19 +239,17 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
+        closeConnection(conn);
         client.setId(id);
 
         for (Account account : client.getAccounts()) {
             DaoFactory.getAccountDao().save(account);
         }
-        lock.unlock();
         return client;
     }
 
     @Override
     public Client save(Client client) throws DaoException {
-        lock.lock();
         if (client.getId() == -1) {
             client = insert(client);
         } else {
@@ -291,18 +274,16 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                     throw new DaoException("impossible to save client in db. transaction is rolled back");
                 }
                 preparedStatement.close();
+                closeConnection(conn);
             } catch (SQLException e) {
                 throw new DaoException(e.getMessage());
             }
         }
-        closeConnection();
-        lock.unlock();
         return client;
     }
 
     @Override
     public void remove(Client client) throws DaoException {
-        lock.lock();
         try {
             try{
                 DaoFactory.getAccountDao().removeAllByClient(client);
@@ -317,16 +298,14 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 throw new DaoException("impossible to remove the client in db. transaction is rolled back");
             }
             preparedStatement.close();
+            closeConnection(conn);
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        closeConnection();
-        lock.unlock();
     }
 
     @Override
     public void removeAllByBank(Bank bank) throws DaoException {
-        lock.lock();
         try {
             Connection conn = openConnection();
             String sql = "delete from clients where id_bank = (?)";
@@ -337,10 +316,9 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 throw new DaoException("impossible to remove the client in db. transaction is rolled back");
             }
             preparedStatement.close();
+            closeConnection(conn);
         } catch (SQLException e) {
             throw new DaoException(e.getMessage());
         }
-        lock.unlock();
-        closeConnection();
     }
 }

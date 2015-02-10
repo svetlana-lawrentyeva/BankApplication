@@ -33,7 +33,7 @@ public class DepositCommand extends AbstractCommand implements Command {
             ServiceFactory.getAccountService().deposit(getCommander().getCurrentClient().getActiveAccount(), x);
             io.write("Current client's active account " +
                     getCommander().getCurrentClient().getActiveAccount() + " balance: " +
-                    getCommander().getCurrentClient().getActiveAccount().getBalance() + "\nenter for continue ");
+                    getCommander().getCurrentClient().getActiveAccount().getBalance() + "\nenter for continue");
             io.read();
         
         } catch (Exception e) {

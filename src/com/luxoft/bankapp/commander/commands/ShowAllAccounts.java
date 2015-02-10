@@ -38,7 +38,7 @@ public class ShowAllAccounts extends AbstractCommand {
             io.write(builder.toString());
             String accNumber = io.read();
             getCommander().getCurrentClient().setActiveAccount(ServiceFactory.getAccountService().getById(Long.parseLong(accNumber)));
-            io.write("active account is "+accNumber+"\nenter for continue ");
+            io.write("active account is "+accNumber+"\nenter for continue");
             io.read();
         
         } catch (Exception e) {

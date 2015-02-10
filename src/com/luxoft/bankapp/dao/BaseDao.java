@@ -20,5 +20,5 @@ public interface BaseDao {
     /**
      * Close connection to database
      */
-    void closeConnection() throws DaoException;
+    void closeConnection(Connection connection) throws DaoException;
 }

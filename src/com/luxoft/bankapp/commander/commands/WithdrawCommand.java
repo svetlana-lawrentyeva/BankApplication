@@ -27,13 +27,19 @@ public class WithdrawCommand extends AbstractCommand implements Command {
                 ShowAllAccounts command = new ShowAllAccounts(getCommander());
                 command.execute(io);
             }
+            StringBuilder sb = new StringBuilder();
+
             io.write("money to withdraw:");
+            sb.append("money to withdraw:").append(" : ");
             float x = Float.parseFloat((String) io.read());
-            ServiceFactory.getAccountService().withdraw(getCommander().getCurrentClient().getActiveAccount(), x);
-            io.write("Current client's active account " +
-                    getCommander().getCurrentClient().getActiveAccount() + " balance: " +
-                    getCommander().getCurrentClient().getActiveAccount().getBalance() + "\nenter for continue ");
-            io.read();
+            sb.append(String.valueOf(x)).append("\n");
+            ServiceFactory.getAccountService().withdraw(account, x);
+            String answer = "Current client's active account " +
+                    account + " balance: " + account.getBalance() + "\nenter for continue";
+            io.write(answer);
+            sb.append(answer).append(" : ");
+            answer = io.read();
+            sb.append(answer).append("\n");
         } catch (Exception e) {
             e.printStackTrace();
         }

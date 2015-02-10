@@ -9,15 +9,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 public abstract class BaseDaoImpl implements BaseDao {
 
-    private Connection connection;
-    private final String CONNECTION_STRING = "jdbc:h2:tcp://localhost/~/BankApplication";
-    private JdbcConnectionPool cp;
-    public static Lock lock = new ReentrantLock();
+    private final String CONNECTION_STRING = "jdbc:h2:tcp://localhost/~/BankApplication;MVCC=true";
 
     public BaseDaoImpl(){
         try {
@@ -25,13 +21,13 @@ public abstract class BaseDaoImpl implements BaseDao {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        cp = JdbcConnectionPool.create(CONNECTION_STRING, "sa", "" );
     }
 
     @Override
     public Connection openConnection() throws DaoException {
+        Connection connection = null;
         try {
-            connection = cp.getConnection();
+            connection = DriverManager.getConnection(CONNECTION_STRING, "sa", "");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -39,7 +35,7 @@ public abstract class BaseDaoImpl implements BaseDao {
     }
 
         @Override
-    public void closeConnection() throws DaoException {
+    public void closeConnection(Connection connection) throws DaoException {
         try {
             connection.close();
         } catch(SQLException e) {

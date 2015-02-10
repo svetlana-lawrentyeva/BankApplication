@@ -1,8 +1,5 @@
 package com.luxoft.bankapp.application.threading;
 
-/**
- * Created by SCJP on 06.02.15.
- */
 public class BankServerMonitor implements Runnable{
     @Override
     public void run() {

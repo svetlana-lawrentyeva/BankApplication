@@ -40,6 +40,7 @@ public class AddAccountCommand extends AbstractCommand {
                 default:
                     throw new IllegalArgumentException("error: wrong balance type");
             }
+            account.setClient(client);
             account.setBalance(startBalance);
             client.addAccount(account);
             ServiceFactory.getClientService().save(client);

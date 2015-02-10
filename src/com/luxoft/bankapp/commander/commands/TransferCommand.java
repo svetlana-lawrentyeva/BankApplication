@@ -51,7 +51,7 @@ public class TransferCommand extends AbstractCommand implements Command {
             builder = new StringBuilder();
             builder.append("Current client's account ").append(currentClientAccount).append(" ").append(currentClientAccount.getBalance());
             builder.append("\n").append("Client ").append(client.getClientSalutation()).append(" account ").append(account).append(" ");
-            builder.append(account.getBalance()).append("\nenter for continue ");
+            builder.append(account.getBalance()).append("\nenter for continue");
             io.write(builder.toString());
             io.read();
         
