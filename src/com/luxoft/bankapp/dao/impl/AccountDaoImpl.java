@@ -42,7 +42,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             preparedStatement.setFloat(2, account.getOverdraft());
             preparedStatement.setLong(3, account.getClient().getId());
 
-            log.fine(Thread.currentThread().getName()+" insert(): preparedStatement created: "+preparedStatement);
+            log.fine(Thread.currentThread().getName()+" insert() "+account+" preparedStatement created: "+preparedStatement);
 
             if (preparedStatement.executeUpdate() == 0) {
                 log.log(Level.SEVERE, Thread.currentThread().getName()+" insert account "+account+" error: ",
@@ -81,7 +81,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
                 preparedStatement.setFloat(2, account.getOverdraft());
                 preparedStatement.setLong(3, account.getClient().getId());
                 preparedStatement.setLong(4, account.getId());
-                log.fine(Thread.currentThread().getName()+" save: preparedStatement created: "+preparedStatement);
+                log.fine(Thread.currentThread().getName()+" save: "+account+" preparedStatement created: "+preparedStatement);
 
                 if (preparedStatement.executeUpdate() == 0) {
                     log.log(Level.SEVERE, Thread.currentThread().getName()+" save "+account+" error: ", new DaoException("impossible to save account in db. transaction is rolled back"));
@@ -105,7 +105,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, account.getId());
-            log.fine(Thread.currentThread().getName()+" remove: preparedStatement created: "+preparedStatement);
+            log.fine(Thread.currentThread().getName()+" remove: "+account+" preparedStatement created: "+preparedStatement);
 
             if (preparedStatement.executeUpdate() == 0) {
                 log.log(Level.SEVERE, Thread.currentThread().getName()+" remove "+account+" error: ", new DaoException("impossible to remove account in db. transaction is rolled back"));
@@ -126,7 +126,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, client.getId());
-            log.fine(Thread.currentThread().getName()+" removeAllByClient: preparedStatement created: "+preparedStatement);
+            log.fine(Thread.currentThread().getName()+" removeAllByClient: "+client+" preparedStatement created: "+preparedStatement);
 
             if (preparedStatement.executeUpdate() == 0) {
                 log.log(Level.SEVERE, Thread.currentThread().getName()+" remove accounts by "+client+" error: ", new DaoException("impossible to remove accounts in db. transaction is rolled back"));
@@ -148,7 +148,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, client.getId());
-            log.fine(Thread.currentThread().getName()+" getAllByClient: preparedStatement created: "+preparedStatement);
+            log.fine(Thread.currentThread().getName()+" getAllByClient: "+client+" preparedStatement created: "+preparedStatement);
 
             if (!preparedStatement.execute()) {
                 log.log(Level.SEVERE, Thread.currentThread().getName()+" getAllByClient "+client+" error: ", new DaoException("impossible to get accounts from db."));

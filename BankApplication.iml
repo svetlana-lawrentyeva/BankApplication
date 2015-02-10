@@ -18,6 +18,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="hamcrest-core-1.31" level="project" />
+    <orderEntry type="library" name="junit-4.121" level="project" />
   </component>
 </module>
-

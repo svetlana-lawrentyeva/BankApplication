@@ -1,0 +1,18 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Пополнение счёта</title>
+    <script>
+        function isNumeric(input){
+            var RE = /^-{0,1}\d*\.{0,1}\d+$/;
+            return (RE.test(input));
+        }
+    </script>
+</head>
+<body>
+<form action="menu.html">
+    <input type="text" name="depositMoney"><div id=”depositMoney”></div>
+    <input type="submit" onclick="isNumeric(__________)" value="Продолжить">
+</form>
+</body>
+</html>

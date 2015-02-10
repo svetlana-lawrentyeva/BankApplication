@@ -2,15 +2,11 @@ package com.luxoft.bankapp.application.threading;
 
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
-import com.luxoft.bankapp.model.AccountType;
-import com.luxoft.bankapp.model.Gender;
-import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
 import com.luxoft.bankapp.model.impl.Bank;
-import com.luxoft.bankapp.model.impl.CheckingAccount;
 import com.luxoft.bankapp.model.impl.Client;
-import com.luxoft.bankapp.model.impl.SavingAccount;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +25,7 @@ public class BankServerThreadedTest {
             e.printStackTrace();
         }
         Account account = client.getAccounts().iterator().next();
-        int rounds = 1000;
+        int rounds = 2;
         float startBalance = account.getBalance();
         client.setActiveAccount(account);
         ExecutorService pool = Executors.newFixedThreadPool(100);
@@ -59,5 +55,7 @@ public class BankServerThreadedTest {
         float finishBalance = account.getBalance();
         float difference = startBalance - finishBalance;
         System.out.println("differense: "+difference);
+        assertEquals((int)difference, rounds);
+
     }
 }
