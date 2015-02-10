@@ -17,11 +17,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
     private static volatile ClientDao instance;
+    private static Logger log = Logger.getLogger(ClientDaoImpl.class.getName());
 
     private ClientDaoImpl(){}
 
@@ -41,8 +44,11 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, bank.getId());
             preparedStatement.setString(2, name);
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+name+" error: ",
+                        new DaoException("impossible to find the client in db."));
                 throw new DaoException("impossible to find the client in db.");
             }
             ResultSet rs = preparedStatement.getResultSet();
@@ -64,6 +70,8 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                     gender = Gender.FEMALE;
                     break;
                 default:
+                    log.log(Level.SEVERE, Thread.currentThread().getName()+" "+name+" error: ",
+                        new DaoException("incorrect data in db, impossible to load the client"));
                     throw new DaoException("incorrect data in db, impossible to load the client");
             }
             client = new Client();
@@ -79,7 +87,9 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
             rs.close();
             preparedStatement.close();
+            log.fine(Thread.currentThread().getName()+" "+name+" success");
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+name+" error: "+e.getMessage());
             throw new DaoException(e.getMessage());
         }
         closeConnection(conn);
@@ -87,6 +97,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
         client.setAccounts(accounts);
         client.setBank(bank);
+        log.fine(Thread.currentThread().getName()+" "+client+" success");
         return client;
     }
 
@@ -100,7 +111,10 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, idClient);
 
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
             if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+idClient+" error: ",
+                        new DaoException("impossible to find the client in db."));
                 throw new DaoException("impossible to find the client in db.");
             }
             ResultSet rs = preparedStatement.getResultSet();
@@ -122,6 +136,8 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                         gender = Gender.FEMALE;
                         break;
                     default:
+                        log.log(Level.SEVERE, Thread.currentThread().getName()+" "+idClient+" error: ",
+                                new DaoException("incorrect data in db, impossible to load the client"));
                         throw new DaoException("incorrect data in db, impossible to load the client");
                 }
 
@@ -139,6 +155,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             rs.close();
             preparedStatement.close();
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+idClient+" error: "+e.getMessage());
             throw new DaoException(e.getMessage());
         }
         closeConnection(conn);
@@ -147,6 +164,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         client.setAccounts(accounts);
         Bank bank = DaoFactory.getBankDao().getBankById(idBank);
         client.setBank(bank);
+        log.fine(Thread.currentThread().getName()+" "+idClient+" success");
         return client;
     }
 
@@ -158,14 +176,16 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, bank.getId());
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                        new DaoException("impossible to get clients from db."));
                 throw new DaoException("impossible to get clients from db.");
             }
             ResultSet rs = preparedStatement.getResultSet();
             clients = new ArrayList<>();
             while (rs.next()) {
-
                 Client client = new Client();
                 long idClient = rs.getLong(1);
                 String clientName = rs.getString(2);
@@ -184,6 +204,8 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                         gender = Gender.FEMALE;
                         break;
                     default:
+                        log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                                new DaoException("incorrect data in db, impossible to load the client"));
                         throw new DaoException("incorrect data in db, impossible to load the client");
                 }
                 client.setId(idClient);
@@ -200,6 +222,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             rs.close();
             preparedStatement.close();
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: "+e.getMessage());
             throw new DaoException(e.getMessage());
         }
         closeConnection(conn);
@@ -208,6 +231,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
             client.setAccounts(accounts);
         }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
         return clients;
     }
 
@@ -225,18 +249,24 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             preparedStatement.setFloat(5, client.getOverdraft());
             preparedStatement.setString(6, String.valueOf(client.getGender().toString().toLowerCase().charAt(0)));
             preparedStatement.setLong(7, client.getBank().getId());
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (preparedStatement.executeUpdate() == 0) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+client+" error: ",
+                        new DaoException("impossible to save account in db. transaction is rolled back"));
                 throw new DaoException("impossible to save account in db. transaction is rolled back");
             }
             ResultSet rs = preparedStatement.getGeneratedKeys();
             if (rs == null || !rs.next()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+client+" error: ",
+                        new DaoException("impossible to save account in db. transaction is rolled back"));
                 throw new DaoException("impossible to save the client in db. transaction is rolled back");
             }
             id = rs.getLong(1);
             rs.close();
             preparedStatement.close();
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+client+" error: "+e.getMessage());
             throw new DaoException(e.getMessage());
         }
         closeConnection(conn);
@@ -245,6 +275,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         for (Account account : client.getAccounts()) {
             DaoFactory.getAccountDao().save(account);
         }
+        log.fine(Thread.currentThread().getName()+" "+client+" success");
         return client;
     }
 
@@ -269,16 +300,22 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
                 preparedStatement.setString(6, String.valueOf(client.getGender().toString().toLowerCase().charAt(0)));
                 preparedStatement.setLong(7, client.getBank().getId());
                 preparedStatement.setLong(8, client.getId());
+                log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
                 if (preparedStatement.executeUpdate() == 0) {
+                    log.log(Level.SEVERE, Thread.currentThread().getName()+" "+client+" error: ",
+                            new DaoException("impossible to save client in db. transaction is rolled back"));
                     throw new DaoException("impossible to save client in db. transaction is rolled back");
                 }
                 preparedStatement.close();
                 closeConnection(conn);
             } catch (SQLException e) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+client+
+                        " error: impossible to save client in db. transaction is rolled back"+e.getMessage());
                 throw new DaoException(e.getMessage());
             }
         }
+        log.fine(Thread.currentThread().getName()+" "+client+" success");
         return client;
     }
 
@@ -293,15 +330,21 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             String sql = "delete from clients where id = (?)";
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, client.getId());
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (preparedStatement.executeUpdate() == 0) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+client+" error: ",
+                        new DaoException("impossible to remove client in db. transaction is rolled back"));
                 throw new DaoException("impossible to remove the client in db. transaction is rolled back");
             }
             preparedStatement.close();
             closeConnection(conn);
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+client+
+                    " error: impossible to remove client in db. transaction is rolled back"+e.getMessage());
             throw new DaoException(e.getMessage());
         }
+        log.fine(Thread.currentThread().getName()+" "+client+" success");
     }
 
     @Override
@@ -311,14 +354,20 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
             String sql = "delete from clients where id_bank = (?)";
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, bank.getId());
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (preparedStatement.executeUpdate() == 0) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                        new DaoException("impossible to remove client in db. transaction is rolled back"));
                 throw new DaoException("impossible to remove the client in db. transaction is rolled back");
             }
             preparedStatement.close();
             closeConnection(conn);
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+
+                    " error: impossible to remove client in db. transaction is rolled back", e.getMessage());
             throw new DaoException(e.getMessage());
         }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
     }
 }

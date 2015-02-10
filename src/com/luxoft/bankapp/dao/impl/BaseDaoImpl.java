@@ -9,17 +9,21 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public abstract class BaseDaoImpl implements BaseDao {
 
     private final String CONNECTION_STRING = "jdbc:h2:tcp://localhost/~/BankApplication;MVCC=true";
+    private static Logger log = Logger.getLogger(BaseDaoImpl.class.getName());
 
     public BaseDaoImpl(){
         try {
             Class.forName("org.h2.Driver");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, Thread.currentThread().getName() + " org.h2.Driver error: "+
+                    e.getMessage(), e);
         }
     }
 
@@ -29,8 +33,9 @@ public abstract class BaseDaoImpl implements BaseDao {
         try {
             connection = DriverManager.getConnection(CONNECTION_STRING, "sa", "");
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, Thread.currentThread().getName() + " " + e.getMessage(), e);
         }
+        log.info(Thread.currentThread().getName() + " connection is opened");
         return connection;
     }
 
@@ -39,8 +44,9 @@ public abstract class BaseDaoImpl implements BaseDao {
         try {
             connection.close();
         } catch(SQLException e) {
-            throw new DaoException(e.getMessage());
+            log.log(Level.SEVERE, Thread.currentThread().getName() + " " + e.getMessage(), e);
         }
+            log.info(Thread.currentThread().getName() + " connection is closed");
     }
 
 }

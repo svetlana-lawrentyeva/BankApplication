@@ -13,12 +13,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
     private static volatile BankDao instance;
+    private static Logger log = Logger.getLogger(BankDaoImpl.class.getName());
 
     private BankDaoImpl(){}
 
@@ -37,8 +38,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, name);
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+name+" error: ",
+                        new DaoException("impossible to get the bank from db."));
                 throw new DaoException("impossible to get the bank from db.");
             }
             ResultSet rs = preparedStatement.getResultSet();
@@ -54,12 +58,14 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             preparedStatement.close();
 
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+name+" error: "+e.getMessage());
             throw new DaoException(e.getMessage());
         }
         closeConnection(conn);
 
         List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
         bank.setClients(new HashSet<>(clients));
+        log.fine(Thread.currentThread().getName() + " " + name + " success");
         return bank;
     }
 
@@ -71,8 +77,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, bankId);
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bankId+" error: ",
+                        new DaoException("impossible to get the bank from db."));
                 throw new DaoException("impossible to get the bank from db.");
             }
             ResultSet rs = preparedStatement.getResultSet();
@@ -86,11 +95,13 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             preparedStatement.close();
 
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bankId+" error: "+e.getMessage());
             throw new DaoException(e.getMessage());
         }
         closeConnection(conn);
         List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
         bank.setClients(new HashSet<>(clients));
+        log.fine(Thread.currentThread().getName() + " " + bankId + " success");
         return bank;
     }
 
@@ -100,12 +111,17 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, bank.getName());
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (preparedStatement.executeUpdate() == 0) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                        new DaoException("impossible to save bank in db. transaction is rolled back"));
                 throw new DaoException("impossible to save bank in db. transaction is rolled back");
             }
             ResultSet rs = preparedStatement.getGeneratedKeys();
             if (rs == null || !rs.next()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                        new DaoException("impossible to save the bank in db. transaction is rolled back"));
                 throw new DaoException("impossible to save the bank in db. transaction is rolled back");
             }
             Long id = rs.getLong(1);
@@ -114,12 +130,14 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             bank.setId(id);
 
         } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: "+e.getMessage());
             throw new DaoException(e.getMessage());
         }
         closeConnection(conn);
         for (Client client : bank.getClients()) {
             DaoFactory.getClientDao().save(client);
         }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
         return bank;
     }
 
@@ -137,16 +155,21 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
                 final PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setString(1, bank.getName());
                 preparedStatement.setLong(2, bank.getId());
+                log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
                 if (preparedStatement.executeUpdate() == 0) {
+                    log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                            new DaoException("impossible to save bank in db. transaction is rolled back"));
                     throw new DaoException("impossible to save bank in db. transaction is rolled back");
                 }
                 preparedStatement.close();
                 closeConnection(conn);
             } catch (SQLException e) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: "+e.getMessage());
                 throw new DaoException(e.getMessage());
             }
         }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
         return bank;
     }
 
@@ -160,18 +183,22 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
                 String sql = "delete from banks where id = (?)";
                 final PreparedStatement preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setLong(1, bank.getId());
+                log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
                 if (preparedStatement.executeUpdate() == 0) {
+                    log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                            new DaoException("impossible to delete bank in db. transaction is rolled back"));
                     throw new DaoException("impossible to delete bank in db. transaction is rolled back");
                 }
                 preparedStatement.close();
                 closeConnection(conn);
             } catch (SQLException e) {
-                throw new DaoException(e.getMessage());
-            } catch (DaoException e) {
-                e.printStackTrace();
-            }
+                log.log(Level.SEVERE, Thread.currentThread().getName() + " " + bank +
+                        " error: impossible to delete bank in db. transaction is rolled back"+e.getMessage());
+                throw new DaoException("impossible to delete bank in db. transaction is rolled back");
+            } 
         }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
     }
 
     @Override
@@ -184,8 +211,9 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             bankInfo.setClientsByCity(getClientsByCity(bank));
             bankInfo.setClientsSorted(getClientsSorted(bank));
         } catch (DaoException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, Thread.currentThread().getName() + " " + bank + " error: z"+e.getMessage());
         }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
         return bankInfo;
     }
 
@@ -226,6 +254,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
                 }
             }
         }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
         return builder.toString();
     }
 
@@ -236,8 +265,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, bank.getId());
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                        new DaoException("no clients found"));
                 throw new DaoException("no clients found");
             }
             ResultSet rs = preparedStatement.getResultSet();
@@ -246,9 +278,10 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             rs.close();
             preparedStatement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, Thread.currentThread().getName() + " " + bank + " error: "+e.getMessage());
         }
         closeConnection(conn);
+        log.fine(Thread.currentThread().getName() + " " + bank + " success");
         return clientsNumber;
     }
 
@@ -259,8 +292,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, bank.getId());
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                        new DaoException("no accounts found"));
                 throw new DaoException("no accounts found");
             }
             ResultSet rs = preparedStatement.getResultSet();
@@ -269,9 +305,10 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             rs.close();
             preparedStatement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, Thread.currentThread().getName() + " " + bank + " error: "+e.getMessage());
         }
         closeConnection(conn);
+        log.fine(Thread.currentThread().getName() + " " + bank + " success");
         return accountsNumber;
     }
 
@@ -284,8 +321,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setLong(1, bank.getId());
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
 
             if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                        new DaoException("no accounts found"));
                 throw new DaoException("no accounts found");
             }
             ResultSet rs = preparedStatement.getResultSet();
@@ -294,10 +334,11 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             rs.close();
             preparedStatement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, Thread.currentThread().getName() + " " + bank + " error: "+e.getMessage());
         }
 
         closeConnection(conn);
+        log.fine(Thread.currentThread().getName() + " " + bank + " success");
         return creditSum;
     }
 
@@ -316,8 +357,9 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
                 }
             }
         } catch (DaoException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, Thread.currentThread().getName() + " " + bank + " error: "+e.getMessage());
         }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
         return map;
     }
 
@@ -326,6 +368,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         Set<Client> sortedClients = new TreeSet<>(c);
         List<Client> clients = DaoFactory.getClientDao().getAllClients(bank);
         sortedClients.addAll(clients);
+        log.fine(Thread.currentThread().getName() + " " + bank + " success");
         return sortedClients;
     }
 }
