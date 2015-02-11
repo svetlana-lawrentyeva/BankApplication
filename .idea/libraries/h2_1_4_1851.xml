@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="h2-1.4.1851">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../h2-1.4.185.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ideaLibSources/h2-1.4.185-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
