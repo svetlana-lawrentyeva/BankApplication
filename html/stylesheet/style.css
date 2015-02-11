@@ -1,0 +1,48 @@
+
+#menu td {
+    padding:30px;
+    font-weight:bold;
+    text-align:center;
+    cursor:hand;
+   border: 1px solid black;
+}
+
+#menu td a{
+    text-decoration:none;
+    color:black;
+}
+
+.title{
+    font-size: 16pt;
+}
+
+.submit{
+    padding:10px;
+    font-weight:bold;
+    text-align:center;
+    cursor:hand;
+   border: 1px solid black;
+}
+
+.textField{
+    margin:20px;
+}
+
+.error{
+    color:red;
+    padding-bottom:30px;
+}
+
+#bankInfo{
+    padding:30px;
+}
+
+#bankInfo td {
+    border-bottom: 1px solid #EEE;
+    padding:5px;
+
+}
+
+#bankInfo .title{
+    font-weight:bold;
+}
