@@ -8,8 +8,8 @@
 </head>
 <body>
     <div class="title">Введите сумму:</div>
-<form action="menu.html">
-    <input type="text" name="withdrawMoney" id="balance">
+<form action="/withdraw" method="post">
+    <input type="text" name="amount" id="balance">
     <div id="balanceError" class="error"></div>
     <input type="submit" onclick="return checkBalance()" value="Продолжить" class="submit">
 </form>

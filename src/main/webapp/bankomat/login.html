@@ -9,8 +9,8 @@
 <body>
 <div class="main">
     <div class="title">Вход в систему</div>
-    <form action="menu.html">
-        <input type="text" id="name" name="user" class="textField">
+    <form action="/login" method="post">
+        <input type="text" id="name" name="clientName" class="textField">
 
         <div id="nameError" class="error"></div>
         <input type="submit" onclick="return checkForm();" value="Отправить" class="submit">
