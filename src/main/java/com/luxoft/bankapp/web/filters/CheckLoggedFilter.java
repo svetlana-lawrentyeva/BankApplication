@@ -6,9 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-/**
- * Created by SCJP on 13.02.2015.
- */
 public class CheckLoggedFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -23,8 +20,9 @@ public class CheckLoggedFilter implements Filter {
         String path = ((HttpServletRequest)servletRequest).getRequestURI();
         HttpServletResponse response = (HttpServletResponse)servletResponse;
 
-        if(path.startsWith("/bankomat/login") ||
+        if(path.equals("/bankomat/login.html") ||
                 path.equals("/welcome") ||
+                path.equals("/login") ||
                 path.startsWith("/js") ||
                 path.startsWith("/stylesheet") ||
                 path.equals("/") ||
