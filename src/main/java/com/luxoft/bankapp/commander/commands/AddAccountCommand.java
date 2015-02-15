@@ -9,7 +9,13 @@ import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.model.impl.SavingAccount;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class AddAccountCommand extends AbstractCommand {
+    private ServiceFactory serviceFactory;
+    private final Logger log = Logger.getLogger(AddAccountCommand.class.getName());
+    private FindClientCommand findClientCommand;
 
     public AddAccountCommand(Commander commander) {
         super(commander);
@@ -26,8 +32,7 @@ public class AddAccountCommand extends AbstractCommand {
             float startBalance = Float.parseFloat((String) io.read());
             Client client;
             while ((client = getCommander().getCurrentClient()) == null) {
-                FindClientCommand command = new FindClientCommand(getCommander());
-                command.execute(io);
+                findClientCommand.execute(io);
             }
             Account account;
             switch (typeAccount) {
@@ -43,17 +48,33 @@ public class AddAccountCommand extends AbstractCommand {
             account.setClient(client);
             account.setBalance(startBalance);
             client.addAccount(account);
-            ServiceFactory.getClientService().save(client);
+            serviceFactory.getClientService().save(client);
             io.write("success\nenter for continue");
             io.read();
             
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     @Override
     public String printCommandInfo() {
         return "Add account";
+    }
+
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
+    }
+
+    public void setServiceFactory(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
+    }
+
+    public FindClientCommand getFindClientCommand() {
+        return findClientCommand;
+    }
+
+    public void setFindClientCommand(FindClientCommand findClientCommand) {
+        this.findClientCommand = findClientCommand;
     }
 }

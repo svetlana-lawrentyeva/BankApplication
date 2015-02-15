@@ -7,8 +7,6 @@ import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
 import com.luxoft.bankapp.model.impl.Client;
 
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class AccountService {
     /**
@@ -76,7 +74,7 @@ public class AccountService {
      * @param x money to withdraw
      */
     public void withdraw(Account account, float x) throws NotEnoughFundsException, DaoException {
-        synchronized (ServiceFactory.accountMonitor){
+        synchronized (ServiceFactory.monitor){
             account.setBalance(getBalance(account));
             account.withdraw(x);
             DaoFactory.getAccountDao().save(account);

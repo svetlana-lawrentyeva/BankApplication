@@ -238,7 +238,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
     private Client insert(Client client) throws DaoException {
         Long id=-1l;
         Connection conn = openConnection();
-        String sql = "insert into clients (name, city, email, phone, overdraft, gender, id_bank)" +
+            String sql = "insert into clients (name, city, email, phone, overdraft, gender, id_bank)" +
                 " values (?, ?, ?, ?, ?, ?, ?)";
         try {
             final PreparedStatement preparedStatement = conn.prepareStatement(sql);
