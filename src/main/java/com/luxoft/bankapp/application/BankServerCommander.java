@@ -56,21 +56,21 @@ public class BankServerCommander {
     public void initCommands() {
         Map<Integer, Command> commandMap = new HashMap<>();
         log.fine("commandMap created");
-        commandMap.put(0, new FindClientCommand(getCommander()));
+        commandMap.put(0, new FindClientCommand());
         log.finest("FindClientCommand added");
-        commandMap.put(1, new ShowAllAccounts(getCommander()));
+        commandMap.put(1, new ShowAllAccounts());
         log.finest("ShowAllAccounts added");
-        commandMap.put(2, new DepositCommand(getCommander()));
+        commandMap.put(2, new DepositCommand());
         log.finest("DepositCommand added");
-        commandMap.put(3, new WithdrawCommand(getCommander()));
+        commandMap.put(3, new WithdrawCommand());
         log.finest("WithdrawCommand added");
-        commandMap.put(4, new TransferCommand(getCommander()));
+        commandMap.put(4, new TransferCommand());
         log.finest("TransferCommand added");
-        commandMap.put(5, new AddClientCommand(getCommander()));
+        commandMap.put(5, new AddClientCommand());
         log.finest("AddClientCommand added");
-        commandMap.put(6, new RemoveClientCommand(getCommander()));
+        commandMap.put(6, new RemoveClientCommand());
         log.finest("RemoveClientCommand added");
-        commandMap.put(7, new BankInfoCommand(getCommander()));
+        commandMap.put(7, new BankInfoCommand());
         log.finest("BankInfoCommand added");
         commandMap.put(8, new Command() {
             @Override

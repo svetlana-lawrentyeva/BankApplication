@@ -1,5 +1,7 @@
 package com.luxoft.bankapp.dao.impl;
 
+import com.luxoft.bankapp.dao.AccountDao;
+import com.luxoft.bankapp.dao.BankDao;
 import com.luxoft.bankapp.dao.ClientDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
@@ -24,6 +26,8 @@ import java.util.logging.Logger;
 public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
 
     private static volatile ClientDao instance;
+    private AccountDao accountDao;
+    private BankDao bankDao;
     private static Logger log = Logger.getLogger(ClientDaoImpl.class.getName());
 
     private ClientDaoImpl(){}
@@ -94,7 +98,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         }
         closeConnection(conn);
 
-        Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
+        Set<Account> accounts = new HashSet<>(accountDao.getAllByClient(client));
         client.setAccounts(accounts);
         client.setBank(bank);
         log.fine(Thread.currentThread().getName()+" "+client+" success");
@@ -160,9 +164,9 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         }
         closeConnection(conn);
 
-        Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
+        Set<Account> accounts = new HashSet<>(accountDao.getAllByClient(client));
         client.setAccounts(accounts);
-        Bank bank = DaoFactory.getBankDao().getBankById(idBank);
+        Bank bank = bankDao.getBankById(idBank);
         client.setBank(bank);
         log.fine(Thread.currentThread().getName()+" "+idClient+" success");
         return client;
@@ -228,7 +232,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         closeConnection(conn);
 
         for(Client client:clients){
-            Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
+            Set<Account> accounts = new HashSet<>(accountDao.getAllByClient(client));
             client.setAccounts(accounts);
         }
         log.fine(Thread.currentThread().getName()+" "+bank+" success");
@@ -273,7 +277,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         client.setId(id);
 
         for (Account account : client.getAccounts()) {
-            DaoFactory.getAccountDao().save(account);
+            accountDao.save(account);
         }
         log.fine(Thread.currentThread().getName()+" "+client+" success");
         return client;
@@ -286,7 +290,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         } else {
             try {
                 for (Account account : client.getAccounts()) {
-                    DaoFactory.getAccountDao().save(account);
+                    accountDao.save(account);
                 }
                 Connection conn = openConnection();
                 String sql = "update clients set name = (?), city = (?), email = (?), phone = (?), overdraft = (?), gender = (?)," +
@@ -323,7 +327,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
     public void remove(Client client) throws DaoException {
         try {
             try{
-                DaoFactory.getAccountDao().removeAllByClient(client);
+                accountDao.removeAllByClient(client);
             } catch (DaoException e){}
 
             Connection conn = openConnection();
@@ -432,7 +436,7 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         closeConnection(conn);
 
         for(Client client:clients){
-            Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
+            Set<Account> accounts = new HashSet<>(accountDao.getAllByClient(client));
             client.setAccounts(accounts);
         }
         log.fine(Thread.currentThread().getName()+" "+bank+" success");

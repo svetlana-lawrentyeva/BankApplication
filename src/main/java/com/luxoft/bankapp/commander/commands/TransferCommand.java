@@ -12,28 +12,24 @@ import java.util.List;
 
 public class TransferCommand extends AbstractCommand implements Command {
 
-    public TransferCommand(Commander commander) {
-        super(commander);
-    }
-
     @Override
     public void execute(Io io) {
         try {
         
             Client currentClient = null;
             while ((currentClient = getCommander().getCurrentClient()) == null) {
-                FindClientCommand command = new FindClientCommand(getCommander());
+                FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
             Account currentClientAccount = null;
             while ((currentClientAccount = getCommander().getCurrentClient().getActiveAccount()) == null) {
-                ShowAllAccounts command = new ShowAllAccounts(getCommander());
+                ShowAllAccounts command = new ShowAllAccounts();
                 command.execute(io);
             }
             io.write("name of client to transfer:");
-            Client client = ServiceFactory.getClientService().getByName(getCommander().getCurrentBank(), io.read());
+            Client client = getServiceFactory().getClientService().getByName(getCommander().getCurrentBank(), io.read());
 
-            List<Account> accounts = ServiceFactory.getAccountService().getAllByClient(client);
+            List<Account> accounts = getServiceFactory().getAccountService().getAllByClient(client);
             StringBuilder builder = new StringBuilder();
             builder.append("choose account number:\n");
             for (Account acc : accounts) {
@@ -41,13 +37,13 @@ public class TransferCommand extends AbstractCommand implements Command {
             }
             io.write(builder.toString());
             long idAccount = Long.parseLong((String) io.read());
-            Account account = ServiceFactory.getAccountService().getById(idAccount);
+            Account account = getServiceFactory().getAccountService().getById(idAccount);
             client.setActiveAccount(account);
 
             io.write("money to transfer:");
             
             float x = Float.parseFloat((String) io.read());
-            ServiceFactory.getAccountService().transfer(currentClientAccount, account, x);
+            getServiceFactory().getAccountService().transfer(currentClientAccount, account, x);
             builder = new StringBuilder();
             builder.append("Current client's account ").append(currentClientAccount).append(" ").append(currentClientAccount.getBalance());
             builder.append("\n").append("Client ").append(client.getClientSalutation()).append(" account ").append(account).append(" ");

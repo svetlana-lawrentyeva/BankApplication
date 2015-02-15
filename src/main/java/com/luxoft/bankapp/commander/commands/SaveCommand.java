@@ -9,19 +9,15 @@ import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class SaveCommand extends AbstractCommand implements Command {
 
-    public SaveCommand(Commander commander) {
-        super(commander);
-    }
-
     @Override
     public void execute(Io io) {  // "./objects"
         try {
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
-                FindClientCommand command = new FindClientCommand(getCommander());
+                FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
-            ServiceFactory.getClientService().save(client);
+            getServiceFactory().getClientService().save(client);
             io.write("Client " + client.getClientSalutation() + " successfully saved\nenter for continue");
             io.read();
         

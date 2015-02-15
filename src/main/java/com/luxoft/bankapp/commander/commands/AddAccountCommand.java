@@ -13,13 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AddAccountCommand extends AbstractCommand {
-    private ServiceFactory serviceFactory;
     private final Logger log = Logger.getLogger(AddAccountCommand.class.getName());
     private FindClientCommand findClientCommand;
-
-    public AddAccountCommand(Commander commander) {
-        super(commander);
-    }
 
     @Override
     public void execute(Io io) {
@@ -48,7 +43,7 @@ public class AddAccountCommand extends AbstractCommand {
             account.setClient(client);
             account.setBalance(startBalance);
             client.addAccount(account);
-            serviceFactory.getClientService().save(client);
+            getServiceFactory().getClientService().save(client);
             io.write("success\nenter for continue");
             io.read();
             
@@ -60,14 +55,6 @@ public class AddAccountCommand extends AbstractCommand {
     @Override
     public String printCommandInfo() {
         return "Add account";
-    }
-
-    public ServiceFactory getServiceFactory() {
-        return serviceFactory;
-    }
-
-    public void setServiceFactory(ServiceFactory serviceFactory) {
-        this.serviceFactory = serviceFactory;
     }
 
     public FindClientCommand getFindClientCommand() {

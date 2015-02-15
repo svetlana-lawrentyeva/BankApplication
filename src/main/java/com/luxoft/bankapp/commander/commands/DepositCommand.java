@@ -10,27 +10,23 @@ import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class DepositCommand extends AbstractCommand implements Command {
 
-    public DepositCommand(Commander commander) {
-        super(commander);
-    }
-
     @Override
     public void execute(Io io) {
         try {
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
-                FindClientCommand command = new FindClientCommand(getCommander());
+                FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
             Account account = null;
             while((account = getCommander().getCurrentClient().getActiveAccount()) == null){
-                ShowAllAccounts command = new ShowAllAccounts(getCommander());
+                ShowAllAccounts command = new ShowAllAccounts();
                 command.execute(io);
             }
             io.write("money to deposit:");
             
             float x = Float.parseFloat((String) io.read());
-            ServiceFactory.getAccountService().deposit(getCommander().getCurrentClient().getActiveAccount(), x);
+            getServiceFactory().getAccountService().deposit(getCommander().getCurrentClient().getActiveAccount(), x);
             io.write("Current client's active account " +
                     getCommander().getCurrentClient().getActiveAccount() + " balance: " +
                     getCommander().getCurrentClient().getActiveAccount().getBalance() + "\nenter for continue");

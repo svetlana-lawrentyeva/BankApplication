@@ -1,6 +1,7 @@
 package com.luxoft.bankapp.dao.impl;
 
 import com.luxoft.bankapp.dao.BankDao;
+import com.luxoft.bankapp.dao.ClientDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.Bank;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
     private static volatile BankDao instance;
+    private ClientDao clientDao;
     private static Logger log = Logger.getLogger(BankDaoImpl.class.getName());
 
     private BankDaoImpl(){}
@@ -63,7 +65,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         }
         closeConnection(conn);
 
-        List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
+        List<Client>clients = clientDao.getAllClients(bank);
         bank.setClients(new HashSet<>(clients));
         log.fine(Thread.currentThread().getName() + " " + name + " success");
         return bank;
@@ -99,7 +101,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
             throw new DaoException(e.getMessage());
         }
         closeConnection(conn);
-        List<Client>clients = DaoFactory.getClientDao().getAllClients(bank);
+        List<Client>clients = clientDao.getAllClients(bank);
         bank.setClients(new HashSet<>(clients));
         log.fine(Thread.currentThread().getName() + " " + bankId + " success");
         return bank;
@@ -135,7 +137,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         }
         closeConnection(conn);
         for (Client client : bank.getClients()) {
-            DaoFactory.getClientDao().save(client);
+            clientDao.save(client);
         }
         log.fine(Thread.currentThread().getName()+" "+bank+" success");
         return bank;
@@ -148,7 +150,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         } else {
             try {
                 for (Client client : bank.getClients()) {
-                    DaoFactory.getClientDao().save(client);
+                    clientDao.save(client);
                 }
                 Connection conn = openConnection();
                 String sql = "update banks set name = (?) where id = (?)";
@@ -177,7 +179,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
         if (bank.getId() != -1){
             try {
                 for (Client client : bank.getClients()) {
-                    DaoFactory.getClientDao().remove(client);
+                    clientDao.remove(client);
                 }
                 Connection conn = openConnection();
                 String sql = "delete from banks where id = (?)";
@@ -219,7 +221,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
 
     @Override
     public String getBankReport(Bank bank) throws DaoException {
-        List<Client> clients = (DaoFactory.getClientDao().getAllClients(bank));
+        List<Client> clients = (clientDao.getAllClients(bank));
         bank.setClients(new HashSet<>(clients));
         int clientsNumber = getClientsNumber(bank);
         int accountNumber = getAccountsNumber(bank);
@@ -345,7 +347,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
     public Map<String, List<Client>> getClientsByCity(Bank bank) {
         Map<String, List<Client>> map = new TreeMap<>();
         try {
-            List<Client> clients = DaoFactory.getClientDao().getAllClients(bank);
+            List<Client> clients = clientDao.getAllClients(bank);
             for (Client client : clients) {
                 String city = client.getCity();
                 if (map.containsKey(city)) {
@@ -366,7 +368,7 @@ public class BankDaoImpl extends BaseDaoImpl implements BankDao {
     public Set<Client> getClientsSorted(Bank bank) throws DaoException {
         Comparator<Client> c = new ClientComparator();
         Set<Client> sortedClients = new TreeSet<>(c);
-        List<Client> clients = DaoFactory.getClientDao().getAllClients(bank);
+        List<Client> clients = clientDao.getAllClients(bank);
         sortedClients.addAll(clients);
         log.fine(Thread.currentThread().getName() + " " + bank + " success");
         return sortedClients;

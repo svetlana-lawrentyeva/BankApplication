@@ -1,7 +1,7 @@
 package com.luxoft.bankapp.service.impl;
 
+import com.luxoft.bankapp.dao.BankDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.dao.impl.DaoFactory;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.BankInfo;
@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class BankService {
+    
+    private BankDao bankDao;
+    
     /**
      * Get bank by name from database
      * @param name name to get the bank
@@ -18,7 +21,7 @@ public class BankService {
     public Bank getByName(String name){
         Bank bank = null;
         try {
-            return DaoFactory.getBankDao().getBankByName(name);
+            return bankDao.getBankByName(name);
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -32,7 +35,7 @@ public class BankService {
     public Bank getById(long idBank){
         Bank bank = null;
         try {
-            return DaoFactory.getBankDao().getBankById(idBank);
+            return bankDao.getBankById(idBank);
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -45,7 +48,7 @@ public class BankService {
      */
     public Bank save(Bank bank){
         try {
-            DaoFactory.getBankDao().save(bank);
+            bankDao.save(bank);
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -54,32 +57,32 @@ public class BankService {
 
     public String getBankReport(Bank bank) throws DaoException {
         bank = getByName(bank.getName());
-        return DaoFactory.getBankDao().getBankReport(bank);
+        return bankDao.getBankReport(bank);
     }
 
     public BankInfo getBankInfo(Bank bank){
         bank = getByName(bank.getName());
-        return DaoFactory.getBankDao().getBankInfo(bank);
+        return bankDao.getBankInfo(bank);
     }
 
     public int getClientsNumber(Bank bank) throws DaoException {
-        return DaoFactory.getBankDao().getClientsNumber(bank);
+        return bankDao.getClientsNumber(bank);
     }
 
     public int getAccountsNumber(Bank bank) throws DaoException{
-        return DaoFactory.getBankDao().getAccountsNumber(bank);
+        return bankDao.getAccountsNumber(bank);
     }
 
     public float getBankCreditSum(Bank bank) throws DaoException{
-        return DaoFactory.getBankDao().getBankCreditSum(bank);
+        return bankDao.getBankCreditSum(bank);
     }
 
     public Map<String, List<Client>> getClientsByCity(Bank bank){
-        return DaoFactory.getBankDao().getClientsByCity(bank);
+        return bankDao.getClientsByCity(bank);
     }
 
     public Set<Client> getClientsSorted(Bank bank) throws DaoException{
-        return DaoFactory.getBankDao().getClientsSorted(bank);
+        return bankDao.getClientsSorted(bank);
     }
 
 

@@ -3,6 +3,7 @@ package com.luxoft.bankapp.commander;
 import com.luxoft.bankapp.application.io.Io;
 import com.luxoft.bankapp.application.io.IoFactory;
 import com.luxoft.bankapp.commander.commands.*;
+import com.luxoft.bankapp.dao.impl.BankDaoImpl;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
@@ -15,24 +16,24 @@ import java.util.Set;
 public class Commander {
 
     private Client currentClient;
-    private Bank currentBank = ServiceFactory.getBankService().getByName("My bank");
+    private Bank currentBank;// = BankDaoImpl.getInstance().getBankByName("My bank");
     private Map<Integer, Command> commandMap = new HashMap<>();
     private Io io;
 
     private void init() {
 
-        commandMap.put(0, new FindClientCommand(this));
-        commandMap.put(1, new ShowAllAccounts(this));
-        commandMap.put(2, new DepositCommand(this));
-        commandMap.put(3, new WithdrawCommand(this));
-        commandMap.put(4, new TransferCommand(this));
-        commandMap.put(5, new AddClientCommand(this));
-        commandMap.put(6, new AddAccountCommand(this));
-        commandMap.put(7, new RemoveClientCommand(this));
-        commandMap.put(8, new LoadCommand(this));
-        commandMap.put(9, new SaveCommand(this));
-        commandMap.put(10, new BankInfoCommand(this));
-        commandMap.put(11, new BankFeedCommand(this));
+        commandMap.put(0, new FindClientCommand());
+        commandMap.put(1, new ShowAllAccounts());
+        commandMap.put(2, new DepositCommand());
+        commandMap.put(3, new WithdrawCommand());
+        commandMap.put(4, new TransferCommand());
+        commandMap.put(5, new AddClientCommand());
+        commandMap.put(6, new AddAccountCommand());
+        commandMap.put(7, new RemoveClientCommand());
+        commandMap.put(8, new LoadCommand());
+        commandMap.put(9, new SaveCommand());
+        commandMap.put(10, new BankInfoCommand());
+        commandMap.put(11, new BankFeedCommand());
         commandMap.put(12, new Command() {
             @Override
             public void execute(Io io) {

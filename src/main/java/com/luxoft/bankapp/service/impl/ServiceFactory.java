@@ -8,9 +8,9 @@ package com.luxoft.bankapp.service.impl;
  */
 public class ServiceFactory {
     private volatile static ServiceFactory serviceFactory;
-    private volatile static AccountService accountService;
-    private volatile static ClientService clientService;
-    private volatile static BankService bankService;
+    private volatile AccountService accountService;
+    private volatile ClientService clientService;
+    private volatile BankService bankService;
     public static Object monitor = new Object();
 
     private ServiceFactory(){}
@@ -26,30 +26,27 @@ public class ServiceFactory {
         return serviceFactory;
     }
 
-    public static AccountService getAccountService(){
-        if(accountService == null){
-            synchronized (monitor){
-                if(accountService == null){
-                    accountService = new AccountService();
-                }
-            }
-        }
+    public AccountService getAccountService() {
         return accountService;
     }
 
-    public static ClientService getClientService(){
-        if(clientService == null){
-                    clientService = new ClientService();
-        }
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    public ClientService getClientService() {
         return clientService;
     }
 
-    public static BankService getBankService(){
-        if(bankService == null){
-                    bankService = new BankService();
-        }
+    public void setClientService(ClientService clientService) {
+        this.clientService = clientService;
+    }
+
+    public BankService getBankService() {
         return bankService;
     }
 
-
+    public void setBankService(BankService bankService) {
+        this.bankService = bankService;
+    }
 }

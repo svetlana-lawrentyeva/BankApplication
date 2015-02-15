@@ -17,19 +17,15 @@ import java.util.List;
  */
 public class ShowAllAccounts extends AbstractCommand {
 
-    public ShowAllAccounts(Commander commander) {
-        super(commander);
-    }
-
     @Override
     public void execute(Io io) {
         try {
             Client client = null;
             while ((client = getCommander().getCurrentClient()) == null) {
-                FindClientCommand command = new FindClientCommand(getCommander());
+                FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
-            List<Account> accounts = ServiceFactory.getAccountService().getAllByClient(getCommander().getCurrentClient());
+            List<Account> accounts = getServiceFactory().getAccountService().getAllByClient(getCommander().getCurrentClient());
             StringBuilder builder = new StringBuilder();
             builder.append("choose account number:\n");
             for(Account account:accounts){
@@ -37,7 +33,7 @@ public class ShowAllAccounts extends AbstractCommand {
             }
             io.write(builder.toString());
             String accNumber = io.read();
-            getCommander().getCurrentClient().setActiveAccount(ServiceFactory.getAccountService().getById(Long.parseLong(accNumber)));
+            getCommander().getCurrentClient().setActiveAccount(getServiceFactory().getAccountService().getById(Long.parseLong(accNumber)));
             io.write("active account is "+accNumber+"\nenter for continue");
             io.read();
         

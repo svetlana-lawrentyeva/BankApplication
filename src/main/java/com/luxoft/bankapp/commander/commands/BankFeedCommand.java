@@ -7,10 +7,6 @@ import com.luxoft.bankapp.commander.Commander;
 
 public class BankFeedCommand extends AbstractCommand implements Command {
 
-    public BankFeedCommand(Commander commander) {
-        super(commander);
-    }
-
     @Override
     public void execute(Io io) {
         try {

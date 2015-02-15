@@ -1,7 +1,7 @@
 package com.luxoft.bankapp.service.impl;
 
+import com.luxoft.bankapp.dao.AccountDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.dao.impl.DaoFactory;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.exceptions.NotEnoughFundsException;
 import com.luxoft.bankapp.model.impl.Client;
@@ -9,12 +9,13 @@ import com.luxoft.bankapp.model.impl.Client;
 import java.util.List;
 
 public class AccountService {
+    private AccountDao accountDao;
     /**
      * Save account to database
      * @param account account to be saved
      */
     public Account save(Account account) throws DaoException {
-        return DaoFactory.getAccountDao().save(account);
+        return accountDao.save(account);
     }
 
     /**
@@ -22,7 +23,7 @@ public class AccountService {
      * @param account account to be removed
      */
     public void remove(Account account) throws DaoException {
-        DaoFactory.getAccountDao().remove(account);
+        accountDao.remove(account);
     }
 
     /**
@@ -30,7 +31,7 @@ public class AccountService {
      * @param client client whose accounts will be removed
      */
     public void removeAllByClient(Client client) throws DaoException {
-        DaoFactory.getAccountDao().removeAllByClient(client);
+        accountDao.removeAllByClient(client);
     }
 
     /**
@@ -38,7 +39,7 @@ public class AccountService {
      * @param client client whose accounts will be get
      */
     public List<Account> getAllByClient(Client client) throws DaoException {
-        return DaoFactory.getAccountDao().getAllByClient(client);
+        return accountDao.getAllByClient(client);
     }
 
     /**
@@ -46,7 +47,7 @@ public class AccountService {
      * @param idAccount id to get account from database
      */
     public Account getById(long idAccount) throws DaoException {
-        return DaoFactory.getAccountDao().getById(idAccount);
+        return accountDao.getById(idAccount);
     }
 
     /**
@@ -65,7 +66,7 @@ public class AccountService {
     public void deposit(Account account, float x) throws DaoException {
         account.setBalance(getBalance(account));
         account.deposit(x);
-        DaoFactory.getAccountDao().save(account);
+        accountDao.save(account);
     }
 
     /**
@@ -77,7 +78,7 @@ public class AccountService {
         synchronized (ServiceFactory.monitor){
             account.setBalance(getBalance(account));
             account.withdraw(x);
-            DaoFactory.getAccountDao().save(account);
+            accountDao.save(account);
         }
     }
 
@@ -90,8 +91,8 @@ public class AccountService {
         account1.setBalance(getBalance(account1));
         account2.setBalance(getBalance(account2));
         account1.transfer(account2, x);
-        DaoFactory.getAccountDao().save(account1);
-        DaoFactory.getAccountDao().save(account2);
+        accountDao.save(account1);
+        accountDao.save(account2);
     }
 
     /**
@@ -99,11 +100,18 @@ public class AccountService {
      * @param account account to get balance
      */
     public float getBalance(Account account) throws DaoException {
-        return DaoFactory.getAccountDao().getBalance(account);
+        return accountDao.getBalance(account);
     }
 
     public float getClientBalance(Client client) throws DaoException {
-        return DaoFactory.getAccountDao().getClientBalance(client);
+        return accountDao.getClientBalance(client);
     }
 
+    public AccountDao getAccountDao() {
+        return accountDao;
+    }
+
+    public void setAccountDao(AccountDao accountDao) {
+        this.accountDao = accountDao;
+    }
 }

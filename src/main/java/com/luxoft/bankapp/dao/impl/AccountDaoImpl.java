@@ -1,6 +1,7 @@
 package com.luxoft.bankapp.dao.impl;
 
 import com.luxoft.bankapp.dao.AccountDao;
+import com.luxoft.bankapp.dao.ClientDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.CheckingAccount;
@@ -21,6 +22,7 @@ import java.util.logging.Logger;
 public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
 
     private static volatile AccountDao instance;
+    private ClientDao clientDao;
     private static Logger log = Logger.getLogger(AccountDaoImpl.class.getName());
 
     private AccountDaoImpl() {
@@ -214,7 +216,7 @@ public class AccountDaoImpl extends BaseDaoImpl implements AccountDao {
             account.setBalance(balance);
 
             if (idClient > 0) {
-                Client client = DaoFactory.getClientDao().getById(idClient);
+                Client client = clientDao.getById(idClient);
                 account.setClient(client);
             }
 

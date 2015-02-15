@@ -1,15 +1,13 @@
 package com.luxoft.bankapp.commander;
 
 import com.luxoft.bankapp.service.ServiceOld;
+import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public abstract class AbstractCommand implements Command {
 
     private ServiceOld service = new ServiceOld();
     private Commander commander;
-
-    public AbstractCommand(Commander commander) {
-        this.commander = commander;
-    }
+    private ServiceFactory serviceFactory;
 
     public ServiceOld getService() {
         return service;
@@ -25,5 +23,13 @@ public abstract class AbstractCommand implements Command {
 
     public void setCommander(Commander commander) {
         this.commander = commander;
+    }
+
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
+    }
+
+    public void setServiceFactory(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 }

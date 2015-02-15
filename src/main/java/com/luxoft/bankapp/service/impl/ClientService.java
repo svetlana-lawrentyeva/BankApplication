@@ -1,7 +1,7 @@
 package com.luxoft.bankapp.service.impl;
 
+import com.luxoft.bankapp.dao.ClientDao;
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.dao.impl.DaoFactory;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.exceptions.BankException;
 import com.luxoft.bankapp.model.exceptions.ClientNotExistsException;
@@ -17,12 +17,14 @@ import java.util.List;
 
 public class ClientService {
 
+    private ClientDao clientDao;
+
     /**
      * Save client to database
      * @param client client that will be saved
      */
     public Client save(Client client) throws DaoException {
-        return DaoFactory.getClientDao().save(client);
+        return clientDao.save(client);
     }
 
     /**
@@ -30,7 +32,7 @@ public class ClientService {
      * @param client client that will be removed
      */
     public void remove(Client client) throws DaoException {
-        DaoFactory.getClientDao().remove(client);
+        clientDao.remove(client);
     }
 
     /**
@@ -38,7 +40,7 @@ public class ClientService {
      * @param bank bank clients of which will be removed
      */
     public void removeAllByBank(Bank bank) throws DaoException {
-        DaoFactory.getClientDao().removeAllByBank(bank);
+        clientDao.removeAllByBank(bank);
     }
 
     /**
@@ -47,7 +49,7 @@ public class ClientService {
      * @param name name of the client to find
      */
     public Client getByName(Bank bank, String name) throws ClientNotExistsException, DaoException {
-        Client client = DaoFactory.getClientDao().getByName(bank, name);
+        Client client = clientDao.getByName(bank, name);
         if (client == null) {
             throw new ClientNotExistsException();
         }
@@ -59,7 +61,7 @@ public class ClientService {
      * @param clientId id of the client to find
      */
     public Client getById(long clientId) throws ClientNotExistsException, DaoException {
-        return DaoFactory.getClientDao().getById(clientId);
+        return clientDao.getById(clientId);
     }
 
     /**
@@ -67,7 +69,7 @@ public class ClientService {
      * @param bank bank that contents clients
      */
     public List<Client>getAllByBank(Bank bank) throws DaoException {
-        return DaoFactory.getClientDao().getAllClients(bank);
+        return clientDao.getAllClients(bank);
     }
 
     /**
@@ -126,7 +128,7 @@ public class ClientService {
      * @param city city of client to find
      */
     public List<Client>getClientsByNameAndCity(Bank bank, String name, String city) throws DaoException, SQLException {
-        return DaoFactory.getClientDao().findClientsByNameAndCity(bank, name, city);
+        return clientDao.findClientsByNameAndCity(bank, name, city);
     }
 
 

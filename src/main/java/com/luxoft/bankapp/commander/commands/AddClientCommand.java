@@ -10,10 +10,6 @@ import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public class AddClientCommand extends AbstractCommand implements Command {
 
-    public AddClientCommand(Commander commander) {
-        super(commander);
-    }
-
     @Override
     public void execute(Io io) {
         try {
@@ -44,7 +40,7 @@ public class AddClientCommand extends AbstractCommand implements Command {
             client.setGender(Gender.getGender(io.read()));
 
             getCommander().getCurrentBank().addClient(client);
-            client = ServiceFactory.getClientService().save(client);
+            client = getServiceFactory().getClientService().save(client);
             getCommander().setCurrentClient(client);
             io.write("Client " + client.getClientSalutation() + " successfully added\nenter for continue");
             io.read();
