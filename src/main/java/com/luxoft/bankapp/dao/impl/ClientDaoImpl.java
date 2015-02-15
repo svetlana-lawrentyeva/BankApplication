@@ -370,4 +370,72 @@ public class ClientDaoImpl extends BaseDaoImpl implements ClientDao {
         }
         log.fine(Thread.currentThread().getName()+" "+bank+" success");
     }
+
+    @Override
+    public List<Client> findClientsByNameAndCity(Bank bank, String name, String city) throws DaoException, SQLException {
+        List<Client> clients = null;
+        Connection conn = openConnection();
+        String sql = "select * from clients where id_bank = (?) and name=(?) and city=(?)";
+        try {
+            final PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setLong(1, bank.getId());
+            preparedStatement.setString(2, name);
+            preparedStatement.setString(3, city);
+
+            log.fine(Thread.currentThread().getName() + " preparedStatement created: " + preparedStatement);
+
+            if (!preparedStatement.execute()) {
+                log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                        new DaoException("impossible to get clients from db."));
+                throw new DaoException("impossible to get clients from db.");
+            }
+            ResultSet rs = preparedStatement.getResultSet();
+            clients = new ArrayList<>();
+            while (rs.next()) {
+                Client client = new Client();
+                long idClient = rs.getLong(1);
+                String email = rs.getString(4);
+                String phone = rs.getString(5);
+                float overdraft = rs.getFloat(6);
+                String genderLetter = rs.getString(7);
+
+                Gender gender;
+                switch (genderLetter) {
+                    case "m":
+                        gender = Gender.MALE;
+                        break;
+                    case "f":
+                        gender = Gender.FEMALE;
+                        break;
+                    default:
+                        log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: ",
+                                new DaoException("incorrect data in db, impossible to load the client"));
+                        throw new DaoException("incorrect data in db, impossible to load the client");
+                }
+                client.setId(idClient);
+                client.setName(name);
+                client.setCity(city);
+                client.setEmail(email);
+                client.setPhone(phone);
+                client.setOverdraft(overdraft);
+                client.setGender(gender);
+                client.setBank(bank);
+
+                clients.add(client);
+            }
+            rs.close();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            log.log(Level.SEVERE, Thread.currentThread().getName()+" "+bank+" error: "+e.getMessage());
+            throw new DaoException(e.getMessage());
+        }
+        closeConnection(conn);
+
+        for(Client client:clients){
+            Set<Account> accounts = new HashSet<>(DaoFactory.getAccountDao().getAllByClient(client));
+            client.setAccounts(accounts);
+        }
+        log.fine(Thread.currentThread().getName()+" "+bank+" success");
+        return clients;
+    }
 }

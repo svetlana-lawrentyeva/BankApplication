@@ -40,6 +40,26 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>FindClientServlet</servlet-name>
+        <servlet-class>com.luxoft.bankapp.web.servlets.FindClientServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>FindClientServlet</servlet-name>
+        <url-pattern>/clients</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetClientServlet</servlet-name>
+        <servlet-class>com.luxoft.bankapp.web.servlets.GetClientServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GetClientServlet</servlet-name>
+        <url-pattern>/client</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>WithdrawServlet</servlet-name>
         <servlet-class>com.luxoft.bankapp.web.servlets.WithdrawServlet</servlet-class>
     </servlet>
@@ -57,6 +77,16 @@
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SaveClientServlet</servlet-name>
+        <servlet-class>com.luxoft.bankapp.web.servlets.SaveClientServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SaveClientServlet</servlet-name>
+        <url-pattern>/saveClient</url-pattern>
     </servlet-mapping>
 
     <welcome-file-list>
@@ -77,4 +107,14 @@
         <listener-class>com.luxoft.bankapp.web.listeners.SessionListener</listener-class>
         <description>count number connections</description>
     </listener>
+
+    <error-page>
+        <error-code>500</error-code>
+        <location>/errorPages/500.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/errorPages/404.jsp</location>
+    </error-page>
 </web-app>

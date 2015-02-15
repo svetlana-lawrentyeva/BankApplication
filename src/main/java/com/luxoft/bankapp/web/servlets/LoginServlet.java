@@ -19,6 +19,7 @@ public class LoginServlet extends HttpServlet {
         req.getSession().setAttribute("clientName", clientName);
         log.info("client "+clientName+" logged into ATM");
 
+        req.setCharacterEncoding("UTF-8");
         resp.sendRedirect("bankomat/menu.html");
     }
 }

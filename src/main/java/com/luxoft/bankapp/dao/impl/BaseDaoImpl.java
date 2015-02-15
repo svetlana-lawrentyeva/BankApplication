@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public abstract class BaseDaoImpl implements BaseDao {
 
-    private final String CONNECTION_STRING = "jdbc:h2:tcp://localhost/~/BankApplication;MVCC=true";
+    private final String CONNECTION_STRING = "jdbc:h2:tcp://localhost/~/BankApplication";
     private static Logger log = Logger.getLogger(BaseDaoImpl.class.getName());
 
     public BaseDaoImpl(){

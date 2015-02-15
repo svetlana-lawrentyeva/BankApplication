@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ClientService {
@@ -117,5 +118,16 @@ public class ClientService {
 
         return client;
     }
+
+    /**
+     * Get all clients of the bank from database by name and city
+     * @param bank bank that contents clients
+     * @param name name of client to find
+     * @param city city of client to find
+     */
+    public List<Client>getClientsByNameAndCity(Bank bank, String name, String city) throws DaoException, SQLException {
+        return DaoFactory.getClientDao().findClientsByNameAndCity(bank, name, city);
+    }
+
 
 }

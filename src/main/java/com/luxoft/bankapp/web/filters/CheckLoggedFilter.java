@@ -20,6 +20,7 @@ public class CheckLoggedFilter implements Filter {
         String path = ((HttpServletRequest)servletRequest).getRequestURI();
         HttpServletResponse response = (HttpServletResponse)servletResponse;
 
+        servletRequest.setCharacterEncoding("UTF-8");
         if(path.equals("/bankomat/login.html") ||
                 path.equals("/welcome") ||
                 path.equals("/login") ||

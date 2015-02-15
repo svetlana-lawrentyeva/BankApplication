@@ -1,7 +1,6 @@
 package com.luxoft.bankapp.web.servlets;
 
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
@@ -10,13 +9,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class WithdrawServlet extends HttpServlet {
-    Logger log = Logger.getLogger(BalanceServlet.class.getName());
+public class FindClientServlet extends HttpServlet {
+    private final Logger log = Logger.getLogger(FindClientServlet.class.getName());
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doPost(req, resp);
@@ -24,27 +24,19 @@ public class WithdrawServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        String clientName = (String) session.getAttribute("clientName");
+        String city = req.getParameter("city");
+        String clientName = req.getParameter("clientName");
+        List<Client> clients = null;
         Bank bank = ServiceFactory.getBankService().getByName("My bank");
-        Client client = null;
         try {
-            client = ServiceFactory.getClientService().getByName(bank, clientName);
-        } catch (Exception e) {
+            clients = ServiceFactory.getClientService().getClientsByNameAndCity(bank, clientName, city);
+        } catch (DaoException e) {
+            log.log(Level.SEVERE, e.getMessage(), e);
+        } catch (SQLException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
-        float x = Float.parseFloat(req.getParameter("amount"));
-        if(client != null){
-            try {
-                Account account = client.getAccounts().iterator().next();
-                if(account != null) {
-                    ServiceFactory.getAccountService().withdraw(account, x);
-                }
-            } catch (Exception e) {
-                log.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
+        req.setAttribute("clients", clients);
         req.setCharacterEncoding("UTF-8");
-        resp.sendRedirect("/balance");
+        req.getRequestDispatcher("remoteOffice/clients.jsp").forward(req, resp);
     }
 }

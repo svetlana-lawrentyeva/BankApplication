@@ -4,6 +4,7 @@ import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -44,9 +45,16 @@ public interface ClientDao {
      */
      void remove(Client client) throws DaoException;
 
-        /**
-         * remove all clients from the bank
-         * @param bank bank to remove clients from
+    /**
+     * remove all clients from the bank
+     * @param bank bank to remove clients from
      */
     void removeAllByBank(Bank bank) throws DaoException;
+
+    /**
+     * find clients in the city by name
+     * @param name name of client
+     * @param city name of city
+     */
+    List<Client> findClientsByNameAndCity(Bank bank, String name, String city) throws DaoException, SQLException;
 }

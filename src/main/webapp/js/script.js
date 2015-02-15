@@ -1,7 +1,7 @@
 function isNumeric(input){
     var result=false;;
     var RE = /^-{0,1}\d*\.{0,1}\d+$/;
-    if (RE.test(input) && input > 0){
+    if (RE.test(input) && (input >= 0)){
         result=true;
     }
     return result;
@@ -22,6 +22,17 @@ function checkName() {
             $("#nameError").html("пожалуйста, укажите имя");
             return false;
         }
+    }
+    return result;
+}
+
+function checkPhone(){
+    var result=true;
+    var phone = ("#phone").val();
+    var RE = /\d{3}-\d{7}/;
+    if (!RE.test(phone)){
+        $("#phoneError").html("пожалуйста, укажите телефон");
+        result=false;
     }
     return result;
 }
@@ -49,6 +60,20 @@ function checkEmail() {
     return result;
 }
 
+function checkOverdraft() {
+    var overdraft=$("#overdraft").val();
+    var result=true;
+    if(!isNumeric(overdraft)){
+        $("#overdraftError").html("введите число");
+        result = false;
+    }
+    if (overdraft<0) {
+        $("#overdraftError").html("введите сумму");
+        result = false;
+    }
+    return result;
+}
+
 function checkBalance() {
     var balance=$("#balance").val();
     var result=true;
@@ -56,7 +81,7 @@ function checkBalance() {
         $("#balanceError").html("введите число");
         result = false;
     }
-    if (balance<=0) {
+    if (balance<0) {
         $("#balanceError").html("введите сумму");
         result = false;
     }
@@ -64,7 +89,7 @@ function checkBalance() {
 }
 
 function checkClientForm() {
-    if(checkName() & checkCity() & checkEmail() & checkBalance()){
+    if(checkName() & checkCity() & checkEmail() & checkOverdraft() & checkBalance() & checkPhone()){
         return true;
     } else {
         return false;
