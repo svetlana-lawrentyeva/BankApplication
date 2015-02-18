@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FindClientServlet extends HttpServlet {
+    private ServiceFactory serviceFactory;
     private final Logger log = Logger.getLogger(FindClientServlet.class.getName());
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -27,9 +28,9 @@ public class FindClientServlet extends HttpServlet {
         String city = req.getParameter("city");
         String clientName = req.getParameter("clientName");
         List<Client> clients = null;
-        Bank bank = ServiceFactory.getBankService().getByName("My bank");
+        Bank bank = serviceFactory.getBankService().getByName("My bank");
         try {
-            clients = ServiceFactory.getClientService().getClientsByNameAndCity(bank, clientName, city);
+            clients = serviceFactory.getClientService().getClientsByNameAndCity(bank, clientName, city);
         } catch (DaoException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         } catch (SQLException e) {
@@ -38,5 +39,13 @@ public class FindClientServlet extends HttpServlet {
         req.setAttribute("clients", clients);
         req.setCharacterEncoding("UTF-8");
         req.getRequestDispatcher("remoteOffice/clients.jsp").forward(req, resp);
+    }
+
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
+    }
+
+    public void setServiceFactory(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 }

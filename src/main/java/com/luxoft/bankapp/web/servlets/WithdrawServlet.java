@@ -1,6 +1,5 @@
 package com.luxoft.bankapp.web.servlets;
 
-import com.luxoft.bankapp.dao.exceptions.DaoException;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.impl.Bank;
 import com.luxoft.bankapp.model.impl.Client;
@@ -16,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WithdrawServlet extends HttpServlet {
+    private ServiceFactory serviceFactory;
     Logger log = Logger.getLogger(BalanceServlet.class.getName());
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -26,10 +26,10 @@ public class WithdrawServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         String clientName = (String) session.getAttribute("clientName");
-        Bank bank = ServiceFactory.getBankService().getByName("My bank");
+        Bank bank = getServiceFactory().getBankService().getByName("My bank");
         Client client = null;
         try {
-            client = ServiceFactory.getClientService().getByName(bank, clientName);
+            client = getServiceFactory().getClientService().getByName(bank, clientName);
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -38,7 +38,7 @@ public class WithdrawServlet extends HttpServlet {
             try {
                 Account account = client.getAccounts().iterator().next();
                 if(account != null) {
-                    ServiceFactory.getAccountService().withdraw(account, x);
+                    getServiceFactory().getAccountService().withdraw(account, x);
                 }
             } catch (Exception e) {
                 log.log(Level.SEVERE, e.getMessage(), e);
@@ -46,5 +46,13 @@ public class WithdrawServlet extends HttpServlet {
         }
         req.setCharacterEncoding("UTF-8");
         resp.sendRedirect("/balance");
+    }
+
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
+    }
+
+    public void setServiceFactory(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 }

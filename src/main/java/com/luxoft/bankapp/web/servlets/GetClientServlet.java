@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GetClientServlet extends HttpServlet {
+    private ServiceFactory serviceFactory;
     private final Logger log = Logger.getLogger(GetClientServlet.class.getName());
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -25,7 +26,7 @@ public class GetClientServlet extends HttpServlet {
         long id= Long.parseLong(req.getParameter("id"));
         Client client = null;
         try {
-            client = ServiceFactory.getClientService().getById(id);
+            client = serviceFactory.getClientService().getById(id);
         } catch (ClientNotExistsException e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         } catch (DaoException e) {
@@ -37,5 +38,13 @@ public class GetClientServlet extends HttpServlet {
 
         req.setCharacterEncoding("UTF-8");
         req.getRequestDispatcher("remoteOffice/client.jsp").forward(req, resp);
+    }
+
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
+    }
+
+    public void setServiceFactory(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 }

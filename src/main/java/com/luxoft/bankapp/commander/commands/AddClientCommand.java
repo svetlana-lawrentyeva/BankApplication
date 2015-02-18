@@ -39,9 +39,9 @@ public class AddClientCommand extends AbstractCommand implements Command {
             io.write("gender (m|f):");
             client.setGender(Gender.getGender(io.read()));
 
-            getCommander().getCurrentBank().addClient(client);
+            getCurrentBank().addClient(client);
             client = getServiceFactory().getClientService().save(client);
-            getCommander().setCurrentClient(client);
+            setCurrentClient(client);
             io.write("Client " + client.getClientSalutation() + " successfully added\nenter for continue");
             io.read();
         

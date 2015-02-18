@@ -16,7 +16,7 @@ public class LoadCommand extends AbstractCommand implements Command {
             io.write("path:");
             
             client = getServiceFactory().getClientService().loadFromDisk((String) io.read());
-            getCommander().setCurrentClient(client);
+            setCurrentClient(client);
                io.write(client.toString() + " is loaded\nenter for continue");
             io.read();
         

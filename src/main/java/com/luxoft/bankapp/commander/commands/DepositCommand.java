@@ -14,22 +14,22 @@ public class DepositCommand extends AbstractCommand implements Command {
     public void execute(Io io) {
         try {
             Client client = null;
-            while ((client = getCommander().getCurrentClient()) == null) {
+            while ((client = getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
             Account account = null;
-            while((account = getCommander().getCurrentClient().getActiveAccount()) == null){
+            while((account = getCurrentClient().getActiveAccount()) == null){
                 ShowAllAccounts command = new ShowAllAccounts();
                 command.execute(io);
             }
             io.write("money to deposit:");
             
             float x = Float.parseFloat((String) io.read());
-            getServiceFactory().getAccountService().deposit(getCommander().getCurrentClient().getActiveAccount(), x);
+            getServiceFactory().getAccountService().deposit(getCurrentClient().getActiveAccount(), x);
             io.write("Current client's active account " +
-                    getCommander().getCurrentClient().getActiveAccount() + " balance: " +
-                    getCommander().getCurrentClient().getActiveAccount().getBalance() + "\nenter for continue");
+                    getCurrentClient().getActiveAccount() + " balance: " +
+                    getCurrentClient().getActiveAccount().getBalance() + "\nenter for continue");
             io.read();
         
         } catch (Exception e) {

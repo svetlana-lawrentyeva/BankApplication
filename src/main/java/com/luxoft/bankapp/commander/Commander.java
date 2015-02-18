@@ -15,8 +15,7 @@ import java.util.Set;
 
 public class Commander {
 
-    private Client currentClient;
-    private Bank currentBank;// = BankDaoImpl.getInstance().getBankByName("My bank");
+
     private Map<Integer, Command> commandMap = new HashMap<>();
     private Io io;
 
@@ -33,8 +32,7 @@ public class Commander {
         commandMap.put(8, new LoadCommand());
         commandMap.put(9, new SaveCommand());
         commandMap.put(10, new BankInfoCommand());
-        commandMap.put(11, new BankFeedCommand());
-        commandMap.put(12, new Command() {
+        commandMap.put(11, new Command() {
             @Override
             public void execute(Io io) {
                 System.exit(0);
@@ -67,10 +65,10 @@ public class Commander {
                     command.append(i).append(". ").append(commandMap.get(i).printCommandInfo()).append("\n");
                 }
                 command.append("your choice:");
-                io.write(command.toString()); // when connection closed server tried to send menu one more time
+                io.write(command.toString());
                 int choice = 0;
                 String choiceString = io.read();
-                choice = Integer.parseInt(choiceString); // and here it tried to read the answer from the client
+                choice = Integer.parseInt(choiceString);
                 commandMap.get(choice).execute(io);
                 if(!(choice<commandMap.size()-1)){
                     _continue = false;
@@ -79,22 +77,6 @@ public class Commander {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public Client getCurrentClient() {
-        return currentClient;
-    }
-
-    public void setCurrentClient(Client currentClient) {
-        this.currentClient = currentClient;
-    }
-
-    public Bank getCurrentBank() {
-        return currentBank;
-    }
-
-    public void setCurrentBank(Bank currentBank) {
-        this.currentBank = currentBank;
     }
 
     public void registerCommand(Integer name, Command command) {

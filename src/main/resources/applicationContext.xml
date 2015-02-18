@@ -8,5 +8,50 @@ http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
    <bean id="bankServerCommander" class="com.luxoft.bankapp.application.BankServerCommander" autowire="byName" />
-   <bean id="commander" class="com.luxoft.bankapp.commander.Commander" />
+   <bean id="commander" class="com.luxoft.bankapp.commander.Commander">
+       <property name="commandMap">
+           <map>
+               <entry key="0" value-ref="findClientCommand" />
+               <entry key="1" value-ref="showAllAccountsCommand" />
+               <entry key="2" value-ref="depositCommand" />
+               <entry key="3" value-ref="withdrawCommand" />
+               <entry key="4" value-ref="transferCommand" />
+               <entry key="5" value-ref="addClientCommand" />
+               <entry key="6" value-ref="removeClientCommand" />
+               <entry key="7" value-ref="bankInfoCommand" />
+               <entry key="8" value-ref="exitCommand" />
+
+           </map>
+       </property>
+   </bean>
+
+    <bean id="accountDao" class="com.luxoft.bankapp.dao.impl.AccountDaoImpl" />
+    <bean id="clientDao" class="com.luxoft.bankapp.dao.impl.ClientDaoImpl" />
+    <bean id="bankDao" class="com.luxoft.bankapp.dao.impl.BankDaoImpl" />
+
+    <bean id="accountService" class="com.luxoft.bankapp.service.impl.AccountService" autowire="byName" />
+    <bean id="clientService" class="com.luxoft.bankapp.service.impl.ClientService" autowire="byName" />
+   <!-- <bean id="clientService" class="com.luxoft.bankapp.service.impl.ClientService" autowire="byName" />-->
+    <bean id="bankService" class="com.luxoft.bankapp.service.impl.BankService" autowire="byName" />
+
+    <bean id="serviceFactory" class="com.luxoft.bankapp.service.impl.ServiceFactory"
+          factory-method="getInstance" autowire="byName" />
+    <bean id="abstractCommand" class="com.luxoft.bankapp.commander.AbstractCommand" abstract="true">
+        <property name="serviceFactory" ref="serviceFactory" />
+    </bean>
+
+    <bean id="addAccountCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.AddAccountCommand" autowire="byType" />
+    <bean id="addClientCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.AddClientCommand" autowire="byType" />
+    <bean id="bankFeedCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.BankFeedCommand" autowire="byType" />
+    <bean id="bankInfoCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.BankInfoCommand" autowire="byType" />
+    <bean id="depositCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.DepositCommand" autowire="byType" />
+    <bean id="findClientCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.FindClientCommand" autowire="byType" />
+    <bean id="loadCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.LoadCommand" autowire="byType" />
+    <bean id="removeClientCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.RemoveClientCommand" autowire="byType" />
+    <bean id="saveCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.SaveCommand" autowire="byType" />
+    <bean id="showAllAccountsCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.ShowAllAccounts" autowire="byType" />
+    <bean id="transferCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.TransferCommand" autowire="byType" />
+    <bean id="withdrawCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.WithdrawCommand" autowire="byType" />
+    <bean id="exitCommand" parent="abstractCommand" class="com.luxoft.bankapp.commander.commands.ExitCommand" autowire="byType" />
+
     </beans>

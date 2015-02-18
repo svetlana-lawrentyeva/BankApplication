@@ -21,11 +21,11 @@ public class ShowAllAccounts extends AbstractCommand {
     public void execute(Io io) {
         try {
             Client client = null;
-            while ((client = getCommander().getCurrentClient()) == null) {
+            while ((client = getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
-            List<Account> accounts = getServiceFactory().getAccountService().getAllByClient(getCommander().getCurrentClient());
+            List<Account> accounts = getServiceFactory().getAccountService().getAllByClient(getCurrentClient());
             StringBuilder builder = new StringBuilder();
             builder.append("choose account number:\n");
             for(Account account:accounts){
@@ -33,7 +33,7 @@ public class ShowAllAccounts extends AbstractCommand {
             }
             io.write(builder.toString());
             String accNumber = io.read();
-            getCommander().getCurrentClient().setActiveAccount(getServiceFactory().getAccountService().getById(Long.parseLong(accNumber)));
+            getCurrentClient().setActiveAccount(getServiceFactory().getAccountService().getById(Long.parseLong(accNumber)));
             io.write("active account is "+accNumber+"\nenter for continue");
             io.read();
         

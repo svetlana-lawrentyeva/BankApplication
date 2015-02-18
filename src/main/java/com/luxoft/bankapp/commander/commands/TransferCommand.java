@@ -17,17 +17,17 @@ public class TransferCommand extends AbstractCommand implements Command {
         try {
         
             Client currentClient = null;
-            while ((currentClient = getCommander().getCurrentClient()) == null) {
+            while ((currentClient = getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
             Account currentClientAccount = null;
-            while ((currentClientAccount = getCommander().getCurrentClient().getActiveAccount()) == null) {
+            while ((currentClientAccount = getCurrentClient().getActiveAccount()) == null) {
                 ShowAllAccounts command = new ShowAllAccounts();
                 command.execute(io);
             }
             io.write("name of client to transfer:");
-            Client client = getServiceFactory().getClientService().getByName(getCommander().getCurrentBank(), io.read());
+            Client client = getServiceFactory().getClientService().getByName(getCurrentBank(), io.read());
 
             List<Account> accounts = getServiceFactory().getAccountService().getAllByClient(client);
             StringBuilder builder = new StringBuilder();

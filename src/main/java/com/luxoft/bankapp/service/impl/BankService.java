@@ -13,7 +13,7 @@ import java.util.Set;
 public class BankService {
     
     private BankDao bankDao;
-    
+
     /**
      * Get bank by name from database
      * @param name name to get the bank
@@ -21,7 +21,7 @@ public class BankService {
     public Bank getByName(String name){
         Bank bank = null;
         try {
-            return bankDao.getBankByName(name);
+            return getBankDao().getBankByName(name);
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -35,7 +35,7 @@ public class BankService {
     public Bank getById(long idBank){
         Bank bank = null;
         try {
-            return bankDao.getBankById(idBank);
+            return getBankDao().getBankById(idBank);
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -48,7 +48,7 @@ public class BankService {
      */
     public Bank save(Bank bank){
         try {
-            bankDao.save(bank);
+            getBankDao().save(bank);
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -57,33 +57,40 @@ public class BankService {
 
     public String getBankReport(Bank bank) throws DaoException {
         bank = getByName(bank.getName());
-        return bankDao.getBankReport(bank);
+        return getBankDao().getBankReport(bank);
     }
 
     public BankInfo getBankInfo(Bank bank){
         bank = getByName(bank.getName());
-        return bankDao.getBankInfo(bank);
+        return getBankDao().getBankInfo(bank);
     }
 
     public int getClientsNumber(Bank bank) throws DaoException {
-        return bankDao.getClientsNumber(bank);
+        return getBankDao().getClientsNumber(bank);
     }
 
     public int getAccountsNumber(Bank bank) throws DaoException{
-        return bankDao.getAccountsNumber(bank);
+        return getBankDao().getAccountsNumber(bank);
     }
 
     public float getBankCreditSum(Bank bank) throws DaoException{
-        return bankDao.getBankCreditSum(bank);
+        return getBankDao().getBankCreditSum(bank);
     }
 
     public Map<String, List<Client>> getClientsByCity(Bank bank){
-        return bankDao.getClientsByCity(bank);
+        return getBankDao().getClientsByCity(bank);
     }
 
     public Set<Client> getClientsSorted(Bank bank) throws DaoException{
-        return bankDao.getClientsSorted(bank);
+        return getBankDao().getClientsSorted(bank);
     }
 
 
+    public BankDao getBankDao() {
+        return bankDao;
+    }
+
+    public void setBankDao(BankDao bankDao) {
+        this.bankDao = bankDao;
+    }
 }

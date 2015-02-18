@@ -13,7 +13,7 @@ public class BankInfoCommand extends AbstractCommand {
     @Override
     public void execute(Io io) {
         try {
-            io.write(getServiceFactory().getBankService().getBankInfo(getCommander().getCurrentBank()).toString() + "\nenter for continue");
+            io.write(getServiceFactory().getBankService().getBankInfo(getCurrentBank()).toString() + "\nenter for continue");
             io.read();
         } catch (Exception e) {
             e.printStackTrace();

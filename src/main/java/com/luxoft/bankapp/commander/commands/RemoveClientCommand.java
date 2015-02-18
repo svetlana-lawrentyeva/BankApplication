@@ -12,14 +12,14 @@ public class RemoveClientCommand extends AbstractCommand {
     public void execute(Io io) {
         try {
             Client client = null;
-            while ((client = getCommander().getCurrentClient()) == null) {
+            while ((client = getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
             getServiceFactory().getClientService().remove(client);
             io.write("Client " + client.getClientSalutation() + " is deleted\nenter for continue");
             io.read();
-            getCommander().setCurrentClient(null);
+            setCurrentClient(null);
 
         } catch (Exception e) {
             e.printStackTrace();

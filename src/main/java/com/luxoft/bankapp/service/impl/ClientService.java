@@ -24,7 +24,7 @@ public class ClientService {
      * @param client client that will be saved
      */
     public Client save(Client client) throws DaoException {
-        return clientDao.save(client);
+        return getClientDao().save(client);
     }
 
     /**
@@ -32,7 +32,7 @@ public class ClientService {
      * @param client client that will be removed
      */
     public void remove(Client client) throws DaoException {
-        clientDao.remove(client);
+        getClientDao().remove(client);
     }
 
     /**
@@ -40,7 +40,7 @@ public class ClientService {
      * @param bank bank clients of which will be removed
      */
     public void removeAllByBank(Bank bank) throws DaoException {
-        clientDao.removeAllByBank(bank);
+        getClientDao().removeAllByBank(bank);
     }
 
     /**
@@ -49,7 +49,7 @@ public class ClientService {
      * @param name name of the client to find
      */
     public Client getByName(Bank bank, String name) throws ClientNotExistsException, DaoException {
-        Client client = clientDao.getByName(bank, name);
+        Client client = getClientDao().getByName(bank, name);
         if (client == null) {
             throw new ClientNotExistsException();
         }
@@ -61,7 +61,7 @@ public class ClientService {
      * @param clientId id of the client to find
      */
     public Client getById(long clientId) throws ClientNotExistsException, DaoException {
-        return clientDao.getById(clientId);
+        return getClientDao().getById(clientId);
     }
 
     /**
@@ -69,7 +69,7 @@ public class ClientService {
      * @param bank bank that contents clients
      */
     public List<Client>getAllByBank(Bank bank) throws DaoException {
-        return clientDao.getAllClients(bank);
+        return getClientDao().getAllClients(bank);
     }
 
     /**
@@ -128,8 +128,15 @@ public class ClientService {
      * @param city city of client to find
      */
     public List<Client>getClientsByNameAndCity(Bank bank, String name, String city) throws DaoException, SQLException {
-        return clientDao.findClientsByNameAndCity(bank, name, city);
+        return getClientDao().findClientsByNameAndCity(bank, name, city);
     }
 
 
+    public ClientDao getClientDao() {
+        return clientDao;
+    }
+
+    public void setClientDao(ClientDao clientDao) {
+        this.clientDao = clientDao;
+    }
 }

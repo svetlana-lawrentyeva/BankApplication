@@ -13,8 +13,8 @@ public class FindClientCommand extends AbstractCommand {
 
             io.write("name:");
             
-            Client client = getServiceFactory().getClientService().getByName(getCommander().getCurrentBank(), io.read());
-            getCommander().setCurrentClient(client);
+            Client client = getServiceFactory().getClientService().getByName(getCurrentBank(), io.read());
+            setCurrentClient(client);
             io.write("Client " + client.getClientSalutation() + " is checked\nenter for continue");
             io.read();
             

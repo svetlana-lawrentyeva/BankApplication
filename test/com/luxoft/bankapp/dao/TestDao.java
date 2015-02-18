@@ -1,7 +1,6 @@
 package com.luxoft.bankapp.dao;
 
 import com.luxoft.bankapp.dao.exceptions.DaoException;
-import com.luxoft.bankapp.dao.impl.DaoFactory;
 import com.luxoft.bankapp.model.Account;
 import com.luxoft.bankapp.model.AccountType;
 import com.luxoft.bankapp.model.Gender;
@@ -22,7 +21,7 @@ public class TestDao {
     @Before
     public void initBank() {
         try {
-            DaoFactory.getBankDao().delete(DaoFactory.getBankDao().getBankByName(BANK_NAME));
+            getBankDao().delete(DaoFactory.getBankDao().getBankByName(BANK_NAME));
         } catch (DaoException e) {
             e.printStackTrace();
         }

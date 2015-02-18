@@ -1,21 +1,16 @@
 package com.luxoft.bankapp.commander;
 
-import com.luxoft.bankapp.service.ServiceOld;
+import com.luxoft.bankapp.model.impl.Bank;
+import com.luxoft.bankapp.model.impl.Client;
 import com.luxoft.bankapp.service.impl.ServiceFactory;
 
 public abstract class AbstractCommand implements Command {
 
-    private ServiceOld service = new ServiceOld();
+    private Client currentClient;
+    private Bank currentBank;// = BankDaoImpl.getInstance().getBankByName("My bank");
     private Commander commander;
     private ServiceFactory serviceFactory;
 
-    public ServiceOld getService() {
-        return service;
-    }
-
-    public void setService(ServiceOld service) {
-        this.service = service;
-    }
 
     public Commander getCommander() {
         return commander;
@@ -31,5 +26,21 @@ public abstract class AbstractCommand implements Command {
 
     public void setServiceFactory(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
+    }
+
+    public Client getCurrentClient() {
+        return currentClient;
+    }
+
+    public void setCurrentClient(Client currentClient) {
+        this.currentClient = currentClient;
+    }
+
+    public Bank getCurrentBank() {
+        return currentBank;
+    }
+
+    public void setCurrentBank(Bank currentBank) {
+        this.currentBank = currentBank;
     }
 }

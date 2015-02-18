@@ -13,7 +13,7 @@ public class SaveCommand extends AbstractCommand implements Command {
     public void execute(Io io) {  // "./objects"
         try {
             Client client = null;
-            while ((client = getCommander().getCurrentClient()) == null) {
+            while ((client = getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }

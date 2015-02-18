@@ -26,7 +26,7 @@ public class AddAccountCommand extends AbstractCommand {
             
             float startBalance = Float.parseFloat((String) io.read());
             Client client;
-            while ((client = getCommander().getCurrentClient()) == null) {
+            while ((client = getCurrentClient()) == null) {
                 findClientCommand.execute(io);
             }
             Account account;

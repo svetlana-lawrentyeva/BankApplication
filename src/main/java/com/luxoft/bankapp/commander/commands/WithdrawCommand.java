@@ -14,12 +14,12 @@ public class WithdrawCommand extends AbstractCommand implements Command {
     public void execute(Io io) {
         try {
             Client client = null;
-            while ((client = getCommander().getCurrentClient()) == null) {
+            while ((client = getCurrentClient()) == null) {
                 FindClientCommand command = new FindClientCommand();
                 command.execute(io);
             }
             Account account = null;
-            while((account = getCommander().getCurrentClient().getActiveAccount()) == null){
+            while((account = getCurrentClient().getActiveAccount()) == null){
                 ShowAllAccounts command = new ShowAllAccounts();
                 command.execute(io);
             }
